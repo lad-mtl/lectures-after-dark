@@ -61,7 +61,7 @@ const UpcomingEvents: React.FC = () => {
                                     </span>
                                 </div>
                                 <a href="#" className={styles.link}>
-                                    EventBrite <ArrowRight size={16} />
+                                    Register <ArrowRight size={16} />
                                 </a>
                             </div>
                         </div>

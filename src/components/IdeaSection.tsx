@@ -8,26 +8,26 @@ const IdeaSection: React.FC = () => {
             <div className="container">
                 <div className={styles.grid}>
                     <div className={styles.content}>
-                        <h2>What to Expect</h2>
+                        <h2>The Idea</h2>
                         <p>
-                            We're addressing a gap in adult education and social life. No stuffy lecture halls, no boring powerpoints.
+                            Lectures After Dark is a growing movement of intellectual social events that combine academic learning in casual settings with the social experience of a bar.
                         </p>
                         <p>
-                            Just world-class speakers, your favorite cocktails, and conversations that actually matter. It's where the university library meets the speakeasy.
+                            Our events are designed to be accessible to everyone while still offering deep insights. Curiosity is the only requirement.
                         </p>
 
                         <ul className={styles.list}>
                             <li className={styles.listItem}>
                                 <span className={styles.check}><Check size={14} /></span>
-                                45-minute deep dive talks
+                                Fun and Engaging Speakers
                             </li>
                             <li className={styles.listItem}>
                                 <span className={styles.check}><Check size={14} /></span>
-                                Q&A with industry leaders
+                                Professors and Industry Leaders
                             </li>
                             <li className={styles.listItem}>
                                 <span className={styles.check}><Check size={14} /></span>
-                                Curated cocktail menus
+                                Education and Entertainment
                             </li>
                         </ul>
                     </div>

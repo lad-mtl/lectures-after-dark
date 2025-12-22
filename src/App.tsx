@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Hero from './components/Hero';
 import UpcomingEvents from './components/UpcomingEvents';
 import IdeaSection from './components/IdeaSection';

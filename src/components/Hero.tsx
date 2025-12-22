@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
 
                 <div className={styles.buttonGroup}>
                     <a href="#events" className={styles.btnPrimary}>
-                        View Upcoming Nights
+                        View Upcoming Events
                     </a>
                     <a href="#contact" className={styles.btnSecondary}>
                         Join the Email List

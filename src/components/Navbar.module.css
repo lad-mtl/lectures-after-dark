@@ -2,18 +2,38 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 0;
+    padding: 0.75rem 0;
+
+    /* Base Glass Style (Always applied but hidden initially) */
     background-color: rgba(26, 22, 18, 0.85);
-    /* --midnight with opacity */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: var(--text-primary);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
     border-bottom: 1px solid rgba(245, 240, 232, 0.05);
-    /* Subtle border */
-    transition: all 0.3s ease;
+    color: var(--text-primary);
+
+    /* Positioning */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+
+    /* Initial Invisible State */
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    /* Prevent clicks when invisible */
+
+    /* Smooth Transition */
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navVisible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    /* Enable clicks */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .container {
@@ -106,10 +126,9 @@
     color: var(--cream);
 }
 
-/* Mobile responsive adjustments could go here */
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
     .links {
         display: none;
-        /* For now, hide links on mobile or implement a hamburger menu later */
     }
 }

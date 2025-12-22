@@ -1,11 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './Navbar.module.css';
 import { Mic } from 'lucide-react';
 
 const Navbar: React.FC = () => {
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Show navbar after scrolling 20% of the viewport height
+            // This gives a "getting past the landing page" feel
+            const threshold = window.innerHeight * 0.2;
+            if (window.scrollY > threshold) {
+                setIsVisible(true);
+            } else {
+                setIsVisible(false);
+            }
+        };
+
+        // Check initial position
+        handleScroll();
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <nav className={styles.nav}>
+        <nav className={`${styles.nav} ${isVisible ? styles.navVisible : ''}`}>
             <div className={styles.container}>
                 <NavLink to="/" className={styles.logo}>
                     <Mic size={24} />

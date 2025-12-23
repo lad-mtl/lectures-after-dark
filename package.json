@@ -11,10 +11,14 @@
   },
   "dependencies": {
     "@craftjs/core": "^0.2.12",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.6",
     "@tailwindcss/vite": "^4.1.18",
     "convex": "^1.31.2",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "^19.2.0",
     "react-router-dom": "^6.28.0",
     "tailwindcss": "^4.1.18"

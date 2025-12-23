@@ -25,7 +25,16 @@ export const SettingsPanel = () => {
             <Box display="flex" flexDirection="column" gap={2}>
                 <Box>
                     <Box pb={2} display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography variant="subtitle2" style={{ fontWeight: 600, color: "#666" }}>Selected</Typography>
+                        <Box display="flex" alignItems="center" gap={1}>
+                            <MaterialButton
+                                size="small"
+                                onClick={() => actions.selectNode(null)}
+                                style={{ minWidth: "auto", padding: "4px" }}
+                            >
+                                ←
+                            </MaterialButton>
+                            <Typography variant="subtitle2" style={{ fontWeight: 600, color: "#666" }}>Selected</Typography>
+                        </Box>
                         <Chip size="small" color="primary" label={selected.name} variant="outlined" />
                     </Box>
                     <Divider />

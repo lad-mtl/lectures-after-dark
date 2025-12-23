@@ -49,6 +49,18 @@ const Header = () => {
 import { useQuery } from "convex/react";
 import { CircularProgress, Box } from "@mui/material";
 
+const Sidebar = () => {
+    const { hasSelected } = useEditor((state) => ({
+        hasSelected: state.events.selected.size > 0
+    }));
+
+    return (
+        <Grid style={{ width: "300px", borderLeft: "1px solid #e0e0e0", backgroundColor: "#fff", overflowY: "auto" }}>
+            {hasSelected ? <SettingsPanel /> : <Toolbox />}
+        </Grid>
+    );
+};
+
 const Admin: React.FC = () => {
     // Fetch the page data from Convex
     const pageData = useQuery(api.pages.getPage, { slug: "home" });
@@ -71,9 +83,6 @@ const Admin: React.FC = () => {
             >
                 <Header />
                 <Grid container style={{ flex: 1, height: "calc(100vh - 48px)", overflow: "hidden" }}>
-                    <Grid style={{ width: "250px", borderRight: "1px solid #e0e0e0", backgroundColor: "#f9f9f9", overflowY: "auto" }}>
-                        <Toolbox />
-                    </Grid>
                     <Grid style={{ flex: 1, backgroundColor: "#f0f2f5", padding: "40px", overflowY: "auto", display: "flex", justifyContent: "center" }}>
                         <Frame json={pageData?.content}>
                             <Element is={Container} padding={40} background="#fff" width="100%" height="auto" canvas>
@@ -86,9 +95,7 @@ const Admin: React.FC = () => {
                             </Element>
                         </Frame>
                     </Grid>
-                    <Grid style={{ width: "300px", borderLeft: "1px solid #e0e0e0", backgroundColor: "#fff", overflowY: "auto" }}>
-                        <SettingsPanel />
-                    </Grid>
+                    <Sidebar />
                 </Grid>
             </Editor>
         </div>

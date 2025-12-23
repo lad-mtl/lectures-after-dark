@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,9 +11,12 @@ import Venues from './pages/Venues';
 import Admin from './pages/Admin';
 
 function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname === '/admin';
+
   return (
     <main>
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
@@ -23,7 +26,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
-      <Footer />
+      {!isAdminRoute && <Footer />}
     </main>
   );
 }

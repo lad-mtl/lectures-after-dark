@@ -68,6 +68,6 @@
 }
 
 .item[data-open="true"] .answer {
-    max-height: 200px;
+    max-height: 1000px;
     /* Approximate max height */
 }

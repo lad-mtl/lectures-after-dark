@@ -28,7 +28,7 @@ export const SettingsPanel = () => {
                         <Box display="flex" alignItems="center" gap={1}>
                             <MaterialButton
                                 size="small"
-                                onClick={() => actions.selectNode(null)}
+                                onClick={() => actions.selectNode(undefined)}
                                 style={{ minWidth: "auto", padding: "4px" }}
                             >
                                 ←

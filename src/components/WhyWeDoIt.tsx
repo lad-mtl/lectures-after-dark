@@ -19,6 +19,15 @@ const WhyWeDoIt: React.FC = () => {
                             And honestly? It’s a break from endless scrolling and fake “facts.” Real ideas, real speakers, real people — all in one room, and it’s a vibe.
                         </p>
                     </div>
+                    <div style={{ marginTop: '3rem' }}>
+                        <a href="https://instagram.com" className="btn" style={{
+                            backgroundColor: 'var(--midnight)',
+                            color: 'var(--cream)',
+                            border: 'none'
+                        }}>
+                            Follow us on Instagram
+                        </a>
+                    </div>
                 </div>
             </div>
         </section>

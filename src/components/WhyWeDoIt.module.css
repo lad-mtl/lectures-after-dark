@@ -1,7 +1,7 @@
 .section {
     padding: 8rem 0;
-    background-color: var(--bg-color);
-    border-bottom: 1px solid var(--border-color);
+    background-color: var(--cream);
+    border-bottom: 1px solid var(--warm-brown);
 }
 
 .content {
@@ -16,7 +16,7 @@
     font-size: 0.875rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--gold);
+    color: var(--amber);
     margin-bottom: 1.5rem;
 }
 
@@ -24,7 +24,7 @@
     font-family: var(--font-headline);
     font-size: 3.5rem;
     line-height: 1.1;
-    color: var(--cream);
+    color: var(--midnight);
     margin-bottom: 2.5rem;
 }
 
@@ -32,7 +32,7 @@
     font-family: var(--font-serif);
     font-size: 1.25rem;
     line-height: 1.7;
-    color: var(--text-secondary);
+    color: var(--warm-brown);
 }
 
 .bodyText p {

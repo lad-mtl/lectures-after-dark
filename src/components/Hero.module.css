@@ -43,7 +43,7 @@
     z-index: 10;
     text-align: center;
     max-width: 900px;
-    padding: 0 2rem;
+    padding: 0 clamp(1rem, 4vw, 2rem);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -56,7 +56,7 @@
 }
 
 .logoImage {
-    width: 200px;
+    width: clamp(120px, 30vw, 200px);
     /* Adjusted size for visibility */
     height: auto;
     display: block;
@@ -64,9 +64,9 @@
 
 .title {
     font-family: var(--font-headline);
-    font-size: 5rem;
+    font-size: clamp(2.5rem, 8vw, 5rem);
     line-height: 0.9;
-    margin-bottom: 1.5rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
     text-transform: uppercase;
     letter-spacing: 0.02em;
     color: var(--cream);
@@ -75,30 +75,39 @@
 
 .subtitle {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
     font-style: italic;
     color: var(--amber);
-    margin-bottom: 3rem;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
     letter-spacing: 0.05em;
     font-weight: 400;
 }
 
 .buttonGroup {
     display: flex;
-    gap: 1.5rem;
+    gap: clamp(1rem, 3vw, 1.5rem);
     justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 500px;
 }
 
 .btnPrimary {
     background-color: var(--cream);
     color: var(--midnight);
     border: 1px solid var(--cream);
-    padding: 1rem 2.5rem;
+    padding: clamp(0.875rem, 2vw, 1rem) clamp(1.75rem, 4vw, 2.5rem);
     font-family: var(--font-headline);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     transition: all 0.3s ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 140px;
 }
 
 .btnPrimary:hover {
@@ -111,12 +120,18 @@
     background-color: transparent;
     color: var(--cream);
     border: 1px solid var(--cream);
-    padding: 1rem 2.5rem;
+    padding: clamp(0.875rem, 2vw, 1rem) clamp(1.75rem, 4vw, 2.5rem);
     font-family: var(--font-headline);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     transition: all 0.3s ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 140px;
 }
 
 .btnSecondary:hover {
@@ -135,22 +150,70 @@
     }
 }
 
-@media (max-width: 768px) {
+/* Small phones */
+@media (max-width: 480px) {
+    .hero {
+        min-height: 100vh;
+        height: auto;
+    }
+
+    .content {
+        padding: 0 1rem;
+    }
+
+    .logoIcon {
+        margin-bottom: 1.5rem;
+    }
+
     .title {
-        font-size: 3.5rem;
+        line-height: 1;
+        margin-bottom: 1rem;
     }
 
     .subtitle {
-        font-size: 1.2rem;
+        margin-bottom: 2rem;
     }
 
     .buttonGroup {
         flex-direction: column;
-        width: 100%;
+        gap: 1rem;
     }
 
     .btnPrimary,
     .btnSecondary {
         width: 100%;
+        min-width: unset;
+    }
+}
+
+/* Medium phones and small tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .buttonGroup {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .btnPrimary,
+    .btnSecondary {
+        flex: 0 1 auto;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .btnPrimary:hover,
+    .btnSecondary:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btnPrimary:active {
+        transform: scale(0.98);
+        background-color: var(--cream-dark);
+    }
+
+    .btnSecondary:active {
+        transform: scale(0.98);
+        background-color: rgba(245, 240, 232, 0.2);
     }
 }

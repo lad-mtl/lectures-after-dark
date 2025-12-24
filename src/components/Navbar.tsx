@@ -64,7 +64,14 @@ const Navbar: React.FC = () => {
             <nav className={`${styles.nav} ${isVisible ? styles.navVisible : ''}`}>
                 <div className={styles.container}>
                     <NavLink to="/" className={styles.logo}>
-                        <img src="/logo.png" alt="Lectures After Dark Logo" style={{ height: '40px', width: 'auto' }} />
+                        <img
+                            src="/logo.png"
+                            alt="Lectures After Dark Logo"
+                            className={styles.logoImg}
+                            width="40"
+                            height="40"
+                            loading="eager"
+                        />
                         <span className={styles.highlightText}>Lectures</span>&nbsp;After Dark
                     </NavLink>
 

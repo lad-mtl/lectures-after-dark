@@ -43,12 +43,12 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 clamp(1rem, 4vw, 2rem);
 }
 
 .logo {
     font-family: var(--font-headline);
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
     font-weight: 700;
     text-decoration: none;
     color: var(--cream);
@@ -57,6 +57,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 48px;
+}
+
+.logoImg {
+    height: clamp(32px, 6vw, 40px);
+    width: auto;
 }
 
 .highlightText {
@@ -80,6 +86,9 @@
     position: relative;
     padding: 0.5rem 0.75rem;
     border-radius: 4px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
 }
 
 .link::after {
@@ -128,6 +137,10 @@
     box-shadow: 0 0 0 0 rgba(217, 83, 46, 0);
     position: relative;
     overflow: hidden;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .contactBtn::before {
@@ -166,10 +179,14 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 10px;
+    padding: 12px;
     z-index: 1001;
     transition: transform 0.3s ease;
     position: relative;
+    min-width: 48px;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
 }
 
 .hamburger:hover {
@@ -288,7 +305,7 @@
     font-family: var(--font-headline);
     text-decoration: none;
     color: var(--text-secondary);
-    font-size: 1.25rem;
+    font-size: clamp(1.1rem, 3vw, 1.25rem);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 1.25rem 1.5rem;
@@ -299,23 +316,41 @@
     overflow: hidden;
     opacity: 0;
     transform: translateX(30px);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
 }
 
 .mobileMenuOpen .mobileLink {
     animation: slideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.mobileMenuOpen .mobileLink:nth-child(1) { animation-delay: 0.15s; }
-.mobileMenuOpen .mobileLink:nth-child(2) { animation-delay: 0.25s; }
-.mobileMenuOpen .mobileLink:nth-child(3) { animation-delay: 0.35s; }
-.mobileMenuOpen .mobileLink:nth-child(4) { animation-delay: 0.45s; }
-.mobileMenuOpen .mobileLink:nth-child(5) { animation-delay: 0.55s; }
+.mobileMenuOpen .mobileLink:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+.mobileMenuOpen .mobileLink:nth-child(2) {
+    animation-delay: 0.25s;
+}
+
+.mobileMenuOpen .mobileLink:nth-child(3) {
+    animation-delay: 0.35s;
+}
+
+.mobileMenuOpen .mobileLink:nth-child(4) {
+    animation-delay: 0.45s;
+}
+
+.mobileMenuOpen .mobileLink:nth-child(5) {
+    animation-delay: 0.55s;
+}
 
 @keyframes slideIn {
     0% {
         opacity: 0;
         transform: translateX(30px);
     }
+
     100% {
         opacity: 1;
         transform: translateX(0);
@@ -361,7 +396,7 @@
 .mobileContactBtn {
     font-family: var(--font-headline);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 2.5vw, 1rem);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     padding: 1.25rem 2rem;
@@ -378,6 +413,10 @@
     box-shadow: 0 4px 16px rgba(217, 83, 46, 0.3);
     opacity: 0;
     transform: translateY(20px);
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mobileMenuOpen .mobileContactBtn {
@@ -389,6 +428,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -477,5 +517,61 @@
 
     .overlay {
         display: block;
+    }
+
+    .nav {
+        padding: 0.75rem 0;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .mobileMenu {
+        width: 90%;
+        max-width: 320px;
+    }
+
+    .mobileMenuHeader {
+        padding: 1.5rem;
+    }
+
+    .mobileLinks {
+        padding: 1.5rem;
+    }
+
+    .mobileLink {
+        padding: 1rem 1.25rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Tablets and landscape phones */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .links {
+        gap: 1.5rem;
+    }
+
+    .contactBtn {
+        padding: 0.65rem 1.5rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .link:hover,
+    .contactBtn:hover {
+        transform: none;
+    }
+
+    .link:active {
+        background-color: rgba(245, 240, 232, 0.15);
+    }
+
+    .hamburger:hover {
+        transform: none;
+    }
+
+    .hamburger:active {
+        transform: scale(0.95);
     }
 }

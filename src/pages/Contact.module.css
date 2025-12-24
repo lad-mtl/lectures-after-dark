@@ -1,5 +1,5 @@
 .page {
-    padding-top: 80px;
+    padding-top: clamp(60px, 12vw, 80px);
     /* Account for fixed navbar */
     min-height: 100vh;
     background-color: var(--midnight);
@@ -9,31 +9,32 @@
 }
 
 .hero {
-    padding: 4rem 0;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
     text-align: center;
     background: radial-gradient(circle at center, rgba(61, 43, 31, 0.3) 0%, rgba(26, 22, 18, 0) 70%);
 }
 
 .title {
     font-family: var(--font-headline);
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
     color: var(--cream);
 }
 
 .subtitle {
     font-family: var(--font-serif);
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
     color: var(--text-secondary);
     max-width: 600px;
     margin: 0 auto;
     font-style: italic;
+    padding: 0 1rem;
 }
 
 .container {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: clamp(1rem, 4vw, 2rem);
     width: 100%;
     flex: 1;
 }
@@ -41,8 +42,8 @@
 .grid {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
-    gap: 4rem;
-    margin-top: 2rem;
+    gap: clamp(2rem, 5vw, 4rem);
+    margin-top: clamp(1.5rem, 4vw, 2rem);
 }
 
 .infoSection {
@@ -53,16 +54,16 @@
 
 .infoCard {
     background: rgba(255, 255, 255, 0.03);
-    padding: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
     border: 1px solid rgba(245, 240, 232, 0.1);
     border-radius: 2px;
 }
 
 .infoTitle {
     font-family: var(--font-headline);
-    font-size: 1.2rem;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
     color: var(--amber);
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -87,7 +88,7 @@
 
 .formSection {
     background: rgba(255, 255, 255, 0.02);
-    padding: 3rem;
+    padding: clamp(1.5rem, 5vw, 3rem);
     border: 1px solid rgba(245, 240, 232, 0.05);
     border-radius: 2px;
 }
@@ -111,12 +112,13 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(245, 240, 232, 0.1);
-    padding: 1rem;
+    padding: clamp(0.875rem, 2vw, 1rem);
     color: var(--cream);
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 2vw, 1rem);
     transition: all 0.3s ease;
     border-radius: 2px;
+    min-height: 48px;
 }
 
 .input:focus,
@@ -135,7 +137,7 @@
     background-color: var(--amber);
     color: var(--cream);
     border: none;
-    padding: 1rem 2.5rem;
+    padding: clamp(1rem, 2.5vw, 1.25rem) clamp(2rem, 4vw, 2.5rem);
     font-family: var(--font-headline);
     font-weight: 600;
     text-transform: uppercase;
@@ -143,7 +145,9 @@
     cursor: pointer;
     transition: all 0.3s ease;
     width: 100%;
-    margin-top: 1rem;
+    margin-top: clamp(0.75rem, 2vw, 1rem);
+    min-height: 56px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .submitBtn:hover {
@@ -152,17 +156,53 @@
     transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
+/* Small phones */
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .infoSection {
+        gap: 1.5rem;
+    }
+}
+
+/* Medium phones to tablets */
+@media (min-width: 481px) and (max-width: 768px) {
     .grid {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+}
 
-    .title {
-        font-size: 2.5rem;
+/* Tablets landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        gap: 3rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .submitBtn:hover {
+        transform: none;
     }
 
-    .formSection {
-        padding: 1.5rem;
+    .submitBtn:active {
+        transform: scale(0.98);
+        background-color: #b03d1e;
+    }
+
+    .infoLink:hover {
+        color: inherit;
+    }
+
+    .infoLink:active {
+        color: var(--amber);
     }
 }

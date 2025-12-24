@@ -1,5 +1,5 @@
 .pageWrapper {
-    padding-top: 80px;
+    padding-top: clamp(60px, 12vw, 80px);
     /* Account for fixed navbar if present */
     min-height: 100vh;
     background-color: var(--bg-primary);
@@ -7,7 +7,7 @@
 
 .header {
     text-align: center;
-    padding: 6rem 0 4rem;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 6vw, 4rem);
     background: linear-gradient(to bottom, rgba(26, 22, 18, 0.8), var(--bg-primary)),
         url('https://images.unsplash.com/photo-1544531586-fde5298cdd40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
     background-size: cover;
@@ -16,66 +16,68 @@
 }
 
 .title {
-    font-size: 4rem;
+    font-size: clamp(2.5rem, 8vw, 4rem);
     color: var(--cream);
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .subtitle {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
     color: var(--cream-dark);
     max-width: 600px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .infoSection {
-    padding: 4rem 0;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
     background-color: var(--bg-primary);
 }
 
 .infoContent {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4rem;
+    gap: clamp(2rem, 6vw, 4rem);
     align-items: center;
 }
 
 .infoText h2 {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
     color: var(--cream);
-    margin-bottom: 1.5rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
 .infoText p {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.7;
 }
 
 .speakersSection {
-    padding: 4rem 0;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
     background-color: var(--bg-secondary);
 }
 
 .sectionTitle {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
     color: var(--cream);
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
 }
 
 .speakersGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: clamp(1.5rem, 3vw, 2rem);
 }
 
 .speakerCard {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 2rem;
+    padding: clamp(1.5rem, 4vw, 2rem);
     transition: transform 0.3s ease;
 }
 
@@ -84,28 +86,29 @@
 }
 
 .speakerName {
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
     color: var(--cream);
-    margin-bottom: 0.5rem;
+    margin-bottom: clamp(0.4rem, 1vw, 0.5rem);
 }
 
 .speakerTopic {
     color: var(--accent);
     font-family: var(--font-headline);
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
     display: block;
 }
 
 .speakerBio {
     color: var(--text-secondary);
-    font-size: 0.95rem;
+    font-size: clamp(0.9rem, 2vw, 0.95rem);
+    line-height: 1.6;
 }
 
 .ctaSection {
-    padding: 6rem 0;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
     text-align: center;
     background-color: var(--bg-primary);
 }
@@ -113,34 +116,40 @@
 .ctaGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: clamp(1.5rem, 4vw, 2rem);
     max-width: 900px;
     margin: 0 auto;
 }
 
 .ctaCard {
     background-color: var(--card-bg);
-    padding: 3rem 2rem;
+    padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2rem);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: clamp(1rem, 3vw, 1.5rem);
 }
 
 .ctaCard h3 {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     color: var(--cream);
 }
 
 .ctaCard p {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
+    font-size: clamp(0.95rem, 2vw, 1rem);
 }
 
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.5rem;
+/* Small phones */
+@media (max-width: 480px) {
+    .pageWrapper {
+        padding-top: 60px;
+    }
+
+    .header {
+        padding: 2.5rem 1rem 1.5rem;
     }
 
     .infoContent {
@@ -148,7 +157,41 @@
         gap: 2rem;
     }
 
+    .speakersGrid {
+        grid-template-columns: 1fr;
+    }
+
     .ctaGrid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Medium phones to tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .infoContent {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .ctaGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tablets landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .speakersGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .speakerCard:hover {
+        transform: none;
+    }
+
+    .speakerCard:active {
+        transform: translateY(-3px);
     }
 }

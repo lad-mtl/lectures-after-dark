@@ -1,44 +1,49 @@
 .footer {
     background-color: #0f0d0a;
-    padding: 4rem 0;
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
     border-top: 1px solid var(--border-color);
 }
 
 .grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 4rem;
-    margin-bottom: 4rem;
+    gap: clamp(2rem, 5vw, 4rem);
+    margin-bottom: clamp(2rem, 5vw, 4rem);
 }
 
 .brand h3 {
     font-family: var(--font-headline);
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
     color: var(--cream);
-    margin-bottom: 1rem;
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
 }
 
 .brand p {
     font-family: var(--font-serif);
     color: var(--text-secondary);
     max-width: 300px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    line-height: 1.6;
 }
 
 .col h4 {
     font-family: var(--font-headline);
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
     color: var(--gold);
-    margin-bottom: 1.5rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
 .col ul li {
-    margin-bottom: 0.8rem;
+    margin-bottom: clamp(0.6rem, 1.5vw, 0.8rem);
 }
 
 .col ul li a {
     font-family: var(--font-body);
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
+    display: inline-block;
+    min-height: 32px;
+    line-height: 32px;
 }
 
 .col ul li a:hover {
@@ -48,15 +53,48 @@
 .copyright {
     text-align: center;
     color: var(--text-secondary);
-    font-size: 0.8rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.8rem);
     font-family: var(--font-body);
-    padding-top: 2rem;
+    padding-top: clamp(1.5rem, 4vw, 2rem);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-@media (max-width: 768px) {
+/* Small phones */
+@media (max-width: 480px) {
+    .footer {
+        padding: 2rem 1rem;
+    }
+
     .grid {
         grid-template-columns: 1fr;
         gap: 2rem;
+        margin-bottom: 2rem;
+    }
+}
+
+/* Medium phones to tablets */
+@media (min-width: 481px) and (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+    }
+}
+
+/* Tablets landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .col ul li a:hover {
+        color: inherit;
+    }
+
+    .col ul li a:active {
+        color: var(--amber);
     }
 }

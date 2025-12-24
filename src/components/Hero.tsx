@@ -41,7 +41,14 @@ export const Hero = ({
 
             <div className={styles.content}>
                 <div className={styles.logoIcon}>
-                    <img src="/logo.png" alt="Lectures After Dark Logo" className={styles.logoImage} />
+                    <img
+                        src="/logo.png"
+                        alt="Lectures After Dark Logo"
+                        className={styles.logoImage}
+                        width="200"
+                        height="200"
+                        loading="eager"
+                    />
                 </div>
 
                 <h1 className={styles.title}>

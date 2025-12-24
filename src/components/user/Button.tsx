@@ -16,7 +16,7 @@ export interface ButtonProps extends Omit<MaterialButtonProps, 'classes'> {
     textColor?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button = ({
     size,
     variant,
     color,

@@ -1,34 +1,8 @@
 import React from 'react';
-import { useNode } from '@craftjs/core';
+import { useNode, Element } from '@craftjs/core';
 import styles from './UpcomingEvents.module.css';
-import { ArrowRight, Calendar, MapPin } from 'lucide-react';
-
-const defaultEvents = [
-    {
-        id: 1,
-        tag: 'Psychology',
-        title: "The Psychology of Ambition: Why Some People Win and Most Don't",
-        date: 'Jan 22, 2025',
-        location: 'Montreal',
-        image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-    },
-    {
-        id: 2,
-        tag: 'Culture',
-        title: 'Modern Dating is Negotiating',
-        date: 'Jan 29, 2025',
-        location: 'Montreal',
-        image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    },
-    {
-        id: 3,
-        tag: 'Psychology',
-        title: 'How Power Really Works',
-        date: 'Feb 05, 2025',
-        location: 'Montreal',
-        image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-    }
-];
+import { ArrowRight } from 'lucide-react';
+import { EventCard } from './EventCard';
 
 interface UpcomingEventsProps {
     title?: string;
@@ -107,28 +81,29 @@ export const UpcomingEvents = ({
                         <ArrowRight size={24} style={{ transform: 'rotate(180deg)' }} />
                     </button>
                     <div className={styles.scrollContainer} ref={scrollContainerRef}>
-                        {defaultEvents.map((event) => (
-                            <div key={event.id} className={styles.card}>
-                                <div className={styles.cardImage}>
-                                    <img src={event.image} alt={event.title} />
-                                </div>
-                                <div className={styles.cardContent}>
-                                    <span className={styles.tag}>{event.tag}</span>
-                                    <h3 className={styles.cardTitle}>{event.title}</h3>
-                                    <div className={styles.meta}>
-                                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                            <Calendar size={14} /> {event.date}
-                                        </span>
-                                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                                            <MapPin size={14} /> {event.location}
-                                        </span>
-                                    </div>
-                                    <a href="#" className={styles.link}>
-                                        Register <ArrowRight size={16} />
-                                    </a>
-                                </div>
-                            </div>
-                        ))}
+                        <Element is="div" id="events-list" canvas className={styles.eventsListCanvas}>
+                            <EventCard
+                                tag="Psychology"
+                                title="The Psychology of Ambition: Why Some People Win and Most Don't"
+                                date="Jan 22, 2025"
+                                location="Montreal"
+                                image="https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            />
+                            <EventCard
+                                tag="Culture"
+                                title="Modern Dating is Negotiating"
+                                date="Jan 29, 2025"
+                                location="Montreal"
+                                image="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            />
+                            <EventCard
+                                tag="Psychology"
+                                title="How Power Really Works"
+                                date="Feb 05, 2025"
+                                location="Montreal"
+                                image="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            />
+                        </Element>
                     </div>
                     <button
                         onClick={() => scroll('right')}

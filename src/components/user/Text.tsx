@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNode } from "@craftjs/core";
 import ContentEditable from "react-contenteditable";
+import { SpacingControl } from "../editor/SpacingControl";
 
 export interface TextProps {
     text: string;
@@ -69,23 +70,10 @@ const TextSettings = () => {
                 />
             </div>
             <div style={{ marginBottom: "10px" }}>
-                <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", color: "#666" }}>Margin</label>
-                <input
-                    type="text"
-                    value={margin || ""}
-                    onChange={(e) => setProp((props: any) => props.margin = e.target.value)}
-                    style={{ width: "100%", padding: "5px", border: "1px solid #e0e0e0", borderRadius: "4px" }}
-                    placeholder="e.g., 10px or 10px 20px"
-                />
-            </div>
-            <div style={{ marginBottom: "10px" }}>
-                <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", color: "#666" }}>Padding</label>
-                <input
-                    type="text"
-                    value={padding || ""}
-                    onChange={(e) => setProp((props: any) => props.padding = e.target.value)}
-                    style={{ width: "100%", padding: "5px", border: "1px solid #e0e0e0", borderRadius: "4px" }}
-                    placeholder="e.g., 10px or 10px 20px"
+                <SpacingControl
+                    margin={margin}
+                    padding={padding}
+                    setProp={setProp}
                 />
             </div>
         </>

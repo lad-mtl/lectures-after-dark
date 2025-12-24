@@ -1,10 +1,11 @@
 import React from "react";
 import { Paper } from "@mui/material";
 import { useNode } from "@craftjs/core";
+import { SpacingControl } from "../editor/SpacingControl";
 
 export interface ContainerProps {
     background?: string;
-    padding?: number;
+    padding?: number | string;
     width?: string;
     height?: string;
     children?: React.ReactNode;
@@ -18,7 +19,7 @@ export const Container = ({ background, padding = 0, width, height, children, ma
         <Paper
             {...props}
             ref={(ref: any) => connect(drag(ref))}
-            style={{ margin, background, padding: `${padding}px`, width, height }}
+            style={{ margin, background, padding: typeof padding === 'number' ? `${padding}px` : padding, width, height }}
         >
             {children}
         </Paper>
@@ -46,12 +47,10 @@ const ContainerSettings = () => {
                 />
             </div>
             <div style={{ marginBottom: "10px" }}>
-                <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", color: "#666" }}>Padding</label>
-                <input
-                    type="number"
-                    value={padding}
-                    onChange={(e) => setProp((props: any) => props.padding = parseInt(e.target.value))}
-                    style={{ width: "100%", padding: "5px", border: "1px solid #e0e0e0", borderRadius: "4px" }}
+                <SpacingControl
+                    margin={margin}
+                    padding={padding}
+                    setProp={setProp}
                 />
             </div>
             <div style={{ marginBottom: "10px" }}>
@@ -72,16 +71,7 @@ const ContainerSettings = () => {
                     style={{ width: "100%", padding: "5px", border: "1px solid #e0e0e0", borderRadius: "4px" }}
                 />
             </div>
-            <div style={{ marginBottom: "10px" }}>
-                <label style={{ display: "block", marginBottom: "5px", fontSize: "12px", color: "#666" }}>Margin</label>
-                <input
-                    type="text"
-                    value={margin || ""}
-                    onChange={(e) => setProp((props: any) => props.margin = e.target.value)}
-                    style={{ width: "100%", padding: "5px", border: "1px solid #e0e0e0", borderRadius: "4px" }}
-                    placeholder="e.g., 5px 0 or 10px"
-                />
-            </div>
+
         </>
     );
 };

@@ -5,6 +5,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { type ChangeEvent, useState } from "react";
 import { Box, Button, Typography, CircularProgress, Paper } from "@mui/material";
 import { Upload } from "lucide-react";
+import { SpacingControl } from "../editor/SpacingControl";
 
 interface ImageProps {
     storageId?: string;
@@ -173,28 +174,10 @@ export const ImageSettings = () => {
             </Box>
 
             <Box sx={{ mt: 2 }}>
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                    Margin
-                </Typography>
-                <input
-                    type="text"
-                    value={margin || ""}
-                    onChange={(e) => setProp((props: ImageProps) => props.margin = e.target.value)}
-                    style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-                    placeholder="e.g., 10px or 10px 20px"
-                />
-            </Box>
-
-            <Box sx={{ mt: 2 }}>
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                    Padding
-                </Typography>
-                <input
-                    type="text"
-                    value={padding || ""}
-                    onChange={(e) => setProp((props: ImageProps) => props.padding = e.target.value)}
-                    style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-                    placeholder="e.g., 10px or 10px 20px"
+                <SpacingControl
+                    margin={margin}
+                    padding={padding}
+                    setProp={setProp}
                 />
             </Box>
 

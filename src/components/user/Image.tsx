@@ -40,8 +40,7 @@ export const Image = ({ storageId, alt = "Image", width = "100%", height = "auto
     );
 };
 
-import { Box, Button, Typography, CircularProgress, Paper } from "@mui/material";
-import { Upload } from "lucide-react";
+
 
 export const ImageSettings = () => {
     const { actions: { setProp }, storageId } = useNode((node) => ({

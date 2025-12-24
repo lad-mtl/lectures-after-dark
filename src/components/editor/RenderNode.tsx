@@ -1,24 +1,18 @@
 import { useNode, useEditor } from "@craftjs/core";
-import React, { useEffect, useRef, useCallback } from "react";
-import ReactDOM from "react-dom";
+import React, { useEffect } from "react";
 
 export const RenderNode = ({ render }: { render: React.ReactElement }) => {
     const { id } = useNode();
-    const { actions, query, isActive } = useEditor((state, query) => ({
+    const { isActive } = useEditor((state) => ({
         isActive: state.events.selected.has(id),
     }));
 
     const {
         isHover,
         dom,
-        name,
-        moveable,
-        connectors: { drag },
     } = useNode((node) => ({
         isHover: node.events.hovered,
         dom: node.dom,
-        name: node.data.custom.displayName || node.data.displayName,
-        moveable: query.node(node.id).isDraggable(),
     }));
 
     useEffect(() => {

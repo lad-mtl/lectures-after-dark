@@ -12,6 +12,7 @@ import { WhyWeDoIt } from '../components/user/WhyWeDoIt';
 
 import { Toolbox } from '../components/Toolbox';
 import { SettingsPanel } from '../components/SettingsPanel';
+import { LayersPanel } from '../components/LayersPanel';
 
 import { useEditor } from '@craftjs/core';
 import { useMutation } from "convex/react";
@@ -50,16 +51,63 @@ const Header = () => {
 };
 
 import { useQuery } from "convex/react";
-import { CircularProgress, Box } from "@mui/material";
+import { CircularProgress, Box, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { useState, useEffect } from "react";
+import { ChevronDown, Pencil, Layers as LayersIcon, Plus } from "lucide-react";
 
 const Sidebar = () => {
     const { hasSelected } = useEditor((state) => ({
         hasSelected: state.events.selected.size > 0
     }));
 
+    const [layersOpen, setLayersOpen] = useState(true);
+    const [customizeOpen, setCustomizeOpen] = useState(true);
+    const [componentsOpen, setComponentsOpen] = useState(true);
+
+    // Automatically expand "Customize" when a component is selected
+    useEffect(() => {
+        if (hasSelected) {
+            setCustomizeOpen(true);
+        }
+    }, [hasSelected]);
+
     return (
         <Grid style={{ width: "300px", borderLeft: "1px solid #e0e0e0", backgroundColor: "#fff", overflowY: "auto" }}>
-            {hasSelected ? <SettingsPanel /> : <Toolbox />}
+            <Accordion expanded={customizeOpen} onChange={() => setCustomizeOpen(!customizeOpen)} disableGutters elevation={0} square>
+                <AccordionSummary expandIcon={<ChevronDown size={16} />}>
+                    <Box display="flex" alignItems="center">
+                        <Pencil size={16} style={{ marginRight: 8 }} />
+                        <Typography variant="subtitle2">CUSTOMIZE</Typography>
+                    </Box>
+                </AccordionSummary>
+                <AccordionDetails style={{ padding: 0 }}>
+                    {hasSelected ? <SettingsPanel /> : <Box p={2}><Typography variant="caption" color="textSecondary">Select a component to customize</Typography></Box>}
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={componentsOpen} onChange={() => setComponentsOpen(!componentsOpen)} disableGutters elevation={0} square>
+                <AccordionSummary expandIcon={<ChevronDown size={16} />}>
+                    <Box display="flex" alignItems="center">
+                        <Plus size={16} style={{ marginRight: 8 }} />
+                        <Typography variant="subtitle2">COMPONENTS</Typography>
+                    </Box>
+                </AccordionSummary>
+                <AccordionDetails style={{ padding: 0 }}>
+                    <Toolbox />
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={layersOpen} onChange={() => setLayersOpen(!layersOpen)} disableGutters elevation={0} square>
+                <AccordionSummary expandIcon={<ChevronDown size={16} />}>
+                    <Box display="flex" alignItems="center">
+                        <LayersIcon size={16} style={{ marginRight: 8 }} />
+                        <Typography variant="subtitle2">LAYERS</Typography>
+                    </Box>
+                </AccordionSummary>
+                <AccordionDetails style={{ padding: 0 }}>
+                    <LayersPanel />
+                </AccordionDetails>
+            </Accordion>
         </Grid>
     );
 };
@@ -91,7 +139,7 @@ const Admin: React.FC = () => {
                 <Grid container style={{ flex: 1, height: "calc(100vh - 48px)", overflow: "hidden" }}>
                     <Grid style={{ flex: 1, backgroundColor: "#f0f2f5", padding: "40px", overflowY: "auto", display: "flex", justifyContent: "center" }}>
                         <Frame data={pageData?.content}>
-                            <Element is={Container} padding={40} background="#fff" width="100%" height="auto" canvas>
+                            <Element is={Container} padding={40} background="#fff" width="100%" height="auto" canvas custom={{ displayName: 'App' }}>
                                 <Element is={WhyWeDoIt} canvas>
                                     <Text
                                         text="Why We Do It"

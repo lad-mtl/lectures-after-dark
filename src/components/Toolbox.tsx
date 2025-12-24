@@ -14,9 +14,7 @@ export const Toolbox = () => {
 
     return (
         <Box px={2} py={2}>
-            <Typography variant="subtitle2" gutterBottom style={{ fontWeight: 600, color: "#666" }}>
-                Components
-            </Typography>
+
             <Box display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
                 <Tooltip title="Button" arrow>
                     <MaterialButton

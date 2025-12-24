@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { X } from 'lucide-react';
 import styles from './Navbar.module.css';
 
 
@@ -122,6 +123,21 @@ const Navbar: React.FC = () => {
 
             {/* Mobile Menu */}
             <div className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
+                {/* Mobile Menu Header */}
+                <div className={styles.mobileMenuHeader}>
+                    <div className={styles.mobileMenuLogo}>
+                        <span>Lectures</span> After Dark
+                    </div>
+                    <button
+                        className={styles.closeButton}
+                        onClick={closeMobileMenu}
+                        aria-label="Close menu"
+                    >
+                        <X size={24} />
+                    </button>
+                </div>
+
+                {/* Mobile Menu Links */}
                 <div className={styles.mobileLinks}>
                     <NavLink
                         to="/events"
@@ -147,6 +163,9 @@ const Navbar: React.FC = () => {
                     >
                         About
                     </NavLink>
+
+                    <div className={styles.mobileMenuDivider}></div>
+
                     <NavLink
                         to="/contact"
                         className={({ isActive }) => isActive ? `${styles.mobileContactBtn} ${styles.mobileContactBtnActive}` : styles.mobileContactBtn}

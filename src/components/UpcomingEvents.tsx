@@ -1,8 +1,9 @@
 import React from 'react';
+import { useNode } from '@craftjs/core';
 import styles from './UpcomingEvents.module.css';
 import { ArrowRight, Calendar, MapPin } from 'lucide-react';
 
-const events = [
+const defaultEvents = [
     {
         id: 1,
         tag: 'Psychology',
@@ -29,7 +30,18 @@ const events = [
     }
 ];
 
-const UpcomingEvents: React.FC = () => {
+interface UpcomingEventsProps {
+    title?: string;
+    subtitle?: string;
+    buttonText?: string;
+}
+
+export const UpcomingEvents = ({
+    title = "Upcoming Events",
+    subtitle = "Curated nights for the curious mind.",
+    buttonText = "View All Events"
+}: UpcomingEventsProps) => {
+    const { connectors: { connect, drag } } = useNode();
     const scrollContainerRef = React.useRef<HTMLDivElement>(null);
     const [showLeftButton, setShowLeftButton] = React.useState(false);
 
@@ -65,15 +77,23 @@ const UpcomingEvents: React.FC = () => {
     };
 
     return (
-        <section id="events" className={styles.section}>
+        <section
+            ref={(ref: HTMLElement | null) => {
+                if (ref) {
+                    connect(drag(ref));
+                }
+            }}
+            id="events"
+            className={styles.section}
+        >
             <div className="container">
                 <div className={styles.header}>
                     <div>
-                        <h2 className={styles.title}>Upcoming Events</h2>
-                        <p className={styles.subtitle}>Curated nights for the curious mind.</p>
+                        <h2 className={styles.title}>{title}</h2>
+                        <p className={styles.subtitle}>{subtitle}</p>
                     </div>
                     <a href="#" className={`btn btn-outline ${styles.viewAllBtn}`}>
-                        View All Events
+                        {buttonText}
                     </a>
                 </div>
 
@@ -87,7 +107,7 @@ const UpcomingEvents: React.FC = () => {
                         <ArrowRight size={24} style={{ transform: 'rotate(180deg)' }} />
                     </button>
                     <div className={styles.scrollContainer} ref={scrollContainerRef}>
-                        {events.map((event) => (
+                        {defaultEvents.map((event) => (
                             <div key={event.id} className={styles.card}>
                                 <div className={styles.cardImage}>
                                     <img src={event.image} alt={event.title} />
@@ -121,6 +141,57 @@ const UpcomingEvents: React.FC = () => {
             </div>
         </section>
     );
+};
+
+const UpcomingEventsSettings = () => {
+    const { actions: { setProp }, title, subtitle, buttonText } = useNode((node) => ({
+        title: node.data.props.title,
+        subtitle: node.data.props.subtitle,
+        buttonText: node.data.props.buttonText,
+    }));
+
+    return (
+        <div>
+            <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Title</label>
+                <input
+                    type="text"
+                    value={title || ''}
+                    onChange={(e) => setProp((props: UpcomingEventsProps) => props.title = e.target.value)}
+                    style={{ width: '100%', padding: '5px' }}
+                />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Subtitle</label>
+                <input
+                    type="text"
+                    value={subtitle || ''}
+                    onChange={(e) => setProp((props: UpcomingEventsProps) => props.subtitle = e.target.value)}
+                    style={{ width: '100%', padding: '5px' }}
+                />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+                <label style={{ display: 'block', marginBottom: '5px' }}>Button Text</label>
+                <input
+                    type="text"
+                    value={buttonText || ''}
+                    onChange={(e) => setProp((props: UpcomingEventsProps) => props.buttonText = e.target.value)}
+                    style={{ width: '100%', padding: '5px' }}
+                />
+            </div>
+        </div>
+    );
+};
+
+(UpcomingEvents as any).craft = {
+    props: {
+        title: "Upcoming Events",
+        subtitle: "Curated nights for the curious mind.",
+        buttonText: "View All Events"
+    },
+    related: {
+        settings: UpcomingEventsSettings
+    }
 };
 
 export default UpcomingEvents;

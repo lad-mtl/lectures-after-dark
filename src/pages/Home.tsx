@@ -1,11 +1,11 @@
 import React from 'react';
 import { Editor, Frame, Element } from '@craftjs/core';
 import { Hero } from '../components/Hero';
-import UpcomingEvents from '../components/UpcomingEvents';
-import WhyWeDoIt from '../components/WhyWeDoIt';
+import { UpcomingEvents } from '../components/UpcomingEvents';
+import { WhyWeDoIt } from '../components/WhyWeDoIt';
 import { IdeaSection } from '../components/IdeaSection';
 import { Instagram } from '../components/Instagram';
-import FAQ from '../components/FAQ';
+import { FAQ } from '../components/FAQ';
 
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';

@@ -3,6 +3,9 @@ import { Editor, Frame, Element } from '@craftjs/core';
 import { Hero } from '../components/Hero';
 import { Instagram } from '../components/Instagram';
 import { IdeaSection } from '../components/IdeaSection';
+import { WhyWeDoIt } from '../components/WhyWeDoIt';
+import { UpcomingEvents } from '../components/UpcomingEvents';
+import { FAQ } from '../components/FAQ';
 import { SettingsPanel } from '../components/SettingsPanel';
 
 import { useQuery } from 'convex/react';
@@ -18,7 +21,7 @@ const Admin: React.FC = () => {
 
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <Editor resolver={{ Hero, Instagram, IdeaSection }}>
+            <Editor resolver={{ Hero, Instagram, IdeaSection, WhyWeDoIt, UpcomingEvents, FAQ }}>
                 <Topbar />
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                     <div style={{ flex: 1, overflow: 'auto', padding: '20px', background: '#e0e0e0' }}>

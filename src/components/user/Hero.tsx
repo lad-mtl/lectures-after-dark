@@ -62,7 +62,7 @@ export const Hero = ({ videoSrc = "/nano_banana_video.mp4", overlayOpacity = 0.4
                 <div className={styles.buttonGroup}>
                     <Element
                         id="hero-cta"
-                        is={Button}
+                        is={Button as any}
                         text="Upcoming Events"
                         variant="contained"
                         backgroundColor="var(--cream)"

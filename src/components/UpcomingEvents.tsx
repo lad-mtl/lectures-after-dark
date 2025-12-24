@@ -76,7 +76,7 @@ export const UpcomingEvents = () => {
                     </div>
                     <Element
                         id="view-all-btn"
-                        is={Button}
+                        is={Button as any}
                         text="VIEW ALL EVENTS"
                         variant="outlined"
                         size="medium"

@@ -14,6 +14,7 @@ export interface ContainerProps {
     flexDirection?: "row" | "column";
     alignItems?: "flex-start" | "center" | "flex-end" | "stretch";
     justifyContent?: "flex-start" | "center" | "flex-end" | "space-between" | "space-around";
+    className?: string;
 }
 
 export const Container = ({
@@ -26,6 +27,7 @@ export const Container = ({
     flexDirection = "column",
     alignItems = "flex-start",
     justifyContent = "flex-start",
+    className,
     ...props
 }: ContainerProps) => {
     const { connectors: { connect, drag } } = useNode();
@@ -33,6 +35,7 @@ export const Container = ({
     return (
         <Paper
             {...props}
+            className={className}
             ref={(ref: any) => connect(drag(ref))}
             style={{
                 margin,

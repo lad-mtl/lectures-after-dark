@@ -3,12 +3,19 @@ import { Check } from 'lucide-react';
 import styles from '../IdeaSection.module.css';
 import { Text } from './Text';
 import { Image } from './Image';
+import { ColorControl } from "../editor/ColorControl";
+import { SpacingControl } from "../editor/SpacingControl";
 
-export const IdeaSection = () => {
+export const IdeaSection = ({ background = "#1a1612", padding = "4rem 0", margin = "0px" }) => {
     const { connectors: { connect, drag } } = useNode();
 
     return (
-        <section ref={(ref: any) => connect(drag(ref))} id="about" className={styles.section}>
+        <section
+            ref={(ref: any) => connect(drag(ref))}
+            id="about"
+            className={styles.section}
+            style={{ backgroundColor: background, padding, margin }}
+        >
             <div className="container">
                 <div className={styles.grid}>
                     <div className={styles.content}>
@@ -63,15 +70,35 @@ export const IdeaSection = () => {
 };
 
 export const IdeaSectionSettings = () => {
+    const { actions: { setProp }, background, padding, margin } = useNode((node) => ({
+        background: node.data.props.background,
+        padding: node.data.props.padding,
+        margin: node.data.props.margin,
+    }));
+
     return (
         <div>
-            <p>Click on any text to edit it directly.</p>
+            <ColorControl
+                label="Background"
+                value={background}
+                onChange={(color) => setProp((props: any) => props.background = color)}
+            />
+            <SpacingControl
+                margin={margin}
+                padding={padding}
+                setProp={setProp}
+            />
         </div>
     );
 };
 
 IdeaSection.craft = {
     displayName: "Idea Section",
+    props: {
+        background: "#1a1612",
+        padding: "4rem 0",
+        margin: "0px",
+    },
     related: {
         settings: IdeaSectionSettings,
     },

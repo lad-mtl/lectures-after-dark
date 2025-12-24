@@ -2,20 +2,22 @@ import { useNode, Element } from "@craftjs/core";
 import styles from '../WhyWeDoIt.module.css';
 import { Text } from './Text';
 import { SpacingControl } from "../editor/SpacingControl";
+import { ColorControl } from "../editor/ColorControl";
 
 export interface WhyWeDoItProps {
     padding?: string;
     margin?: string;
+    background?: string;
 }
 
-export const WhyWeDoIt = ({ padding = "8rem 0", margin = "0px" }: WhyWeDoItProps) => {
+export const WhyWeDoIt = ({ padding = "8rem 0", margin = "0px", background = "#1a1612" }: WhyWeDoItProps) => {
     const { connectors: { connect, drag } } = useNode();
 
     return (
         <section
             ref={(ref: any) => connect(drag(ref))}
             className={styles.section}
-            style={{ padding, margin }}
+            style={{ padding, margin, backgroundColor: background }}
         >
             <div className="container">
                 <div className={styles.content}>
@@ -48,13 +50,19 @@ export const WhyWeDoIt = ({ padding = "8rem 0", margin = "0px" }: WhyWeDoItProps
 };
 
 export const WhyWeDoItSettings = () => {
-    const { actions: { setProp }, padding, margin } = useNode((node) => ({
+    const { actions: { setProp }, padding, margin, background } = useNode((node) => ({
         padding: node.data.props.padding,
         margin: node.data.props.margin,
+        background: node.data.props.background,
     }));
 
     return (
         <div style={{ marginBottom: "10px" }}>
+            <ColorControl
+                label="Background"
+                value={background}
+                onChange={(color) => setProp((props: any) => props.background = color)}
+            />
             <SpacingControl
                 margin={margin}
                 padding={padding}
@@ -69,6 +77,7 @@ WhyWeDoIt.craft = {
     props: {
         padding: "8rem 0",
         margin: "0px",
+        background: "#1a1612",
     },
     related: {
         settings: WhyWeDoItSettings,

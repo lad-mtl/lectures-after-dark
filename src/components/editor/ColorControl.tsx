@@ -12,9 +12,11 @@ const PRESET_COLORS = [
     { name: 'Midnight', value: '#1a1612' },
     { name: 'Warm Brown', value: '#3D2B1F' },
     { name: 'Amber', value: '#D9532E' },
-    { name: 'Gold', value: '#CC9966' },
+    { name: 'Amber Light', value: '#E67E52' },
     { name: 'Cream', value: '#F5F0E8' },
     { name: 'Cream Dark', value: '#D4C7B8' },
+    { name: 'Gold', value: '#CC9966' },
+    { name: 'Card BG', value: '#2A1F1A' },
     { name: 'White', value: '#ffffff' },
     { name: 'Black', value: '#000000' },
 ];

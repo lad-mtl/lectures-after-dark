@@ -1,6 +1,7 @@
 import React from 'react';
 import { Editor, Frame, Element } from '@craftjs/core';
-import { Typography, Grid, AppBar, Toolbar } from '@mui/material';
+import { Typography, Grid, AppBar, Toolbar, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Laptop, Smartphone } from 'lucide-react';
 
 import { Text } from '../components/user/Text';
 import { Button } from '../components/user/Button';
@@ -20,7 +21,7 @@ import { api } from "../../convex/_generated/api";
 import { Button as MuiButton } from "@mui/material";
 import { RenderNode } from '../components/editor/RenderNode';
 
-const Header = () => {
+const Header = ({ device, setDevice }: { device: "desktop" | "mobile", setDevice: (d: "desktop" | "mobile") => void }) => {
     const { query } = useEditor();
     const savePage = useMutation(api.pages.savePage);
 
@@ -42,6 +43,21 @@ const Header = () => {
                 <Typography variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                     Page Editor
                 </Typography>
+                <ToggleButtonGroup
+                    value={device}
+                    exclusive
+                    onChange={(_, newDevice) => newDevice && setDevice(newDevice)}
+                    aria-label="device"
+                    size="small"
+                    style={{ marginRight: 16, backgroundColor: '#f5f5f5' }}
+                >
+                    <ToggleButton value="desktop" aria-label="desktop">
+                        <Laptop size={20} />
+                    </ToggleButton>
+                    <ToggleButton value="mobile" aria-label="mobile">
+                        <Smartphone size={20} />
+                    </ToggleButton>
+                </ToggleButtonGroup>
                 <MuiButton variant="contained" color="primary" onClick={handleSave}>
                     Save Changes
                 </MuiButton>
@@ -113,6 +129,7 @@ const Sidebar = () => {
 };
 
 const Admin: React.FC = () => {
+    const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
     // Fetch the page data from Convex
     const pageData = useQuery(api.pages.getPage, { slug: "home" });
 
@@ -135,56 +152,67 @@ const Admin: React.FC = () => {
                 // If content exists, load it. Otherwise, use the default structure (Frame with children).
                 enabled={true}
             >
-                <Header />
+                <Header device={device} setDevice={setDevice} />
                 <Grid container style={{ flex: 1, height: "calc(100vh - 48px)", overflow: "hidden" }}>
                     <Grid style={{ flex: 1, backgroundColor: "#f0f2f5", padding: "40px", overflowY: "auto", display: "flex", justifyContent: "center" }}>
-                        <Frame data={pageData?.content}>
-                            <Element is={Container} padding={40} background="#fff" width="100%" height="auto" canvas custom={{ displayName: 'App' }}>
-                                <Element is={WhyWeDoIt} canvas>
-                                    <Text
-                                        text="Why We Do It"
-                                        tagName="span"
-                                        fontSize="0.875rem"
-                                        fontFamily="var(--font-headline)"
-                                        color="var(--gold)"
-                                        textTransform="uppercase"
-                                        letterSpacing="0.15em"
-                                        margin="0px 0px 24px 0px"
-                                        textAlign="center"
-                                    />
-                                    <Text
-                                        text="Make learning a night out."
-                                        tagName="h2"
-                                        fontSize="3.5rem"
-                                        fontFamily="var(--font-headline)"
-                                        color="var(--cream)"
-                                        margin="0px 0px 40px 0px"
-                                        textAlign="center"
-                                    />
-                                </Element>
-                                <Element is={IdeaSection} canvas>
-                                    <Box sx={{ gridColumn: 'span 1' }}>
+                        <div style={{
+                            width: device === "mobile" ? "375px" : "100%",
+                            height: device === "mobile" ? "667px" : "100%",
+                            transition: "all 0.3s ease",
+                            border: device === "mobile" ? "1px solid #ccc" : "none",
+                            boxShadow: device === "mobile" ? "0 0 20px rgba(0,0,0,0.1)" : "none",
+                            backgroundColor: "#fff",
+                            overflowY: device === "mobile" ? "auto" : "visible",
+                            overflowX: "hidden"
+                        }}>
+                            <Frame data={pageData?.content}>
+                                <Element is={Container} padding={40} background="#fff" width="100%" height="auto" canvas custom={{ displayName: 'App' }}>
+                                    <Element is={WhyWeDoIt} canvas>
                                         <Text
-                                            text="The Idea"
+                                            text="Why We Do It"
+                                            tagName="span"
+                                            fontSize="0.875rem"
+                                            fontFamily="var(--font-headline)"
+                                            color="var(--gold)"
+                                            textTransform="uppercase"
+                                            letterSpacing="0.15em"
+                                            margin="0px 0px 24px 0px"
+                                            textAlign="center"
+                                        />
+                                        <Text
+                                            text="Make learning a night out."
                                             tagName="h2"
                                             fontSize="3.5rem"
                                             fontFamily="var(--font-headline)"
                                             color="var(--cream)"
-                                            margin="0px 0px 32px 0px"
+                                            margin="0px 0px 40px 0px"
+                                            textAlign="center"
                                         />
-                                    </Box>
-                                    <Box sx={{ gridColumn: 'span 1' }}>
-                                        <Image
-                                            alt="Cocktails and Conversation"
-                                            width="100%"
-                                            height="auto"
-                                            boxShadow="20px 20px 0 rgba(26, 22, 18, 0.5)"
-                                            borderRadius="4px"
-                                        />
-                                    </Box>
+                                    </Element>
+                                    <Element is={IdeaSection} canvas>
+                                        <Box sx={{ gridColumn: 'span 1' }}>
+                                            <Text
+                                                text="The Idea"
+                                                tagName="h2"
+                                                fontSize="3.5rem"
+                                                fontFamily="var(--font-headline)"
+                                                color="var(--cream)"
+                                                margin="0px 0px 32px 0px"
+                                            />
+                                        </Box>
+                                        <Box sx={{ gridColumn: 'span 1' }}>
+                                            <Image
+                                                alt="Cocktails and Conversation"
+                                                width="100%"
+                                                height="auto"
+                                                boxShadow="20px 20px 0 rgba(26, 22, 18, 0.5)"
+                                                borderRadius="4px"
+                                            />
+                                        </Box>
+                                    </Element>
                                 </Element>
-                            </Element>
-                        </Frame>
+                            </Frame>
+                        </div>
                     </Grid>
                     <Sidebar />
                 </Grid>

@@ -41,3 +41,33 @@ export const deletePage = mutation({
         }
     },
 });
+
+export const initializePages = mutation({
+    args: {},
+    handler: async (ctx) => {
+        const pages = ["home", "bars", "speakers", "about"];
+
+        for (const slug of pages) {
+            const existing = await ctx.db
+                .query("pages")
+                .withIndex("by_slug", (q) => q.eq("slug", slug))
+                .first();
+
+            if (!existing) {
+                await ctx.db.insert("pages", {
+                    slug,
+                    layout: JSON.stringify({})
+                });
+            }
+        }
+
+        return { success: true, message: "Pages initialized" };
+    },
+});
+
+export const listPages = query({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.db.query("pages").collect();
+    },
+});

@@ -39,7 +39,7 @@ const Admin: React.FC = () => {
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <Editor resolver={MAIN_RESOLVER}>
-                <Topbar />
+                <Topbar activePageSlug={activePage} />
                 <PageTabs activePageSlug={activePage} onPageChange={setActivePage} />
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                     <div style={{ flex: 1, overflow: 'auto', padding: '20px', background: '#e0e0e0' }}>

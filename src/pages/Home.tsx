@@ -7,10 +7,19 @@ import { IdeaSection } from '../components/IdeaSection';
 import { Instagram } from '../components/Instagram';
 import FAQ from '../components/FAQ';
 
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
+
 const Home: React.FC = () => {
+    const pageData = useQuery(api.pages.getPage, { slug: "home" });
+
+    if (pageData === undefined) {
+        return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</div>;
+    }
+
     return (
         <Editor enabled={false} resolver={{ Hero, Instagram, IdeaSection, UpcomingEvents, WhyWeDoIt, FAQ }}>
-            <Frame>
+            <Frame json={pageData?.layout}>
                 <Element is="div" canvas>
                     <Hero />
                     <UpcomingEvents />

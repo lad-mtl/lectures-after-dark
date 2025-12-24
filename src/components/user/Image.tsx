@@ -17,12 +17,14 @@ interface ImageProps {
     borderRadius?: string;
     margin?: string;
     padding?: string;
+    src?: string;
 }
 
-export const Image = ({ storageId, alt = "Image", width = "100%", height = "auto", className, boxShadow = "none", borderRadius = "0px", margin = "0px", padding = "0px" }: ImageProps) => {
+export const Image = ({ storageId, src, alt = "Image", width = "100%", height = "auto", className, boxShadow = "none", borderRadius = "0px", margin = "0px", padding = "0px" }: ImageProps) => {
     const { connectors: { connect, drag } } = useNode();
 
-    const imageUrl = useQuery(api.files.getFileUrl, storageId ? { storageId: storageId as Id<"_storage"> } : "skip");
+    const storageUrl = useQuery(api.files.getFileUrl, storageId ? { storageId: storageId as Id<"_storage"> } : "skip");
+    const imageUrl = src || storageUrl;
 
     return (
         <div ref={(ref: any) => connect(drag(ref))} className={className} style={{ width, height, boxShadow, borderRadius, margin, padding, display: "flex", overflow: "hidden" }}>
@@ -49,8 +51,9 @@ export const Image = ({ storageId, alt = "Image", width = "100%", height = "auto
 
 
 export const ImageSettings = () => {
-    const { actions: { setProp }, storageId, boxShadow, borderRadius, margin, padding } = useNode((node) => ({
+    const { actions: { setProp }, storageId, src, boxShadow, borderRadius, margin, padding } = useNode((node) => ({
         storageId: node.data.props.storageId,
+        src: node.data.props.src,
         boxShadow: node.data.props.boxShadow,
         borderRadius: node.data.props.borderRadius,
         margin: node.data.props.margin,
@@ -58,7 +61,8 @@ export const ImageSettings = () => {
     }));
 
     const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-    const imageUrl = useQuery(api.files.getFileUrl, storageId ? { storageId: storageId as Id<"_storage"> } : "skip");
+    const storageUrl = useQuery(api.files.getFileUrl, storageId ? { storageId: storageId as Id<"_storage"> } : "skip");
+    const imageUrl = src || storageUrl;
     const [uploading, setUploading] = useState(false);
 
     const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -149,6 +153,19 @@ export const ImageSettings = () => {
 
             <Box sx={{ mt: 2 }}>
                 <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                    Image URL (optional)
+                </Typography>
+                <input
+                    type="text"
+                    value={src || ""}
+                    onChange={(e) => setProp((props: ImageProps) => props.src = e.target.value)}
+                    style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+                    placeholder="https://example.com/image.jpg"
+                />
+            </Box>
+
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
                     Box Shadow
                 </Typography>
                 <input
@@ -192,6 +209,7 @@ Image.craft = {
     displayName: "Image",
     props: {
         storageId: "",
+        src: "",
         alt: "Image",
         width: "100%",
         height: "auto",

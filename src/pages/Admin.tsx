@@ -12,6 +12,7 @@ import { IdeaSection } from '../components/user/IdeaSection';
 import { WhyWeDoIt } from '../components/user/WhyWeDoIt';
 import { EventCard } from '../components/user/EventCard';
 import { UpcomingEvents } from '../components/UpcomingEvents';
+import { Instagram } from '../components/user/Instagram';
 
 import { Hero } from '../components/user/Hero';
 import { Toolbox } from '../components/Toolbox';
@@ -148,12 +149,12 @@ const Admin: React.FC = () => {
 
 
     console.log('Admin Render - Text component:', Text);
-    console.log('Admin Render - Resolver keys:', Object.keys({ Text, Button, Container, Card, IdeaSection, Image, WhyWeDoIt, UpcomingEvents, EventCard, Hero }));
+    console.log('Admin Render - Resolver keys:', Object.keys({ Text, Button, Container, Card, IdeaSection, Image, WhyWeDoIt, UpcomingEvents, EventCard, Hero, Instagram }));
 
     return (
         <div style={{ margin: "0 auto", width: "100%", height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <Editor
-                resolver={{ Text, Button, Container, Card, IdeaSection, Image, WhyWeDoIt, UpcomingEvents, EventCard, Hero }}
+                resolver={{ Text, Button, Container, Card, IdeaSection, Image, WhyWeDoIt, UpcomingEvents, EventCard, Hero, Instagram }}
                 onRender={RenderNode}
                 // If content exists, load it. Otherwise, use the default structure (Frame with children).
                 enabled={true}

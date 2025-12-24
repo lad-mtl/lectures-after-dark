@@ -10,7 +10,8 @@ import { Image } from "./user/Image";
 import { UpcomingEvents } from "./UpcomingEvents";
 import { EventCard } from "./user/EventCard";
 import { Hero } from "./user/Hero";
-import { Type, Square, Layout, CreditCard, Calendar, Monitor } from "lucide-react";
+import { Instagram as InstagramComponent } from "./user/Instagram";
+import { Type, Square, Layout, CreditCard, Calendar, Monitor, Instagram } from "lucide-react";
 
 export const Toolbox = () => {
     const { connectors } = useEditor();
@@ -186,6 +187,17 @@ export const Toolbox = () => {
                     >
                         <Monitor size={20} style={{ marginBottom: 5 }} />
                         <Typography variant="caption">Hero</Typography>
+                    </MaterialButton>
+                </Tooltip>
+                <Tooltip title="Instagram" arrow>
+                    <MaterialButton
+                        variant="outlined"
+                        fullWidth
+                        style={{ flexDirection: "column", padding: "10px", textTransform: "none", borderColor: "#e0e0e0", color: "#555" }}
+                        ref={(ref: any) => connectors.create(ref, <InstagramComponent />)}
+                    >
+                        <Instagram size={20} style={{ marginBottom: 5 }} />
+                        <Typography variant="caption">Instagram</Typography>
                     </MaterialButton>
                 </Tooltip>
             </Box>

@@ -29,8 +29,11 @@ const Admin: React.FC = () => {
                             <Frame json={pageData?.layout}>
                                 <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                     <Hero />
+                                    <UpcomingEvents />
                                     <IdeaSection />
+                                    <WhyWeDoIt />
                                     <Instagram />
+                                    <FAQ />
                                 </Element>
                             </Frame>
                         </div>

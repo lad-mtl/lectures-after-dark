@@ -49,7 +49,7 @@ const Home: React.FC = () => {
                 ) : (
                     <Frame>
                         <Element is={Container} canvas width="100%" padding={0} background="transparent">
-                            <LegacyHero />
+                            <Element is={Hero} canvas videoSrc="/nano_banana_video.mp4" overlayOpacity={0.4} />
                             <Element is={UpcomingEvents} />
                             <LegacyIdeaSection />
                             <LegacyWhyWeDoIt />
@@ -58,7 +58,7 @@ const Home: React.FC = () => {
                             <Element is={Container} padding={40} background="#1a1a1a" width="100%" alignItems="center" justifyContent="center">
                                 <Element is={Text} text="Stay Updated" fontSize="2rem" color="#ffffff" textAlign="center" margin="0 0 10px 0" />
                                 <Element is={Text} text="Join our newsletter to get the latest updates." fontSize="1rem" color="#cccccc" textAlign="center" margin="0 0 20px 0" />
-                                <Element is={Button} text="Join our newsletter" variant="contained" color="primary" size="large" />
+                                <Element is={Button as any} text="Join our newsletter" variant="contained" color="primary" size="large" />
                             </Element>
                         </Element>
                     </Frame>

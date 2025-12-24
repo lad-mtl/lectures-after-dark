@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Popover } from "@mui/material";
+import { Box, Typography, Popover } from "@mui/material";
 import { Palette } from "lucide-react";
 
 interface ColorControlProps {

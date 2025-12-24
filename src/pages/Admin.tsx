@@ -10,6 +10,7 @@ import { SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA } from '../comp
 import { SpeakerCard } from '../components/SpeakerCard';
 import { BarsHeader, BarsInfo, BarsList, BarsCTA } from '../components/Bars';
 import { BarCard } from '../components/BarCard';
+import { AboutHeader, AboutMission } from '../components/About';
 import { FAQ } from '../components/FAQ';
 import { SettingsPanel } from '../components/SettingsPanel';
 import Navbar from '../components/Navbar';
@@ -22,7 +23,8 @@ import PageTabs from '../components/PageTabs';
 const MAIN_RESOLVER = {
     Hero, Instagram, IdeaSection, WhyWeDoIt, UpcomingEvents, EventCard, FAQ,
     SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA, SpeakerCard,
-    BarsHeader, BarsInfo, BarsList, BarsCTA, BarCard
+    BarsHeader, BarsInfo, BarsList, BarsCTA, BarCard,
+    AboutHeader, AboutMission
 };
 
 const Admin: React.FC = () => {
@@ -70,6 +72,13 @@ const Admin: React.FC = () => {
                                         <SpeakersInfo />
                                         <SpeakersList />
                                         <SpeakersCTA />
+                                    </Element>
+                                </Frame>
+                            ) : activePage === 'about' ? (
+                                <Frame json={pageData?.layout}>
+                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                        <AboutHeader />
+                                        <AboutMission />
                                     </Element>
                                 </Frame>
                             ) : (

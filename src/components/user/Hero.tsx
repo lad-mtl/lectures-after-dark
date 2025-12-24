@@ -38,12 +38,8 @@ export const Hero = ({ videoSrc = "/nano_banana_video.mp4", overlayOpacity = 0.4
                     text="Lectures After Dark"
                     tagName="h1"
                     className={styles.title}
-                    fontSize="5.37rem"
+                    fontSize="5rem"
                     color="var(--cream)"
-                    fontFamily="var(--font-headline)"
-                    textAlign="center"
-                    lineHeight={0.9}
-                    textTransform="uppercase"
                 />
 
                 <Element
@@ -54,9 +50,6 @@ export const Hero = ({ videoSrc = "/nano_banana_video.mp4", overlayOpacity = 0.4
                     className={styles.subtitle}
                     fontSize="1.5rem"
                     color="var(--amber)"
-                    fontFamily="var(--font-serif)"
-                    textAlign="center"
-                    margin="0 0 3rem 0"
                 />
 
                 <div className={styles.buttonGroup}>
@@ -67,7 +60,6 @@ export const Hero = ({ videoSrc = "/nano_banana_video.mp4", overlayOpacity = 0.4
                         variant="contained"
                         backgroundColor="var(--cream)"
                         textColor="var(--midnight)"
-                        padding="1rem 2.5rem"
                         className={styles.heroButton}
                     />
                     <Element
@@ -77,7 +69,6 @@ export const Hero = ({ videoSrc = "/nano_banana_video.mp4", overlayOpacity = 0.4
                         variant="outlined"
                         backgroundColor="transparent"
                         textColor="var(--cream)"
-                        padding="1rem 2.5rem"
                         className={styles.heroButtonSecondary}
                     />
                 </div>

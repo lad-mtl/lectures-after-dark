@@ -1,5 +1,5 @@
 .section {
-    padding: 6rem 0;
+    padding: 3rem 0;
     background-color: var(--cream);
     border-top: 1px solid rgba(26, 22, 18, 0.1);
     border-bottom: 1px solid rgba(26, 22, 18, 0.1);
@@ -30,23 +30,34 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: var(--midnight);
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     z-index: 10;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
-    color: var(--cream);
+    transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    color: var(--midnight);
 }
 
 .floatingScrollButton.right {
-    right: -20px;
+    right: -10px;
+    animation: slideRight 1.5s ease-in-out infinite;
+}
+
+@keyframes slideRight {
+    0% {
+        transform: translateY(-50%) translateX(0);
+    }
+    50% {
+        transform: translateY(-50%) translateX(5px);
+    }
+    100% {
+        transform: translateY(-50%) translateX(0);
+    }
 }
 
 .floatingScrollButton.left {
@@ -58,11 +69,6 @@
 .floatingScrollButton.left.visible {
     opacity: 1;
     visibility: visible;
-}
-
-.floatingScrollButton:hover {
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .title {
@@ -183,10 +189,25 @@
     .title {
         font-size: 2.5rem;
     }
+
+    .scrollContainer {
+        scroll-snap-type: x mandatory;
+        padding-left: 1rem;
+    }
+
+    .card {
+        scroll-snap-align: start;
+        min-width: 80vw;
+    }
+
+    .eventsListCanvas {
+        padding-right: 1rem;
+        width: auto;
+    }
 }
 
 .eventsListCanvas {
     display: flex;
     gap: 2rem;
-    width: 100%;
+    width: auto;
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useEditor } from '@craftjs/core';
-import { Toolbox } from './Toolbox';
+
 
 export const SettingsPanel = () => {
-    const { selected, actions } = useEditor((state, query) => {
+    const { selected } = useEditor((state, query) => {
         const [currentNodeId] = state.events.selected;
         let selected;
 

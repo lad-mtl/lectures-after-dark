@@ -133,6 +133,9 @@ const HeroSettings = () => {
     },
     related: {
         settings: HeroSettings
+    },
+    rules: {
+        deletable: false
     }
 };
 

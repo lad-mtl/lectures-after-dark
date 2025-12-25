@@ -1,5 +1,6 @@
 import React from 'react';
 import { useEditor } from '@craftjs/core';
+import { Toolbox } from './Toolbox';
 
 export const SettingsPanel = () => {
     const { selected, actions } = useEditor((state, query) => {
@@ -20,22 +21,47 @@ export const SettingsPanel = () => {
         };
     });
 
-    return selected ? (
-        <div style={{ padding: '20px', background: '#f5f5f5', borderLeft: '1px solid #ddd', width: '300px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3>Settings</h3>
-                {selected.isDeletable ? (
-                    <button
-                        onClick={() => {
-                            actions.delete(selected.id);
-                        }}
-                        style={{ padding: '5px 10px', background: '#ff4d4f', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                    >
-                        Delete
-                    </button>
-                ) : null}
+    return (
+        <div style={{
+            background: 'rgb(252, 252, 252)',
+            borderLeft: '1px solid rgb(230, 230, 230)',
+            width: '300px',
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
+            <div style={{
+                padding: '12px',
+                borderBottom: '1px solid rgb(230, 230, 230)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            }}>
+                <h2 style={{
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    margin: 0,
+                    color: 'rgb(51, 51, 51)',
+                }}>
+                    {selected ? `Settings: ${selected.name}` : 'Toolbox'}
+                </h2>
             </div>
-            {selected.settings && React.createElement(selected.settings)}
+            <div style={{
+                flex: 1,
+                overflowY: 'auto',
+                padding: '12px',
+            }}>
+                {selected && selected.settings ? (
+                    React.createElement(selected.settings)
+                ) : (
+                    <div style={{
+                        textAlign: 'center',
+                        color: 'rgb(153, 153, 153)',
+                        paddingTop: '20px',
+                    }}>
+                        <p>Select a component to edit its settings.</p>
+                    </div>
+                )}
+            </div>
         </div>
-    ) : null;
+    );
 };

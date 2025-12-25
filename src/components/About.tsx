@@ -18,6 +18,7 @@ export const AboutHeader = ({
             ref={(ref: HTMLElement | null) => { if (ref) connect(drag(ref)); }}
             className={styles.header}
         >
+            <div className={styles.headerOverlay}></div>
             <div className="container">
                 <h1 className={styles.title}>{title}</h1>
                 <p className={styles.subtitle}>{subtitle}</p>
@@ -53,16 +54,14 @@ const AboutHeaderSettings = () => {
 // --- AboutMission ---
 interface AboutMissionProps {
     title?: string;
-    text1?: string;
-    text2?: string;
-    text3?: string;
+    missionStatement?: string;
+    imageUrl?: string;
 }
 
 export const AboutMission = ({
     title = "Our Mission",
-    text1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    text2 = "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    text3 = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+    missionStatement = "Our mission is to bring people together to share ideas and stories in a relaxed and inspiring environment. We believe that a good conversation can change the world.",
+    imageUrl = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
 }: AboutMissionProps) => {
     const { connectors: { connect, drag } } = useNode();
     return (
@@ -74,9 +73,10 @@ export const AboutMission = ({
                 <div className={styles.missionContent}>
                     <div className={styles.missionText}>
                         <h2>{title}</h2>
-                        <p>{text1}</p>
-                        <p>{text2}</p>
-                        <p>{text3}</p>
+                        <p>{missionStatement}</p>
+                    </div>
+                    <div className={styles.missionImage}>
+                        <img src={imageUrl} alt="Our team" />
                     </div>
                 </div>
             </div>
@@ -85,11 +85,10 @@ export const AboutMission = ({
 };
 
 const AboutMissionSettings = () => {
-    const { actions: { setProp }, title, text1, text2, text3 } = useNode((node) => ({
+    const { actions: { setProp }, title, missionStatement, imageUrl } = useNode((node) => ({
         title: node.data.props.title,
-        text1: node.data.props.text1,
-        text2: node.data.props.text2,
-        text3: node.data.props.text3,
+        missionStatement: node.data.props.missionStatement,
+        imageUrl: node.data.props.imageUrl,
     }));
     return (
         <div>
@@ -98,16 +97,12 @@ const AboutMissionSettings = () => {
                 <input type="text" value={title} onChange={e => setProp((p: any) => p.title = e.target.value)} style={{ width: '100%' }} />
             </div>
             <div style={{ marginBottom: '10px' }}>
-                <label>Text 1</label>
-                <textarea value={text1} onChange={e => setProp((p: any) => p.text1 = e.target.value)} style={{ width: '100%', minHeight: '80px' }} />
+                <label>Mission Statement</label>
+                <textarea value={missionStatement} onChange={e => setProp((p: any) => p.missionStatement = e.target.value)} style={{ width: '100%', minHeight: '100px' }} />
             </div>
             <div style={{ marginBottom: '10px' }}>
-                <label>Text 2</label>
-                <textarea value={text2} onChange={e => setProp((p: any) => p.text2 = e.target.value)} style={{ width: '100%', minHeight: '80px' }} />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label>Text 3</label>
-                <textarea value={text3} onChange={e => setProp((p: any) => p.text3 = e.target.value)} style={{ width: '100%', minHeight: '80px' }} />
+                <label>Image URL</label>
+                <input type="text" value={imageUrl} onChange={e => setProp((p: any) => p.imageUrl = e.target.value)} style={{ width: '100%' }} />
             </div>
         </div>
     );
@@ -116,9 +111,8 @@ const AboutMissionSettings = () => {
 (AboutMission as any).craft = {
     props: {
         title: "Our Mission",
-        text1: "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-        text2: "Duis aute irure dolor in reprehenderit...",
-        text3: "Sed ut perspiciatis unde omnis iste natus error..."
+        missionStatement: "Our mission is to bring people together to share ideas and stories in a relaxed and inspiring environment. We believe that a good conversation can change the world.",
+        imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80"
     },
     related: { settings: AboutMissionSettings }
 };

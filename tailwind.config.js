@@ -5,9 +5,6 @@ export default {
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
 
-    // CRITICAL: Prefix prevents conflicts during migration
-    prefix: 'tw-',
-
     theme: {
         extend: {
             colors: {

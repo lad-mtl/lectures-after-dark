@@ -57,21 +57,18 @@ export const UpcomingEvents = ({
                 }
             }}
             id="events"
-            className="py-12 bg-cream border-t border-b border-midnight/10"
+            className="pt-12 pb-8 bg-cream border-t border-b border-midnight/10"
         >
             <div className="container">
-                <div className="flex justify-between items-end mb-12 max-md:flex-col max-md:items-start max-md:gap-4">
+                <div className="flex !mb-4 max-md:flex-col max-md:items-start">
                     <div>
                         <h2 className="font-headline text-5xl text-midnight mb-2 max-md:text-4xl">{title}</h2>
                         <p className="font-serif text-warm-brown text-lg">{subtitle}</p>
                     </div>
-                    <a href="#" className="btn btn-outline border-midnight text-midnight hover:bg-midnight/5">
-                        {buttonText}
-                    </a>
                 </div>
 
                 <div className="relative">
-                    <div className="flex gap-8 overflow-x-auto pb-8 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:pl-4 max-md:gap-4" ref={scrollContainerRef}>
+                    <div className="flex gap-8 overflow-x-auto pb-2 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:gap-4" ref={scrollContainerRef}>
                         <Element is="div" id="events-list" canvas className="flex gap-8 w-auto">
                             <EventCard
                                 tag="Psychology"
@@ -132,32 +129,32 @@ const UpcomingEventsSettings = () => {
     }));
 
     return (
-        <div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Title</label>
+        <div className="space-y-4">
+            <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Title</label>
                 <input
                     type="text"
                     value={title || ''}
                     onChange={(e) => setProp((props: UpcomingEventsProps) => props.title = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Subtitle</label>
+            <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Subtitle</label>
                 <input
                     type="text"
                     value={subtitle || ''}
                     onChange={(e) => setProp((props: UpcomingEventsProps) => props.subtitle = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Button Text</label>
+            <div>
+                <label className="block mb-2 text-sm font-medium text-gray-700">Button Text</label>
                 <input
                     type="text"
                     value={buttonText || ''}
                     onChange={(e) => setProp((props: UpcomingEventsProps) => props.buttonText = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
             </div>
         </div>

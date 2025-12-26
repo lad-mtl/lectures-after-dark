@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Editor, Frame, Element } from '@craftjs/core';
+import { Editor, Element } from '@craftjs/core';
+import { MigratingFrame } from '../components/MigratingFrame';
 import { Hero } from '../components/Hero';
 import { Instagram } from '../components/Instagram';
 import { IdeaSection } from '../components/IdeaSection';
@@ -47,7 +48,7 @@ const Admin: React.FC = () => {
                         <div style={{ background: 'white', minHeight: '100%', boxShadow: '0 0 10px rgba(0,0,0,0.1)', position: 'relative', transform: 'translate(0)' }}>
 
                             {activePage === 'home' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <Hero />
                                         <UpcomingEvents />
@@ -56,48 +57,48 @@ const Admin: React.FC = () => {
                                         <Instagram />
                                         <FAQ />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : activePage === 'bars' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <BarsHeader />
                                         <BarsInfo />
                                         <BarsList />
                                         <BarsCTA />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : activePage === 'speakers' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <SpeakersHeader />
                                         <SpeakersInfo />
                                         <SpeakersList />
                                         <SpeakersCTA />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : activePage === 'about' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <AboutHeader />
                                         <AboutMission />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : activePage === 'events' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <UpcomingEvents />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : activePage === 'test-tailwind' ? (
-                                <Frame json={pageData?.layout}>
+                                <MigratingFrame json={pageData?.layout}>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
                                         <TestTailwind />
                                     </Element>
-                                </Frame>
+                                </MigratingFrame>
                             ) : (
-                                <Frame>
+                                <MigratingFrame>
                                     <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas />
-                                </Frame>
+                                </MigratingFrame>
                             )}
                         </div>
                     </div>

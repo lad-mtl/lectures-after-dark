@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNode, Element } from '@craftjs/core';
-import styles from './UpcomingEvents.module.css';
 import { ArrowRight } from 'lucide-react';
 import { EventCard } from './EventCard';
 
@@ -58,48 +57,63 @@ export const UpcomingEvents = ({
                 }
             }}
             id="events"
-            className={styles.section}
+            className="py-12 bg-cream border-t border-b border-midnight/10"
         >
             <div className="container">
-                <div className={styles.header}>
+                <div className="flex justify-between items-end mb-12 max-md:flex-col max-md:items-start max-md:gap-4">
                     <div>
-                        <h2 className={styles.title}>{title}</h2>
-                        <p className={styles.subtitle}>{subtitle}</p>
+                        <h2 className="font-headline text-5xl text-midnight mb-2 max-md:text-4xl">{title}</h2>
+                        <p className="font-serif text-warm-brown text-lg">{subtitle}</p>
                     </div>
-                    <a href="#" className={`btn btn-outline ${styles.viewAllBtn}`}>
+                    <a href="#" className="btn btn-outline border-midnight text-midnight hover:bg-midnight/5">
                         {buttonText}
                     </a>
                 </div>
 
-                <div className={styles.carouselWrapper}>
-                    <div className={styles.scrollContainer} ref={scrollContainerRef}>
-                        <Element is="div" id="events-list" canvas className={styles.eventsListCanvas}>
+                <div className="relative">
+                    <div className="flex gap-8 overflow-x-auto pb-8 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:pl-4" ref={scrollContainerRef}>
+                        <Element is="div" id="events-list" canvas className="flex gap-8 w-auto max-md:pr-4">
                             <EventCard
                                 tag="Psychology"
                                 title="The Psychology of Ambition: Why Some People Win and Most Don't"
                                 date="Jan 22, 2025"
+                                time="7:00 PM"
                                 location="Montreal"
+                                attendeeCount="+120"
                                 image="https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                             />
                             <EventCard
                                 tag="Culture"
                                 title="Modern Dating is Negotiating"
                                 date="Jan 29, 2025"
+                                time="6:30 PM"
                                 location="Montreal"
+                                attendeeCount="+85"
                                 image="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
                             />
                             <EventCard
                                 tag="Psychology"
                                 title="How Power Really Works"
                                 date="Feb 05, 2025"
+                                time="8:00 PM"
                                 location="Montreal"
+                                attendeeCount="+200"
                                 image="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            />
+                            <EventCard
+                                tag="Music"
+                                title="The Art of Jazz Improvisation"
+                                date="Feb 12, 2025"
+                                time="9:00 PM"
+                                location="Montreal"
+                                attendeeCount="+150"
+                                image="https://images.unsplash.com/photo-1511192336575-5a79af67a629?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
                             />
                         </Element>
                     </div>
                     <button
                         onClick={() => scroll('right')}
-                        className={`${styles.floatingScrollButton} ${styles.right}`}
+                        className="absolute top-1/2 -translate-y-1/2 right-[-10px] w-10 h-10 bg-transparent border-none flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-midnight animate-slide-right"
                         aria-label="Scroll right"
                     >
                         <ArrowRight size={24} />

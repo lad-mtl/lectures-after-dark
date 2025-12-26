@@ -41,6 +41,15 @@ export default {
                 'card': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
                 'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
             },
+            keyframes: {
+                slideRight: {
+                    '0%, 100%': { transform: 'translateY(-50%) translateX(0)' },
+                    '50%': { transform: 'translateY(-50%) translateX(5px)' },
+                },
+            },
+            animation: {
+                'slide-right': 'slideRight 1.5s ease-in-out infinite',
+            },
         },
     },
     plugins: [],

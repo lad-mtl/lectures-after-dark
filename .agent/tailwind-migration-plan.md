@@ -130,23 +130,23 @@ interface HeroProps {
 export default function Hero({ title, subtitle, backgroundImage }: HeroProps) {
   return (
     <section
-      className="tw-relative tw-bg-midnight tw-min-h-[600px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-px-4 tw-overflow-hidden"
+      className="relative bg-midnight min-h-[600px] flex flex-col justify-center items-center px-4 overflow-hidden"
       style={backgroundImage ? { backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
     >
       {/* Dark overlay for text contrast - FIXES REPORT ISSUE #1 */}
-      <div className="tw-absolute tw-inset-0 tw-bg-gradient-to-b tw-from-black/70 tw-to-black/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/50" />
 
-      <div className="tw-relative tw-z-10 tw-text-center tw-max-w-4xl tw-space-y-6">
-        <h1 className="tw-text-hero tw-font-headline tw-uppercase tw-text-cream tw-tracking-wide">
+      <div className="relative z-10 text-center max-w-4xl space-y-6">
+        <h1 className="text-hero font-headline uppercase text-cream tracking-wide">
           {title}
         </h1>
 
         {/* CRITICAL FIX: Changed from amber to cream-100 (white) for WCAG compliance */}
-        <p className="tw-text-xl md:tw-text-2xl tw-font-serif tw-italic tw-text-cream-100 tw-drop-shadow-lg">
+        <p className="text-xl md:text-2xl font-serif italic text-cream-100 drop-shadow-lg">
           {subtitle}
         </p>
 
-        <div className="tw-flex tw-gap-4 tw-justify-center tw-flex-wrap tw-pt-4">
+        <div className="flex gap-4 justify-center flex-wrap pt-4">
           <Button variant="primary" size="lg">
             UPCOMING EVENTS
           </Button>
@@ -228,37 +228,37 @@ export default function EventCard({
   onRegisterClick
 }: EventCardProps) {
   return (
-    <article className="tw-bg-card-bg tw-rounded-xl tw-overflow-hidden tw-transition-all tw-duration-300 hover:tw-shadow-card-hover hover:tw-scale-[1.02] tw-cursor-pointer">
+    <article className="bg-card-bg rounded-xl overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:scale-[1.02] cursor-pointer">
       {/* FIX: Locked 16:9 aspect ratio (Report Issue #9) */}
-      <div className="tw-relative tw-w-full tw-aspect-video tw-overflow-hidden">
+      <div className="relative w-full aspect-video overflow-hidden">
         <img
           src={imageUrl}
           alt={title}
-          className="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
       </div>
 
-      <div className="tw-p-6 tw-space-y-4">
+      <div className="p-6 space-y-4">
         {/* Category badge */}
-        <span className="tw-inline-block tw-px-3 tw-py-1 tw-bg-amber/20 tw-text-amber tw-text-sm tw-font-semibold tw-uppercase tw-rounded">
+        <span className="inline-block px-3 py-1 bg-amber/20 text-amber text-sm font-semibold uppercase rounded">
           {category}
         </span>
 
         {/* Event title */}
-        <h3 className="tw-text-card-title tw-font-bold tw-text-cream tw-line-clamp-2">
+        <h3 className="text-card-title font-bold text-cream line-clamp-2">
           {title}
         </h3>
 
         {/* Date if provided */}
         {date && (
-          <p className="tw-text-cream-dark tw-text-sm">
+          <p className="text-cream-dark text-sm">
             {date}
           </p>
         )}
 
         {/* Price and CTA */}
-        <div className="tw-flex tw-justify-between tw-items-center tw-pt-2">
-          <span className="tw-text-cream tw-text-xl tw-font-semibold">
+        <div className="flex justify-between items-center pt-2">
+          <span className="text-cream text-xl font-semibold">
             ${price}
           </span>
           <Button
@@ -313,11 +313,11 @@ interface UpcomingEventsProps {
 
 export default function UpcomingEvents({ events, onViewAllClick }: UpcomingEventsProps) {
   return (
-    <section className="tw-py-section tw-px-4 tw-bg-midnight">
-      <div className="tw-max-w-7xl tw-mx-auto">
+    <section className="py-section px-4 bg-midnight">
+      <div className="max-w-7xl mx-auto">
         {/* Header with proper alignment */}
-        <div className="tw-flex tw-flex-col md:tw-flex-row tw-justify-between tw-items-start md:tw-items-center tw-gap-4 tw-mb-12">
-          <SectionTitle className="tw-mb-0">UPCOMING EVENTS</SectionTitle>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
+          <SectionTitle className="mb-0">UPCOMING EVENTS</SectionTitle>
           <Button
             variant="outline"
             size="sm"
@@ -328,7 +328,7 @@ export default function UpcomingEvents({ events, onViewAllClick }: UpcomingEvent
         </div>
 
         {/* FIX: Proper responsive grid with consistent gap (Report Issue #2, #5) */}
-        <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map(event => (
             <EventCard
               key={event.id}
@@ -374,28 +374,28 @@ export default function TheIdea() {
   ]
 
   return (
-    <section className="tw-py-section tw-px-4 tw-bg-warm-brown">
-      <div className="tw-max-w-7xl tw-mx-auto tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-12 tw-items-center">
+    <section className="py-section px-4 bg-warm-brown">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Text content */}
-        <div className="tw-space-y-6">
+        <div className="space-y-6">
           <SectionTitle>THE IDEA</SectionTitle>
 
-          <Paragraph className="tw-text-cream-dark">
+          <Paragraph className="text-cream-dark">
             Curated nights for the curious mind. Lectures After Dark brings together
             thought leaders, cultural critics, and curious individuals for intimate
             evenings of intellectual exploration.
           </Paragraph>
 
           {/* Feature list with checkmarks */}
-          <ul className="tw-space-y-4">
+          <ul className="space-y-4">
             {features.map((feature, index) => (
-              <li key={index} className="tw-flex tw-items-center tw-gap-3">
-                <div className="tw-w-6 tw-h-6 tw-rounded-full tw-bg-amber tw-flex tw-items-center tw-justify-center tw-flex-shrink-0">
-                  <svg className="tw-w-4 tw-h-4 tw-text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <li key={index} className="flex items-center gap-3">
+                <div className="w-6 h-6 rounded-full bg-amber flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="tw-text-cream tw-font-semibold tw-text-sm tw-uppercase tw-tracking-wide">
+                <span className="text-cream font-semibold text-sm uppercase tracking-wide">
                   {feature}
                 </span>
               </li>
@@ -404,11 +404,11 @@ export default function TheIdea() {
         </div>
 
         {/* Image - 50/50 split (Report Issue #12) */}
-        <div className="tw-relative tw-rounded-xl tw-overflow-hidden tw-aspect-[4/3]">
+        <div className="relative rounded-xl overflow-hidden aspect-[4/3]">
           <img
             src="/path/to/bar-image.jpg"
             alt="Lectures After Dark venue"
-            className="tw-w-full tw-h-full tw-object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       </div>
@@ -427,17 +427,17 @@ export default function TheIdea() {
 ```tsx
 export default function WhyWeDoIt() {
   return (
-    <section className="tw-py-section tw-px-4 tw-bg-cream">
-      <div className="tw-max-w-4xl tw-mx-auto tw-text-center">
-        <SectionTitle dark className="tw-mb-8">
+    <section className="py-section px-4 bg-cream">
+      <div className="max-w-4xl mx-auto text-center">
+        <SectionTitle dark className="mb-8">
           WHY WE DO IT
         </SectionTitle>
 
-        <div className="tw-space-y-6">
+        <div className="space-y-6">
           {/* FIX: Constrained width for optimal readability (Report Issue #8) */}
           <Paragraph
             maxWidth="prose"
-            className="tw-text-midnight tw-text-lg tw-mx-auto"
+            className="text-midnight text-lg mx-auto"
           >
             In a world of endless digital content and shallow interactions, we believe
             in the power of gathering together—in person—to explore ideas that matter.
@@ -447,14 +447,14 @@ export default function WhyWeDoIt() {
 
           <Paragraph
             maxWidth="prose"
-            className="tw-text-midnight/80 tw-mx-auto"
+            className="text-midnight/80 mx-auto"
           >
             Our events are designed for those who refuse to settle for surface-level
             conversations, who seek depth, connection, and inspiration in unexpected places.
           </Paragraph>
 
           {/* Single CTA - removing redundancy (Report Issue #7) */}
-          <div className="tw-pt-6">
+          <div className="pt-6">
             <Button variant="primary" size="lg">
               FOLLOW US ON INSTAGRAM
             </Button>
@@ -485,24 +485,24 @@ function FAQItem({ question, answer }: FAQItemProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="tw-border-b tw-border-cream/20 tw-py-6 tw-transition-all">
+    <div className="border-b border-cream/20 py-6 transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="tw-w-full tw-flex tw-justify-between tw-items-center tw-text-left tw-gap-4 hover:tw-opacity-80 tw-transition-opacity"
+        className="w-full flex justify-between items-center text-left gap-4 hover:opacity-80 transition-opacity"
       >
-        <span className="tw-text-cream-100 tw-text-lg tw-font-semibold">
+        <span className="text-cream-100 text-lg font-semibold">
           {question}
         </span>
         {/* FIX: Use + and - instead of + and X (Report Issue #6) */}
-        <span className="tw-text-amber tw-text-3xl tw-font-light tw-flex-shrink-0 tw-w-8 tw-text-center">
+        <span className="text-amber text-3xl font-light flex-shrink-0 w-8 text-center">
           {isOpen ? '−' : '+'}
         </span>
       </button>
 
       {isOpen && (
-        <div className="tw-mt-4 tw-pl-0 tw-transition-all">
+        <div className="mt-4 pl-0 transition-all">
           {/* FIX: Changed to cream-100 (white) for WCAG compliance (Report Issue #6) */}
-          <p className="tw-text-cream-100 tw-leading-relaxed tw-text-base">
+          <p className="text-cream-100 leading-relaxed text-base">
             {answer}
           </p>
         </div>
@@ -525,13 +525,13 @@ export default function FAQ() {
   ]
 
   return (
-    <section className="tw-py-section tw-px-4 tw-bg-midnight">
-      <div className="tw-max-w-3xl tw-mx-auto">
-        <SectionTitle className="tw-text-center tw-mb-12">
+    <section className="py-section px-4 bg-midnight">
+      <div className="max-w-3xl mx-auto">
+        <SectionTitle className="text-center mb-12">
           FREQUENTLY ASKED QUESTIONS
         </SectionTitle>
 
-        <div className="tw-space-y-0">
+        <div className="space-y-0">
           {faqs.map((faq, index) => (
             <FAQItem key={index} {...faq} />
           ))}
@@ -624,13 +624,13 @@ find src -name "*.module.css" -type f
 
 #### 6.3 Remove Tailwind Prefix
 
-Once all CSS modules are removed, the `tw-` prefix is no longer needed:
+Once all CSS modules are removed, the `` prefix is no longer needed:
 
 ```js
 // tailwind.config.js
 export default {
   // DELETE this line:
-  // prefix: 'tw-',
+  // prefix: '',
 
   content: [
     "./index.html",
@@ -642,13 +642,13 @@ export default {
 
 **Global find/replace:**
 ```
-Find: tw-
+Find: 
 Replace: (empty string)
 ```
 
 **VS Code:**
 - Press `Cmd/Ctrl + Shift + F`
-- Find: `tw-`
+- Find: ``
 - Replace: (empty)
 - Replace All in: `src/**/*.tsx`
 
@@ -680,12 +680,12 @@ ls -lh dist/assets/
 
 ```tsx
 // ❌ BAD - Conflict risk
-<div className={`${styles.hero} tw-bg-amber tw-p-8`}>
+<div className={`${styles.hero} bg-amber p-8`}>
   Content
 </div>
 
 // ✅ GOOD - All Tailwind
-<div className="tw-bg-amber tw-p-8 tw-min-h-screen">
+<div className="bg-amber p-8 min-h-screen">
   Content
 </div>
 
@@ -697,14 +697,14 @@ ls -lh dist/assets/
 
 ### Rule 2: Use Prefix During Migration
 
-The `tw-` prefix ensures Tailwind classes never conflict with existing CSS:
+The `` prefix ensures Tailwind classes never conflict with existing CSS:
 
 ```css
 /* Existing CSS module might have */
 .flex { display: block; } /* Different from Tailwind */
 
 /* Tailwind with prefix */
-.tw-flex { display: flex; } /* No conflict */
+.flex { display: flex; } /* No conflict */
 ```
 
 ### Rule 3: Migrate Entire Component at Once
@@ -716,7 +716,7 @@ The `tw-` prefix ensures Tailwind classes never conflict with existing CSS:
 function EventCard() {
   return (
     <div className={styles.card}> {/* CSS Module */}
-      <h3 className="tw-text-2xl tw-font-bold"> {/* Tailwind */}
+      <h3 className="text-2xl font-bold"> {/* Tailwind */}
         Title
       </h3>
       <p className={styles.description}> {/* CSS Module */}
@@ -733,11 +733,11 @@ function EventCard() {
 // ✅ GOOD - Fully migrated
 function EventCard() {
   return (
-    <div className="tw-bg-card-bg tw-rounded-xl tw-p-6">
-      <h3 className="tw-text-2xl tw-font-bold tw-text-cream">
+    <div className="bg-card-bg rounded-xl p-6">
+      <h3 className="text-2xl font-bold text-cream">
         Title
       </h3>
-      <p className="tw-text-cream-dark tw-leading-relaxed">
+      <p className="text-cream-dark leading-relaxed">
         Description
       </p>
     </div>
@@ -798,7 +798,7 @@ interface EventCardProps {
 // Component receives same data, just styled differently
 function EventCard({ title, category, price, imageUrl }: EventCardProps) {
   return (
-    <div className="tw-bg-card-bg..."> {/* Only styling changed */}
+    <div className="bg-card-bg..."> {/* Only styling changed */}
       <h3>{title}</h3> {/* Data usage unchanged */}
       <span>{category}</span>
       <span>${price}</span>
@@ -873,7 +873,7 @@ Each phase requires passing these gates before proceeding:
 ### Gate 1: Setup Validation
 - [ ] Tailwind config loads without errors
 - [ ] Site appearance unchanged
-- [ ] Test class (`tw-bg-amber`) works
+- [ ] Test class (`bg-amber`) works
 - [ ] No console errors
 
 ### Gate 2: Component Library
@@ -1198,7 +1198,7 @@ src/
 
 ### Q: What if Tailwind classes conflict with existing global CSS?
 
-**A:** Use the `tw-` prefix during migration. Remove it only after all CSS modules are deleted.
+**A:** Use the `` prefix during migration. Remove it only after all CSS modules are deleted.
 
 ### Q: How do I handle dynamic classes from the database?
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Editor, Frame, Element } from '@craftjs/core';
+import { Editor, Element } from '@craftjs/core';
+import { MigratingFrame } from '../components/MigratingFrame';
 import { Hero } from '../components/Hero';
 import { UpcomingEvents } from '../components/UpcomingEvents';
 import { WhyWeDoIt } from '../components/WhyWeDoIt';
@@ -20,7 +21,7 @@ const Home: React.FC = () => {
 
     return (
         <Editor enabled={false} resolver={{ Hero, Instagram, IdeaSection, UpcomingEvents, WhyWeDoIt, FAQ, EventCard }}>
-            <Frame json={pageData?.layout}>
+            <MigratingFrame json={pageData?.layout}>
                 <Element is="div" canvas>
                     <Hero />
                     <UpcomingEvents />
@@ -29,7 +30,7 @@ const Home: React.FC = () => {
                     <Instagram />
                     <FAQ />
                 </Element>
-            </Frame>
+            </MigratingFrame>
         </Editor>
     );
 };

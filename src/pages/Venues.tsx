@@ -1,5 +1,6 @@
 import React from 'react';
-import { Editor, Frame, Element } from '@craftjs/core';
+import { Editor, Element } from '@craftjs/core';
+import { MigratingFrame } from '../components/MigratingFrame';
 import { BarsHeader, BarsInfo, BarsList, BarsCTA } from '../components/Bars';
 import { BarCard } from '../components/BarCard';
 
@@ -15,14 +16,14 @@ const Venues: React.FC = () => {
 
     return (
         <Editor enabled={false} resolver={{ BarsHeader, BarsInfo, BarsList, BarsCTA, BarCard }}>
-            <Frame json={pageData?.layout}>
+            <MigratingFrame json={pageData?.layout}>
                 <Element is="div" canvas>
                     <BarsHeader />
                     <BarsInfo />
                     <BarsList />
                     <BarsCTA />
                 </Element>
-            </Frame>
+            </MigratingFrame>
         </Editor>
     );
 };

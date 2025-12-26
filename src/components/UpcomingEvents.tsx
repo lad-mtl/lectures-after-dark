@@ -12,7 +12,6 @@ interface UpcomingEventsProps {
 export const UpcomingEvents = ({
     title = "Upcoming Events",
     subtitle = "Curated nights for the curious mind.",
-    buttonText = "View All Events"
 }: UpcomingEventsProps) => {
     const { connectors: { connect, drag } } = useNode();
     const scrollContainerRef = React.useRef<HTMLDivElement>(null);
@@ -57,19 +56,33 @@ export const UpcomingEvents = ({
                 }
             }}
             id="events"
-            className="pt-12 pb-8 bg-cream border-t border-b border-midnight/10"
+            className="pt-12 pb-8 bg-gradient-to-b from-cream via-cream to-cream-dark/80 border-t border-b border-midnight/10"
         >
             <div className="container">
-                <div className="flex !mb-4 max-md:flex-col max-md:items-start">
-                    <div>
-                        <h2 className="font-headline text-5xl text-midnight mb-2 max-md:text-4xl">{title}</h2>
-                        <p className="font-serif text-warm-brown text-lg">{subtitle}</p>
+                {/* Header with decorative elements */}
+                <div className="flex !mb-8 max-md:flex-col max-md:items-start max-md:!mb-6">
+                    <div className="w-full">
+                        {/* Title with gold accent */}
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="w-12 h-1 bg-gradient-to-r from-gold to-amber rounded-full max-md:w-8"></div>
+                            <h2 className="font-headline text-5xl text-midnight max-md:text-4xl">{title}</h2>
+                        </div>
+
+                        {/* Subtitle */}
+                        <p className="font-serif text-warm-brown text-lg ml-16 max-md:ml-12">{subtitle}</p>
+
+                        {/* Decorative divider */}
+                        <div className="flex items-center gap-3 mt-6 ml-16 max-md:ml-12 max-md:mt-4">
+                            <div className="h-[2px] w-20 bg-gradient-to-r from-gold/60 to-transparent"></div>
+                            <div className="w-1.5 h-1.5 rounded-full bg-gold/60"></div>
+                            <div className="h-[2px] w-20 bg-gradient-to-l from-gold/60 to-transparent"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div className="relative">
-                    <div className="flex gap-8 overflow-x-auto pb-2 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:gap-4" ref={scrollContainerRef}>
-                        <Element is="div" id="events-list" canvas className="flex gap-8 w-auto">
+                    <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:gap-4" ref={scrollContainerRef}>
+                        <Element is="div" id="events-list" canvas className="flex gap-6 w-auto max-md:gap-4">
                             <EventCard
                                 tag="Psychology"
                                 title="The Psychology of Ambition: Why Some People Win and Most Don't"
@@ -77,7 +90,7 @@ export const UpcomingEvents = ({
                                 time="7:00 PM"
                                 location="Montreal"
                                 attendeeCount="+120"
-                                image="https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                image="/the_psychology _of_ambition.png"
                             />
                             <EventCard
                                 tag="Culture"
@@ -86,7 +99,7 @@ export const UpcomingEvents = ({
                                 time="6:30 PM"
                                 location="Montreal"
                                 attendeeCount="+85"
-                                image="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                image="/modern_dating.png"
                             />
                             <EventCard
                                 tag="Psychology"
@@ -95,7 +108,7 @@ export const UpcomingEvents = ({
                                 time="8:00 PM"
                                 location="Montreal"
                                 attendeeCount="+200"
-                                image="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                image="/how_power_works.png"
                             />
                             <EventCard
                                 tag="Music"
@@ -110,7 +123,7 @@ export const UpcomingEvents = ({
                     </div>
                     <button
                         onClick={() => scroll('right')}
-                        className="absolute top-1/2 -translate-y-1/2 right-[-10px] w-10 h-10 bg-transparent border-none flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-midnight animate-slide-right"
+                        className="absolute top-1/2 -translate-y-1/2 right-[-10px] w-10 h-10 bg-transparent border-none flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-gold hover:text-amber animate-slide-right"
                         aria-label="Scroll right"
                     >
                         <ArrowRight size={24} />

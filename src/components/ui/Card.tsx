@@ -4,11 +4,11 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
     variant?: 'default' | 'elevated' | 'bordered'
 }
 
-interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> { }
-interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> { }
-interface CardDescriptionProps extends HTMLAttributes<HTMLParagraphElement> { }
-interface CardContentProps extends HTMLAttributes<HTMLDivElement> { }
-interface CardFooterProps extends HTMLAttributes<HTMLDivElement> { }
+type CardHeaderProps = HTMLAttributes<HTMLDivElement>
+type CardTitleProps = HTMLAttributes<HTMLHeadingElement>
+type CardDescriptionProps = HTMLAttributes<HTMLParagraphElement>
+type CardContentProps = HTMLAttributes<HTMLDivElement>
+type CardFooterProps = HTMLAttributes<HTMLDivElement>
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
     ({ variant = 'default', className = '', children, ...props }, ref) => {

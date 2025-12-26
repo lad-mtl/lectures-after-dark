@@ -1,4 +1,4 @@
-import { useNode } from '@craftjs/core';
+import { useNode, useEditor } from '@craftjs/core';
 import { Card, CardContent, CardFooter } from './ui/Card';
 import { ArrowRight, Clock, MapPin } from 'lucide-react';
 
@@ -12,6 +12,7 @@ interface EventCardProps {
     buttonText?: string;
     price?: string;
     attendeeCount?: string;
+    eventbriteUrl?: string;
 }
 
 export const EventCard = ({
@@ -21,9 +22,76 @@ export const EventCard = ({
     image = 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     buttonText = 'Register',
     price = '$29.99',
-    attendeeCount = '+30'
+    attendeeCount = '+30',
+    eventbriteUrl = 'https://www.eventbrite.com'
 }: EventCardProps) => {
     const { connectors: { connect, drag } } = useNode();
+    const { enabled } = useEditor((state) => ({
+        enabled: state.options.enabled
+    }));
+
+    const cardContent = (
+        <Card className="h-full flex flex-col relative overflow-hidden group bg-gradient-to-b from-warm-brown to-card-bg border-2 border-gold/30 hover:border-gold/70 shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_12px_40px_rgba(204,153,102,0.25),0_0_20px_rgba(204,153,102,0.1)] transition-all duration-300">
+                {/* Image Section */}
+                <div className="relative w-full aspect-[16/9] overflow-hidden">
+                    <img
+                        src={image}
+                        alt={title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+
+                    {/* Gradient overlay for depth */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-midnight/80 via-midnight/40 to-transparent pointer-events-none"></div>
+
+                    {/* Price Badge */}
+                    <div className="absolute left-0 top-0 bg-gradient-to-br from-gold via-amber to-amber-light text-midnight px-4 py-2 rounded-br-lg shadow-[0_4px_12px_rgba(0,0,0,0.3)] z-10">
+                        <span className="font-headline text-sm font-bold tracking-wide">{price}</span>
+                    </div>
+
+                    {/* Avatar Group (Top Right) */}
+                    <div className="absolute top-3 right-3 flex -space-x-3 z-10">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="w-8 h-8 rounded-full border-2 border-cream/40 bg-warm-brown overflow-hidden shadow-md">
+                                <img
+                                    src={`https://i.pravatar.cc/100?img=${i + 10}`}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        ))}
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gold to-amber text-midnight text-[10px] font-bold flex items-center justify-center shadow-md">
+                            {attendeeCount}
+                        </div>
+                    </div>
+                </div>
+
+                <CardContent className="flex-1 pt-3 px-5 pb-2 border-b border-gold/10">
+                    {/* Location & Time Row */}
+                    <div className="flex items-center flex-start text-xs text-gold !mb-3 font-medium">
+                        <div className="flex items-center gap-1 !mr-2 px-2 py-1 bg-gold/10 rounded-md border border-gold/20">
+                            <MapPin size={8} className="text-gold" />
+                            <span>{location}</span>
+                        </div>
+                        <div className="flex items-center gap-1 px-2 py-1 bg-gold/10 rounded-md border border-gold/20">
+                            <Clock size={8} className="text-gold" />
+                            <span>{time}</span>
+                        </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-body text-base !normal-case text-cream leading-tight mb-2 line-clamp-2 min-h-[3.5rem]">
+                        {title}
+                    </h3>
+                </CardContent>
+
+                <CardFooter className="px-5 pb-5 pt-3 border-t-0 bg-transparent">
+                    <button className="flex items-center gap-2 text-amber hover:text-amber-light transition-all duration-300 font-medium capitalize text-xs tracking-normal group/btn hover:gap-3">
+                        {buttonText}
+                        <ArrowRight size={14} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
+                    </button>
+                </CardFooter>
+        </Card>
+    );
 
     return (
         <div
@@ -32,71 +100,26 @@ export const EventCard = ({
                     connect(drag(ref));
                 }
             }}
-            className="w-[300px] shrink-0 max-md:w-[calc(82vw-2rem)] scroll-snap-align-start"
+            className="w-[300px] shrink-0 max-md:w-[calc(82vw-2rem)] scroll-snap-align-start transform transition-transform duration-300 hover:scale-[1.02]"
         >
-            <Card className="h-full flex flex-col relative overflow-hidden group bg-card-bg border border-cream/10 hover:border-gold/30 transition-all duration-300">
-                {/* Image Section */}
-                <div className="relative h-[220px] w-full overflow-hidden">
-                    <img
-                        src={image}
-                        alt={title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-
-                    {/* Price Ribbon (Top Left) */}
-                    <div className="absolute top-0 left-0 bg-red-900 text-cream px-4 py-2 text-sm font-bold shadow-md z-10">
-                        {price}
-                    </div>
-
-                    {/* Avatar Group (Top Right) */}
-                    <div className="absolute top-3 right-3 flex -space-x-3 z-10">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="w-8 h-8 rounded-full border-2 border-midnight bg-gray-300 overflow-hidden">
-                                <img
-                                    src={`https://i.pravatar.cc/100?img=${i + 10}`}
-                                    alt="Avatar"
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        ))}
-                        <div className="w-8 h-8 rounded-full border-2 border-midnight bg-black/80 text-white text-[10px] font-bold flex items-center justify-center">
-                            {attendeeCount}
-                        </div>
-                    </div>
-                </div>
-
-                <CardContent className="flex-1 pt-5 px-5 pb-2">
-                    {/* Location & Time Row */}
-                    <div className="flex items-center justify-between text-xs text-cream-dark/80 mb-3 font-medium">
-                        <div className="flex items-center gap-1">
-                            <MapPin size={10} className="text-gold" />
-                            <span>{location}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Clock size={10} className="text-gold" />
-                            <span>{time}</span>
-                        </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-headline text-lg text-cream leading-tight mb-2 line-clamp-2 min-h-[3.5rem]">
-                        {title}
-                    </h3>
-                </CardContent>
-
-                <CardFooter className="px-5 pb-5 pt-0 border-t-0 bg-transparent">
-                    <button className="flex items-center gap-2 text-gold hover:text-gold-light transition-colors font-semibold uppercase text-sm tracking-wide group/btn">
-                        {buttonText}
-                        <ArrowRight size={16} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
-                    </button>
-                </CardFooter>
-            </Card>
+            {enabled ? (
+                cardContent
+            ) : (
+                <a
+                    href={eventbriteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block h-full no-underline cursor-pointer"
+                >
+                    {cardContent}
+                </a>
+            )}
         </div>
     );
 };
 
 const EventCardSettings = () => {
-    const { actions: { setProp }, title, time, location, image, buttonText, price, attendeeCount } = useNode((node) => ({
+    const { actions: { setProp }, title, time, location, image, buttonText, price, attendeeCount, eventbriteUrl } = useNode((node) => ({
         title: node.data.props.title,
         time: node.data.props.time,
         location: node.data.props.location,
@@ -104,6 +127,7 @@ const EventCardSettings = () => {
         buttonText: node.data.props.buttonText,
         price: node.data.props.price,
         attendeeCount: node.data.props.attendeeCount,
+        eventbriteUrl: node.data.props.eventbriteUrl,
     }));
 
     const inputStyle = {
@@ -196,6 +220,15 @@ const EventCardSettings = () => {
                     style={inputStyle}
                 />
             </div>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Eventbrite URL</label>
+                <input
+                    type="text"
+                    value={eventbriteUrl || ''}
+                    onChange={(e) => setProp((props: EventCardProps) => props.eventbriteUrl = e.target.value)}
+                    style={inputStyle}
+                />
+            </div>
         </div>
     );
 };
@@ -211,7 +244,8 @@ const EventCardSettings = () => {
         image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
         buttonText: 'Register',
         price: '$29.99',
-        attendeeCount: '+248'
+        attendeeCount: '+248',
+        eventbriteUrl: 'https://www.eventbrite.com'
     },
     related: {
         settings: EventCardSettings

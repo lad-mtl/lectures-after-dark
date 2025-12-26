@@ -54,7 +54,19 @@ export const MigratingFrame: React.FC<MigratingFrameProps> = ({ json, children }
 
                             if (linkedNodeKey) {
                                 // This is the events-list canvas, apply correct Tailwind classes
-                                node.props.className = 'flex gap-8 w-auto max-md:gap-4';
+                                node.props.className = 'flex gap-6 w-auto max-md:gap-4';
+                            }
+                        }
+
+                        // Also update gap-8 to gap-6 for events-list even if no CSS module pattern
+                        if (className.includes('gap-8')) {
+                            const linkedNodeKey = Object.keys(savedState).find(key => {
+                                const parentNode = savedState[key];
+                                return parentNode?.linkedNodes?.['events-list'] === nodeId;
+                            });
+
+                            if (linkedNodeKey) {
+                                node.props.className = className.replace('gap-8', 'gap-6');
                             }
                         }
                         return;
@@ -71,7 +83,12 @@ export const MigratingFrame: React.FC<MigratingFrameProps> = ({ json, children }
                     if (!Component) return;
 
                     // Get the current default props
-                    const craft = (Component as any).craft;
+                    type CraftComponent = {
+                        craft?: {
+                            props?: Record<string, unknown>;
+                        };
+                    };
+                    const craft = (Component as CraftComponent).craft;
                     const defaultProps = craft?.props || {};
 
                     // Merge: saved props override defaults, but new default props are added

@@ -1,5 +1,7 @@
 import { useNode } from '@craftjs/core';
+import { Card } from './Card';
 import { ArrowRight, Calendar, MapPin } from 'lucide-react';
+import styles from './EventCard.module.css';
 
 interface EventCardProps {
     tag?: string;
@@ -23,68 +25,41 @@ export const EventCard = ({
     const { connectors: { connect, drag } } = useNode();
 
     return (
-        <article
-            ref={(ref: HTMLElement | null) => {
+        <div
+            ref={(ref: HTMLDivElement | null) => {
                 if (ref) {
                     connect(drag(ref));
                 }
             }}
-            className="bg-card-bg rounded-xl overflow-hidden transition-all duration-300 hover:shadow-card-hover hover:scale-[1.02] cursor-pointer group h-full flex flex-col"
+            className={styles.eventCardWrapper}
         >
-            {/* Image Container - 16:9 Aspect Ratio */}
-            <div className="relative w-full aspect-video overflow-hidden">
-                <img
-                    src={image}
-                    alt={title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                {/* Overlay gradient for better text readability if needed, though design has text below */}
-            </div>
-
-            <div className="p-6 flex flex-col flex-grow space-y-4">
-                {/* Category Badge */}
-                <div>
-                    <span className="inline-block px-3 py-1 bg-amber/20 text-amber text-xs font-headline font-semibold uppercase tracking-wider rounded-sm">
-                        {tag}
-                    </span>
+            <Card
+                variant="image-top"
+                image={image}
+                imageHeight="220px"
+                padding="medium"
+                hoverable={true}
+            >
+                <span className={styles.tag}>{tag}</span>
+                <h3 className={styles.eventTitle}>{title}</h3>
+                <div className={styles.meta}>
+                    <div className={styles.metaItem}>
+                        <Calendar size={14} />
+                        <span>{date}</span>
+                    </div>
+                    <div className={styles.metaItem}>
+                        <MapPin size={14} />
+                        <span>{location}</span>
+                    </div>
                 </div>
-
-                {/* Title */}
-                <h3 className="text-card-title font-headline font-bold text-cream leading-tight line-clamp-2 min-h-[3rem]">
-                    {title}
-                </h3>
-
-                {/* Meta Info */}
-                <div className="flex items-center gap-4 text-cream-dark text-sm font-body">
-                    {date && (
-                        <div className="flex items-center gap-2">
-                            <Calendar size={14} className="text-amber" />
-                            <span>{date}</span>
-                        </div>
-                    )}
-                    {location && (
-                        <div className="flex items-center gap-2">
-                            <MapPin size={14} className="text-amber" />
-                            <span>{location}</span>
-                        </div>
-                    )}
+                <div className={styles.footer}>
+                    <span className={styles.price}>{price}</span>
+                    <a href="#" className={styles.link}>
+                        {buttonText} <ArrowRight size={16} />
+                    </a>
                 </div>
-
-                {/* Spacer to push footer to bottom */}
-                <div className="flex-grow" />
-
-                {/* Footer: Price and CTA */}
-                <div className="flex justify-between items-center pt-4 border-t border-cream/10 mt-auto">
-                    <span className="text-xl font-headline font-bold text-cream">
-                        {price}
-                    </span>
-                    <button className="flex items-center gap-2 text-amber font-headline font-semibold uppercase tracking-wider text-sm hover:text-amber-light transition-colors group/btn">
-                        {buttonText}
-                        <ArrowRight size={16} className="transition-transform group-hover/btn:translate-x-1" />
-                    </button>
-                </div>
-            </div>
-        </article>
+            </Card>
+        </div>
     );
 };
 

@@ -15,7 +15,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         const variantClasses = {
             primary: 'bg-amber text-midnight border-amber hover:bg-amber hover:border-amber hover:shadow-[0_8px_30px_rgba(204,153,102,0.4)] hover:-translate-y-0.5 shadow-[0_2px_10px_rgba(204,153,102,0.2)]',
             secondary: 'bg-cream text-midnight border-cream hover:bg-transparent hover:text-cream hover:shadow-[0_8px_30px_rgba(245,240,232,0.2)] hover:-translate-y-0.5',
-            outline: 'bg-transparent text-cream border-cream hover:bg-cream/10 hover:shadow-[0_8px_30px_rgba(245,240,232,0.15)] hover:border-:wamber hover:text-amber hover:-translate-y-0.5',
+            outline: 'bg-transparent text-cream border-cream hover:bg-cream/10 hover:shadow-[0_8px_30px_rgba(245,240,232,0.15)] hover:border-amber hover:text-amber hover:-translate-y-0.5',
         }
 
         const sizeClasses = {

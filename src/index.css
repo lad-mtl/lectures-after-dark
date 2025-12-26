@@ -134,6 +134,43 @@ video {
   }
 }
 
+/* Editor Settings Panel Styles */
+.settings-panel-content input[type="text"],
+.settings-panel-content input[type="number"],
+.settings-panel-content input[type="email"],
+.settings-panel-content input[type="url"],
+.settings-panel-content textarea,
+.settings-panel-content select {
+  width: 100%;
+  padding: 8px 10px !important;
+  font-size: 14px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  font-family: var(--font-body) !important;
+}
+
+.settings-panel-content input[type="text"]:focus,
+.settings-panel-content input[type="number"]:focus,
+.settings-panel-content input[type="email"]:focus,
+.settings-panel-content input[type="url"]:focus,
+.settings-panel-content textarea:focus,
+.settings-panel-content select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.settings-panel-content label {
+  display: block !important;
+  margin-bottom: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #475569 !important;
+}
+
 /* Responsive breakpoints */
 @media (max-width: 480px) {
   .section-padding {

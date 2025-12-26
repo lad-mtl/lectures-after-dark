@@ -74,69 +74,93 @@ const EventCardSettings = () => {
         price: node.data.props.price,
     }));
 
+    const inputStyle = {
+        width: '100%',
+        padding: '8px 10px',
+        fontSize: '14px',
+        border: '1px solid #cbd5e1',
+        borderRadius: '6px',
+        background: '#ffffff',
+        color: '#1e293b',
+        outline: 'none',
+        transition: 'border-color 0.2s',
+    };
+
+    const labelStyle = {
+        display: 'block',
+        marginBottom: '6px',
+        fontSize: '13px',
+        fontWeight: 500,
+        color: '#475569',
+    };
+
+    const fieldStyle = {
+        marginBottom: '14px',
+    };
+
     return (
         <div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Tag</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Tag</label>
                 <input
                     type="text"
                     value={tag || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.tag = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Title</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Title</label>
                 <input
                     type="text"
                     value={title || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.title = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Date</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Date</label>
                 <input
                     type="text"
                     value={date || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.date = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Location</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Location</label>
                 <input
                     type="text"
                     value={location || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.location = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Image URL</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Image URL</label>
                 <input
                     type="text"
                     value={image || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.image = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Button Text</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Button Text</label>
                 <input
                     type="text"
                     value={buttonText || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.buttonText = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Price</label>
+            <div style={fieldStyle}>
+                <label style={labelStyle}>Price</label>
                 <input
                     type="text"
                     value={price || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.price = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={inputStyle}
                 />
             </div>
         </div>

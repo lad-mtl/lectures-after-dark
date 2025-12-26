@@ -23,39 +23,43 @@ export const SettingsPanel = () => {
 
     return (
         <div style={{
-            background: 'rgb(252, 252, 252)',
-            borderLeft: '1px solid rgb(230, 230, 230)',
+            background: '#f8f9fa',
+            borderLeft: '1px solid #cbd5e1',
             width: '300px',
             display: 'flex',
             flexDirection: 'column',
         }}>
             <div style={{
                 padding: '12px',
-                borderBottom: '1px solid rgb(230, 230, 230)',
+                borderBottom: '1px solid #cbd5e1',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
+                background: '#ffffff',
             }}>
                 <h2 style={{
                     fontSize: '15px',
                     fontWeight: 600,
                     margin: 0,
-                    color: 'rgb(51, 51, 51)',
+                    color: '#1e293b',
                 }}>
                     {selected ? `Settings: ${selected.name}` : 'Toolbox'}
                 </h2>
             </div>
-            <div style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '12px',
-            }}>
+            <div
+                className="settings-panel-content"
+                style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '16px',
+                }}
+            >
                 {selected && selected.settings ? (
                     React.createElement(selected.settings)
                 ) : (
                     <div style={{
                         textAlign: 'center',
-                        color: 'rgb(153, 153, 153)',
+                        color: '#64748b',
                         paddingTop: '20px',
                     }}>
                         <p>Select a component to edit its settings.</p>

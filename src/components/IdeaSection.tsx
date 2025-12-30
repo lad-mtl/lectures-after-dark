@@ -29,44 +29,36 @@ export const IdeaSection = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
                     <div>
                         {/* Title with gold accent bar */}
-                        <div className="flex items-center gap-4 !mb-12">
-                            <div className="w-12 h-1 bg-gradient-to-r from-gold to-amber rounded-full max-md:w-8"></div>
+                        <div className="flex items-center gap-6 !mb-8">
+                            <div className="w-16 h-1 bg-gold"></div>
                             <h2 className="font-headline text-5xl text-cream md:text-[3.5rem]">{title}</h2>
                         </div>
 
-                        <p className="font-serif text-xl leading-[1.8] text-cream !mb-10">{description1}</p>
-                        <p className="font-serif text-xl leading-[1.8] text-cream !mb-12">{description2}</p>
+                        <p className="font-serif text-xl leading-[2] text-cream !mb-10">{description1}</p>
+                        <p className="font-serif text-xl leading-[2] text-cream !mb-12">{description2}</p>
 
-                        {/* Ornamental divider */}
-                        <div className="flex items-center gap-3 !mb-12">
-                            <div className="h-[2px] w-16 bg-gradient-to-r from-gold/60 to-transparent"></div>
-                            <div className="w-1.5 h-1.5 rounded-full bg-gold/60"></div>
-                            <div className="h-[2px] w-16 bg-gradient-to-l from-gold/60 to-transparent"></div>
-                        </div>
-
-                        <ul className="space-y-5">
-                            <li className="flex items-center gap-4 font-headline text-base text-cream uppercase tracking-wide">
-                                <span className="text-gold flex items-center justify-center w-7 h-7 border-2 border-gold rounded-full bg-gold/10"><Check size={16} /></span>
-                                Fun and Engaging Speakers
+                        <ul className="space-y-5 mt-16">
+                            <li className="flex items-start gap-3 text-lg text-cream">
+                                <Check size={22} className="text-gold mt-0.5 shrink-0 stroke-[2.5]" />
+                                <span className="font-medium">Fun and Engaging Speakers</span>
                             </li>
-                            <li className="flex items-center gap-4 font-headline text-base text-cream uppercase tracking-wide">
-                                <span className="text-gold flex items-center justify-center w-7 h-7 border-2 border-gold rounded-full bg-gold/10"><Check size={16} /></span>
-                                Professors and Industry Leaders
+                            <li className="flex items-start gap-3 text-lg text-cream">
+                                <Check size={22} className="text-gold mt-0.5 shrink-0 stroke-[2.5]" />
+                                <span className="font-medium">Professors and Industry Leaders</span>
                             </li>
-                            <li className="flex items-center gap-4 font-headline text-base text-cream uppercase tracking-wide">
-                                <span className="text-gold flex items-center justify-center w-7 h-7 border-2 border-gold rounded-full bg-gold/10"><Check size={16} /></span>
-                                Education and Entertainment
+                            <li className="flex items-start gap-3 text-lg text-cream">
+                                <Check size={22} className="text-gold mt-0.5 shrink-0 stroke-[2.5]" />
+                                <span className="font-medium">Education and Entertainment</span>
                             </li>
                         </ul>
                     </div>
 
                     <div className="relative">
-                        {/* Enhanced image with border and shadow */}
-                        <div className="relative p-1 bg-gradient-to-br from-gold via-amber to-gold rounded-lg">
+                        <div className="relative p-1 bg-gradient-to-br from-gold/20 to-transparent rounded-lg">
                             <img
-                                src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                                src="/idea.png"
                                 alt="Cocktails and Conversation"
-                                className="w-full rounded-md shadow-[12px_12px_24px_rgba(0,0,0,0.4)] [filter:sepia(0.15)_contrast(1.05)_brightness(0.95)]"
+                                className="w-full rounded-lg shadow-2xl"
                             />
                         </div>
                     </div>

@@ -93,9 +93,9 @@
 }
 
 .btnPrimary {
-    background-color: var(--cream);
+    background-color: var(--amber);
     color: var(--midnight);
-    border: 1px solid var(--cream);
+    border: 1px solid var(--amber);
     padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(1.5rem, 3vw, 2rem);
     font-family: var(--font-headline);
     font-weight: 600;
@@ -110,8 +110,8 @@
 
 .btnPrimary:hover {
     background-color: transparent;
-    color: var(--cream);
-    box-shadow: 0 0 20px rgba(245, 240, 232, 0.2);
+    color: var(--amber);
+    box-shadow: 0 0 20px rgba(255, 111, 0, 0.2);
 }
 
 .btnSecondary {
@@ -138,11 +138,11 @@
 
 @keyframes glow {
     from {
-        filter: drop-shadow(0 0 5px rgba(217, 83, 46, 0.2));
+        filter: drop-shadow(0 0 5px rgba(255, 111, 0, 0.2));
     }
 
     to {
-        filter: drop-shadow(0 0 15px rgba(217, 83, 46, 0.6));
+        filter: drop-shadow(0 0 15px rgba(255, 111, 0, 0.6));
     }
 }
 
@@ -197,6 +197,7 @@
 
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
+
     .btnPrimary:hover,
     .btnSecondary:hover {
         transform: none;

@@ -15,11 +15,11 @@ export const UpcomingEvents = ({
 }: UpcomingEventsProps) => {
     const { connectors: { connect, drag } } = useNode();
     const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-    // const [showLeftButton, setShowLeftButton] = React.useState(false);
+    const [showLeftButton, setShowLeftButton] = React.useState(false);
 
     const checkScroll = () => {
         if (scrollContainerRef.current) {
-            // setShowLeftButton(scrollContainerRef.current.scrollLeft > 0);
+            setShowLeftButton(scrollContainerRef.current.scrollLeft > 0);
         }
     };
 
@@ -81,7 +81,7 @@ export const UpcomingEvents = ({
                 </div>
 
                 <div className="relative">
-                    <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:gap-4" ref={scrollContainerRef}>
+                    <div className="flex gap-6 overflow-x-auto pb-2 pr-12 scrollbar-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-md:scroll-snap-x-mandatory max-md:gap-4" ref={scrollContainerRef}>
                         <Element is="div" id="events-list" canvas className="flex gap-6 w-auto max-md:gap-4">
                             <EventCard
                                 category="Psychology"
@@ -121,12 +121,21 @@ export const UpcomingEvents = ({
                             />
                         </Element>
                     </div>
+                    {showLeftButton && (
+                        <button
+                            onClick={() => scroll('left')}
+                            className="absolute top-1/2 -translate-y-1/2 left-[-10px] w-12 h-12 rounded-full bg-cream/90 backdrop-blur-sm shadow-lg border-2 border-gold/30 flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-gold hover:text-amber hover:scale-110 hover:shadow-xl hover:border-gold/60 animate-fadeIn"
+                            aria-label="Scroll left"
+                        >
+                            <ArrowRight size={20} className="rotate-180" />
+                        </button>
+                    )}
                     <button
                         onClick={() => scroll('right')}
-                        className="absolute top-1/2 -translate-y-1/2 right-[-10px] w-10 h-10 bg-transparent border-none flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-gold hover:text-amber animate-slide-right"
+                        className="absolute top-1/2 -translate-y-1/2 right-[-10px] w-12 h-12 rounded-full bg-cream/90 backdrop-blur-sm shadow-lg border-2 border-gold/30 flex items-center justify-center cursor-pointer z-10 transition-all duration-300 text-gold hover:text-amber hover:scale-110 hover:shadow-xl hover:border-gold/60 animate-pulse-slow"
                         aria-label="Scroll right"
                     >
-                        <ArrowRight size={24} />
+                        <ArrowRight size={20} />
                     </button>
                 </div>
             </div>

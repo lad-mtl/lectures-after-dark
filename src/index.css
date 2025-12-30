@@ -2,8 +2,8 @@
   /* Color Palette */
   --midnight: #1a1612;
   --warm-brown: #3D2B1F;
-  --amber: #D9532E;
-  --amber-light: #E67E52;
+  --amber: #FF6F00;
+  --amber-light: #FF8833;
   --cream: #F5F0E8;
   --cream-dark: #D4C7B8;
   --gold: #CC9966;
@@ -99,14 +99,14 @@ video {
 }
 
 .btn-primary {
-  background-color: var(--cream);
+  background-color: var(--amber);
   color: var(--midnight);
-  border: 1px solid var(--cream);
+  border: 1px solid var(--amber);
 }
 
 .btn-primary:hover {
   background-color: transparent;
-  color: var(--cream);
+  color: var(--amber);
 }
 
 .btn-outline {

@@ -11,8 +11,8 @@ export default {
                 midnight: '#1a1612',
                 'warm-brown': '#3D2B1F',
                 amber: {
-                    DEFAULT: '#D9532E',
-                    light: '#E67E52',
+                    DEFAULT: '#FF6F00',
+                    light: '#FF8833',
                 },
                 cream: {
                     DEFAULT: '#F5F0E8',
@@ -62,10 +62,15 @@ export default {
                     '0%': { opacity: '0', transform: 'translateY(10px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
+                pulseSlow: {
+                    '0%, 100%': { opacity: '1', transform: 'translateY(-50%) scale(1)' },
+                    '50%': { opacity: '0.8', transform: 'translateY(-50%) scale(1.05)' },
+                },
             },
             animation: {
                 'slide-right': 'slideRight 1.5s ease-in-out infinite',
                 'fadeIn': 'fadeIn 0.3s ease-out',
+                'pulse-slow': 'pulseSlow 2s ease-in-out infinite',
             },
         },
     },

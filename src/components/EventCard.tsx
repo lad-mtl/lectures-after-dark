@@ -73,7 +73,7 @@ export const EventCard = ({
                     </div>
                 </div>
 
-                <CardContent className="flex-1 flex flex-col !p-6 max-md:!px-5 max-md:!py-4 bg-cream">
+                <CardContent className="flex-1 flex flex-col px-6 pt-5 pb-4 max-md:!px-5 max-md:!py-3 bg-cream">
                     {/* Category Tag */}
                     <div className="inline-block px-3 py-1 rounded-full bg-amber/10 text-amber text-xs max-md:text-[10px] max-md:px-2 max-md:py-0.5 font-semibold !mb-2 self-start">
                         {category}
@@ -85,7 +85,7 @@ export const EventCard = ({
                     </h3>
 
                     {/* Details Stack */}
-                    <div className="flex flex-col space-y-2.5 max-md:space-y-1 !mb-6 max-md:!mb-2">
+                    <div className="flex flex-col space-y-2.5 max-md:space-y-1">
                         <div className="flex items-center gap-2 text-sm max-md:text-xs text-warm-brown/70">
                             <MapPin size={16} className="text-gold shrink-0 max-md:w-3 max-md:h-3" />
                             <span className="line-clamp-1">{location}</span>
@@ -100,8 +100,11 @@ export const EventCard = ({
                         </div>
                     </div>
 
+                    {/* Spacer to push buttons down */}
+                    <div className="flex-1" />
+
                     {/* CTA Section */}
-                    <div className="flex gap-3 max-md:gap-2 mt-auto">
+                    <div className="flex gap-3 max-md:gap-2 pt-3">
                         <button className="flex-1 py-3 max-md:py-2 bg-amber text-cream rounded-lg font-semibold max-md:text-sm hover:bg-amber-light transition-colors">
                             Buy Tickets
                         </button>
@@ -121,7 +124,7 @@ export const EventCard = ({
                     connect(drag(ref));
                 }
             }}
-            className="w-[380px] h-[520px] shrink-0 max-md:w-[280px] max-md:h-[370px] scroll-snap-align-start transform transition-transform duration-300 hover:scale-[1.02]"
+            className="w-[380px] h-[460px] shrink-0 max-md:w-[280px] max-md:h-[320px] scroll-snap-align-start transform transition-transform duration-300 hover:scale-[1.02]"
         >
             {enabled ? (
                 cardContent

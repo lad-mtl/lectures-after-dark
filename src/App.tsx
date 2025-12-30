@@ -10,6 +10,7 @@ import Contact from './pages/Contact';
 import Venues from './pages/Venues';
 import Admin from './pages/Admin';
 import TestButtonPage from './pages/TestButtonPage';
+import TestEventCardPage from './pages/TestEventCardPage';
 
 function App() {
   const location = useLocation();
@@ -26,6 +27,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/test" element={<TestButtonPage />} />
+        <Route path="/test-event-card" element={<TestEventCardPage />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
       {!isAdmin && <Footer />}

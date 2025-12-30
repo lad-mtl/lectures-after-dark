@@ -21,6 +21,9 @@ export default {
                 },
                 gold: '#CC9966',
                 'card-bg': '#2A1F1A',
+                // Design System Tokens
+                'cta-primary': '#E87456',
+                'border-accent': '#C97B54',
             },
             fontFamily: {
                 headline: ['var(--font-headline)'],
@@ -36,10 +39,19 @@ export default {
                 'section-title': ['3.5rem', { lineHeight: '1.2' }], // 56px
                 'subsection': ['2rem', { lineHeight: '1.3' }],
                 'card-title': ['1.5rem', { lineHeight: '1.4' }],
+                // Design System Typography
+                'event-title': ['1.25rem', { lineHeight: '1.3', fontWeight: '600' }], // 20px
+                'event-title-lg': ['1.5rem', { lineHeight: '1.3', fontWeight: '600' }], // 24px
+                'event-metadata': ['0.875rem', { lineHeight: '1.4', fontWeight: '400' }], // 14px
+                'event-price': ['1.125rem', { lineHeight: '1', fontWeight: '700' }], // 18px
+                'event-cta': ['1rem', { lineHeight: '1', fontWeight: '500' }], // 16px
             },
             boxShadow: {
                 'card': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)',
                 'card-hover': '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)',
+                // Design System Shadows
+                'event-card': '0 4px 12px rgba(0, 0, 0, 0.15)',
+                'event-card-hover': '0 12px 24px rgba(0, 0, 0, 0.25)',
             },
             keyframes: {
                 slideRight: {

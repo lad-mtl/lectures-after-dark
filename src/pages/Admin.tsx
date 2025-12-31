@@ -50,7 +50,7 @@ const Admin: React.FC = () => {
 
                             {activePage === 'home' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <Hero />
                                         <UpcomingEvents />
                                         <IdeaSection />
@@ -61,7 +61,7 @@ const Admin: React.FC = () => {
                                 </MigratingFrame>
                             ) : activePage === 'bars' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <BarsHeader />
                                         <BarsInfo />
                                         <BarsList />
@@ -70,7 +70,7 @@ const Admin: React.FC = () => {
                                 </MigratingFrame>
                             ) : activePage === 'speakers' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <SpeakersHeader />
                                         <SpeakersInfo />
                                         <SpeakersList />
@@ -79,26 +79,26 @@ const Admin: React.FC = () => {
                                 </MigratingFrame>
                             ) : activePage === 'about' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <AboutHeader />
                                         <AboutMission />
                                     </Element>
                                 </MigratingFrame>
                             ) : activePage === 'events' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <UpcomingEvents />
                                     </Element>
                                 </MigratingFrame>
                             ) : activePage === 'test-tailwind' ? (
                                 <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas>
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
                                         <TestTailwind />
                                     </Element>
                                 </MigratingFrame>
                             ) : (
                                 <MigratingFrame>
-                                    <Element is="div" style={{ padding: '20px', minHeight: '800px' }} canvas />
+                                    <Element is="div" style={{ minHeight: '800px' }} canvas />
                                 </MigratingFrame>
                             )}
                         </div>

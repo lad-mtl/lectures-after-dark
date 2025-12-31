@@ -1,6 +1,7 @@
 import { useNode } from '@craftjs/core';
 import styles from '../pages/Venues.module.css';
 import { MapPin } from 'lucide-react';
+import { ImageUploadField } from './ImageUploadField';
 
 interface BarCardProps {
     name?: string;
@@ -74,15 +75,11 @@ const BarCardSettings = () => {
                     style={{ width: '100%', padding: '5px', minHeight: '100px' }}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Image URL</label>
-                <input
-                    type="text"
-                    value={imageUrl || ''}
-                    onChange={(e) => setProp((props: BarCardProps) => props.imageUrl = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
-                />
-            </div>
+            <ImageUploadField
+                label="Image URL"
+                value={imageUrl || ''}
+                onChange={(newUrl) => setProp((props: BarCardProps) => props.imageUrl = newUrl)}
+            />
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import { useNode, useEditor } from '@craftjs/core';
 import { Card, CardContent } from './ui/Card';
 import { Calendar, MapPin, DollarSign } from 'lucide-react';
+import { ImageUploadField } from './ImageUploadField';
 
 interface EventCardProps {
     category?: string;
@@ -273,15 +274,11 @@ const EventCardSettings = () => {
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Image URL</label>
-                <input
-                    type="text"
-                    value={image || ''}
-                    onChange={(e) => setProp((props: EventCardProps) => props.image = e.target.value)}
-                    style={inputStyle}
-                />
-            </div>
+            <ImageUploadField
+                label="Image URL"
+                value={image || ''}
+                onChange={(newUrl) => setProp((props: EventCardProps) => props.image = newUrl)}
+            />
 
             <div style={fieldStyle}>
                 <label style={labelStyle}>Price</label>

@@ -2,6 +2,7 @@ import { useNode } from '@craftjs/core';
 import { Card } from './Card';
 import styles from './SpeakerCard.module.css';
 import { Twitter, Linkedin, Globe } from 'lucide-react';
+import { ImageUploadField } from './ImageUploadField';
 
 interface SpeakerCardProps {
     name?: string;
@@ -65,16 +66,11 @@ const SpeakerCardSettings = () => {
 
     return (
         <div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Image URL</label>
-                <input
-                    type="text"
-                    value={image || ''}
-                    onChange={(e) => setProp((props: SpeakerCardProps) => props.image = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
-                    placeholder="https://example.com/speaker.jpg"
-                />
-            </div>
+            <ImageUploadField
+                label="Image URL"
+                value={image || ''}
+                onChange={(newUrl) => setProp((props: SpeakerCardProps) => props.image = newUrl)}
+            />
             <div style={{ marginBottom: '10px' }}>
                 <label style={{ display: 'block', marginBottom: '5px' }}>Name</label>
                 <input

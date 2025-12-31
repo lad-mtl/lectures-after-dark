@@ -67,14 +67,11 @@ const Navbar: React.FC = () => {
                 <div className={styles.container}>
                     <NavLink to="/" className={styles.logo}>
                         <img
-                            src="/logo.png"
+                            src="/logo_with_text.svg"
                             alt="Lectures After Dark Logo"
                             className={styles.logoImg}
-                            width="40"
-                            height="40"
                             loading="eager"
                         />
-                        <span className={styles.highlightText}>Lectures</span>&nbsp;After Dark
                     </NavLink>
 
                     {/* Desktop Navigation */}

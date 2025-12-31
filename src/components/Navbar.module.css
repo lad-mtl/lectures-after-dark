@@ -47,26 +47,21 @@
 }
 
 .logo {
-    font-family: var(--font-headline);
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
-    font-weight: 700;
-    text-decoration: none;
-    color: var(--cream);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    text-decoration: none;
     min-height: 48px;
 }
 
 .logoImg {
-    height: clamp(32px, 6vw, 40px);
+    height: clamp(40px, 5vw, 52px); /* Full logo with text needs more height */
     width: auto;
+    flex-shrink: 0; /* Prevent logo from shrinking */
 }
 
 .highlightText {
     color: var(--amber);
+    font-weight: 700; /* Ensure it's bold */
 }
 
 .links {

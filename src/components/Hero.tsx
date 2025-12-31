@@ -33,6 +33,7 @@ export const Hero = ({
                     loop
                     muted
                     playsInline
+                    preload="metadata"
                     className={styles.backgroundImage}
                 >
                     <source src="/nano_banana_video.mp4" type="video/mp4" />
@@ -43,14 +44,17 @@ export const Hero = ({
 
             <div className={styles.content}>
                 <div className={styles.logoIcon}>
-                    <img
-                        src="/logo.png"
-                        alt="Lectures After Dark Logo"
-                        className={styles.logoImage}
-                        width="200"
-                        height="200"
-                        loading="eager"
-                    />
+                    <picture>
+                        <source srcSet="/logo.webp" type="image/webp" />
+                        <img
+                            src="/logo.png"
+                            alt="Lectures After Dark Logo"
+                            className={styles.logoImage}
+                            width="200"
+                            height="200"
+                            loading="eager"
+                        />
+                    </picture>
                 </div>
 
                 <h1 className={styles.title}>

@@ -50,10 +50,10 @@ export const Instagram = ({
                         <div key={index} className={styles.imageWrapper}>
                             {post.postUrl ? (
                                 <a href={post.postUrl} target="_blank" rel="noopener noreferrer">
-                                    <img src={post.imageUrl} alt={`Instagram post ${index + 1}`} />
+                                    <img src={post.imageUrl} alt={`Instagram post ${index + 1}`} loading="lazy" decoding="async" />
                                 </a>
                             ) : (
-                                <img src={post.imageUrl} alt={`Instagram post ${index + 1}`} />
+                                <img src={post.imageUrl} alt={`Instagram post ${index + 1}`} loading="lazy" decoding="async" />
                             )}
                         </div>
                     ))}

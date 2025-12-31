@@ -55,11 +55,16 @@ export const IdeaSection = ({
 
                     <div className="relative">
                         <div className="relative p-1 bg-gradient-to-br from-gold/20 to-transparent rounded-lg">
-                            <img
-                                src="/idea.png"
-                                alt="Cocktails and Conversation"
-                                className="w-full rounded-lg shadow-2xl"
-                            />
+                            <picture>
+                                <source srcSet="/idea.webp" type="image/webp" />
+                                <img
+                                    src="/idea.png"
+                                    alt="Cocktails and Conversation"
+                                    className="w-full rounded-lg shadow-2xl"
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                            </picture>
                         </div>
                     </div>
                 </div>

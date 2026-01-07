@@ -101,6 +101,12 @@ const Navbar: React.FC = () => {
                             About
                         </NavLink>
                         <NavLink
+                            to="/sponsors"
+                            className={({ isActive }) => isActive ? `${styles.link} ${styles.activeLink}` : styles.link}
+                        >
+                            Sponsors
+                        </NavLink>
+                        <NavLink
                             to="/contact"
                             className={({ isActive }) => isActive ? `${styles.contactBtn} ${styles.contactBtnActive}` : styles.contactBtn}
                         >
@@ -172,6 +178,12 @@ const Navbar: React.FC = () => {
                         className={({ isActive }) => isActive ? `${styles.mobileLink} ${styles.mobileActiveLink}` : styles.mobileLink}
                     >
                         About
+                    </NavLink>
+                    <NavLink
+                        to="/sponsors"
+                        className={({ isActive }) => isActive ? `${styles.mobileLink} ${styles.mobileActiveLink}` : styles.mobileLink}
+                    >
+                        Sponsors
                     </NavLink>
 
                     <div className={styles.mobileMenuDivider}></div>

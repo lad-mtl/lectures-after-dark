@@ -13,18 +13,20 @@ import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/ProtectedRoute';
 import TestButtonPage from './pages/TestButtonPage';
 import TestEventCardPage from './pages/TestEventCardPage';
+import Sponsors from './pages/Sponsors';
 
 function App() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
 
   return (
-    <main>
+    <main className="!pt-20">
       {!isAdmin && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/events" element={<Events />} />
         <Route path="/speakers" element={<Speakers />} />
+        <Route path="/sponsors" element={<Sponsors />} />
         <Route path="/bars" element={<Venues />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />

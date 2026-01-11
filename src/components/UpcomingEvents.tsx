@@ -61,7 +61,7 @@ export const UpcomingEvents = ({
             {/* Header with decorative elements */}
             <div className="container">
                 <div className="flex !mb-8 max-md:flex-col max-md:items-start max-md:!mb-6">
-                    <div className="w-full">
+                    <div className="">
                         {/* Title with gold accent */}
                         <div className="flex items-center gap-4 mb-2">
                             <div className="w-12 h-1 bg-gradient-to-r from-gold to-amber rounded-full max-md:w-8"></div>

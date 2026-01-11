@@ -1,10 +1,10 @@
 import React from 'react';
-import { UpcomingEventsRedesign } from '../components/UpcomingEventsRedesign';
+import { UpcomingEvents } from '../components/UpcomingEvents';
 
 const TestEventCardPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-cream">
-            <UpcomingEventsRedesign />
+            <UpcomingEvents />
         </div>
     );
 };

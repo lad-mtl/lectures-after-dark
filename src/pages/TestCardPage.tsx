@@ -1,12 +1,12 @@
 import { EventCard } from '../components/EventCard';
-import { UpcomingEventsRedesign } from '../components/UpcomingEventsRedesign';
+import { UpcomingEvents } from '../components/UpcomingEvents';
 import SectionTitle from '../components/ui/SectionTitle';
 
 export default function TestCardPage() {
     return (
         <div className="min-h-screen pt-24">
             {/* New Redesigned Section */}
-            <UpcomingEventsRedesign />
+            <UpcomingEvents />
 
             {/* Original Cards */}
             <div className="bg-midnight p-8 text-cream">

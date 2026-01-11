@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -17,6 +18,11 @@ import Sponsors from './pages/Sponsors';
 function App() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  // Scroll to top when route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <main className="!pt-0 lg:!pt-20">

@@ -8,6 +8,7 @@ import { HowToJoin } from '../components/HowToJoin';
 import { WhyWeDoIt } from '../components/WhyWeDoIt';
 import { UpcomingEvents } from '../components/UpcomingEvents';
 import { EventCard } from '../components/EventCard';
+import { EventCardRedesign } from '../components/EventCardRedesign';
 import { SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA } from '../components/Speakers';
 import { SpeakerCard } from '../components/SpeakerCard';
 import { BarsHeader, BarsInfo, BarsList, BarsCTA } from '../components/Bars';
@@ -25,7 +26,7 @@ import { Topbar } from '../components/Topbar';
 import PageTabs from '../components/PageTabs';
 
 const MAIN_RESOLVER = {
-    Hero, Instagram, IdeaSection, HowToJoin, WhyWeDoIt, UpcomingEvents, EventCard, FAQ,
+    Hero, Instagram, IdeaSection, HowToJoin, WhyWeDoIt, UpcomingEvents, EventCard, EventCardRedesign, FAQ,
     SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA, SpeakerCard,
     BarsHeader, BarsInfo, BarsList, BarsCTA, BarCard,
     AboutHeader, AboutMission, TestTailwind,

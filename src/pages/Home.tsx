@@ -8,6 +8,7 @@ import { IdeaSection } from '../components/IdeaSection';
 import { Instagram } from '../components/Instagram';
 import { FAQ } from '../components/FAQ';
 import { EventCard } from '../components/EventCard';
+import { EventCardRedesign } from '../components/EventCardRedesign';
 
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
@@ -20,7 +21,7 @@ const Home: React.FC = () => {
     }
 
     return (
-        <Editor enabled={false} resolver={{ Hero, Instagram, IdeaSection, UpcomingEvents, WhyWeDoIt, FAQ, EventCard }}>
+        <Editor enabled={false} resolver={{ Hero, Instagram, IdeaSection, UpcomingEvents, WhyWeDoIt, FAQ, EventCard, EventCardRedesign }}>
             <MigratingFrame json={pageData?.layout}>
                 <Element is="div" canvas>
                     <Hero />

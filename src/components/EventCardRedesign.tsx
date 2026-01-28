@@ -1,32 +1,7 @@
-import { useNode, useEditor } from '@craftjs/core';
+import { useNode } from '@craftjs/core';
 import { ImageUploadField } from './ImageUploadField';
-
-// Safe hook that returns editor state or defaults when outside Editor
-const useSafeEditor = () => {
-    try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useEditor((state) => ({
-            enabled: state.options.enabled
-        }));
-    } catch {
-        return { enabled: false };
-    }
-};
-
-// Safe hook that returns node connectors or no-ops when outside Editor
-const useSafeNode = () => {
-    try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useNode();
-    } catch {
-        return {
-            connectors: {
-                connect: (ref: HTMLElement | null) => ref as HTMLElement,
-                drag: (ref: HTMLElement | null) => ref as HTMLElement
-            }
-        };
-    }
-};
+import { useEditorAwareNode, useEditorAwareState } from '../hooks/useEditorAwareNode';
+import { settingsStyles } from './settings/settingsStyles';
 
 interface EventCardRedesignProps {
     title?: string;
@@ -49,8 +24,8 @@ export const EventCardRedesign = ({
     image = '/the_psychology_of_ambition.webp',
     eventbriteUrl = 'https://www.eventbrite.com'
 }: EventCardRedesignProps) => {
-    const { connectors: { connect, drag } } = useSafeNode();
-    const { enabled } = useSafeEditor();
+    const { connectors: { connect, drag } } = useEditorAwareNode();
+    const { enabled } = useEditorAwareState();
 
     const cardContent = (
         <div className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black">
@@ -153,94 +128,70 @@ const EventCardRedesignSettings = () => {
         eventbriteUrl: node.data.props.eventbriteUrl,
     }));
 
-    const inputStyle = {
-        width: '100%',
-        padding: '8px 10px',
-        fontSize: '14px',
-        border: '1px solid #cbd5e1',
-        borderRadius: '6px',
-        background: '#ffffff',
-        color: '#1e293b',
-        outline: 'none',
-        transition: 'border-color 0.2s',
-    };
-
-    const labelStyle = {
-        display: 'block',
-        marginBottom: '6px',
-        fontSize: '13px',
-        fontWeight: 500,
-        color: '#475569',
-    };
-
-    const fieldStyle = {
-        marginBottom: '14px',
-    };
-
     return (
         <div>
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Title</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Title</label>
                 <input
                     type="text"
                     value={title || ''}
                     onChange={(e) => setProp((props: EventCardRedesignProps) => props.title = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                 />
             </div>
 
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
-                <div style={{ flex: 1 }}>
-                    <label style={labelStyle}>Day</label>
+            <div style={settingsStyles.row}>
+                <div style={settingsStyles.flexItem}>
+                    <label style={settingsStyles.label}>Day</label>
                     <input
                         type="text"
                         value={day || ''}
                         onChange={(e) => setProp((props: EventCardRedesignProps) => props.day = e.target.value)}
-                        style={inputStyle}
+                        style={settingsStyles.input}
                         placeholder="22"
                     />
                 </div>
-                <div style={{ flex: 1 }}>
-                    <label style={labelStyle}>Month</label>
+                <div style={settingsStyles.flexItem}>
+                    <label style={settingsStyles.label}>Month</label>
                     <input
                         type="text"
                         value={month || ''}
                         onChange={(e) => setProp((props: EventCardRedesignProps) => props.month = e.target.value)}
-                        style={inputStyle}
+                        style={settingsStyles.input}
                         placeholder="JAN"
                     />
                 </div>
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Time</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Time</label>
                 <input
                     type="text"
                     value={time || ''}
                     onChange={(e) => setProp((props: EventCardRedesignProps) => props.time = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="7:00"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Location</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Location</label>
                 <input
                     type="text"
                     value={location || ''}
                     onChange={(e) => setProp((props: EventCardRedesignProps) => props.location = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="Montreal"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Price</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Price</label>
                 <input
                     type="text"
                     value={price || ''}
                     onChange={(e) => setProp((props: EventCardRedesignProps) => props.price = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="$29.99"
                 />
             </div>
@@ -251,13 +202,13 @@ const EventCardRedesignSettings = () => {
                 onChange={(newUrl) => setProp((props: EventCardRedesignProps) => props.image = newUrl)}
             />
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Eventbrite URL</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Eventbrite URL</label>
                 <input
                     type="text"
                     value={eventbriteUrl || ''}
                     onChange={(e) => setProp((props: EventCardRedesignProps) => props.eventbriteUrl = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="https://www.eventbrite.com/..."
                 />
             </div>

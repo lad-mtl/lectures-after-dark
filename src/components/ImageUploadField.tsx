@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Upload, Link2 } from 'lucide-react';
+import { MAX_UPLOAD_SIZE_BYTES, MAX_UPLOAD_SIZE_MB, ALLOWED_IMAGE_TYPES } from '../constants';
 
 interface ImageUploadFieldProps {
     label: string;
@@ -19,19 +20,17 @@ export const ImageUploadField = ({ label, value, onChange }: ImageUploadFieldPro
     const getFileUrl = useMutation(api.files.getFileUrl);
 
     const validateFile = (file: File): { valid: boolean; error?: string } => {
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        if (!validTypes.includes(file.type)) {
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
             return {
                 valid: false,
                 error: 'Please upload a valid image file (.jpg, .jpeg, .png, .gif, .webp)'
             };
         }
 
-        const maxSize = 5 * 1024 * 1024; // 5MB
-        if (file.size > maxSize) {
+        if (file.size > MAX_UPLOAD_SIZE_BYTES) {
             return {
                 valid: false,
-                error: 'File size must be under 5MB'
+                error: `File size must be under ${MAX_UPLOAD_SIZE_MB}MB`
             };
         }
 

@@ -1,20 +1,6 @@
 import { useNode, Element } from '@craftjs/core';
 import { EventCardRedesign } from './EventCardRedesign';
-
-// Safe hook that returns node connectors or no-ops when outside Editor
-const useSafeNode = () => {
-    try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useNode();
-    } catch {
-        return {
-            connectors: {
-                connect: (ref: HTMLElement | null) => ref as HTMLElement,
-                drag: (ref: HTMLElement | null) => ref as HTMLElement
-            }
-        };
-    }
-};
+import { useEditorAwareNode } from '../hooks/useEditorAwareNode';
 
 interface UpcomingEventsProps {
     title?: string;
@@ -25,7 +11,7 @@ export const UpcomingEvents = ({
     title = "UPCOMING EVENTS",
     subtitle = "Curated nights for the curious mind.",
 }: UpcomingEventsProps) => {
-    const { connectors: { connect, drag } } = useSafeNode();
+    const { connectors: { connect, drag } } = useEditorAwareNode();
 
     return (
         <section

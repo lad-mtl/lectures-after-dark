@@ -2,6 +2,7 @@ import { useNode } from '@craftjs/core';
 import styles from '../pages/Venues.module.css';
 import { MapPin } from 'lucide-react';
 import { ImageUploadField } from './ImageUploadField';
+import { settingsStyles } from './settings/settingsStyles';
 
 interface BarCardProps {
     name?: string;
@@ -49,30 +50,30 @@ const BarCardSettings = () => {
 
     return (
         <div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Name</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Name</label>
                 <input
                     type="text"
                     value={name || ''}
                     onChange={(e) => setProp((props: BarCardProps) => props.name = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Neighborhood</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Neighborhood</label>
                 <input
                     type="text"
                     value={neighborhood || ''}
                     onChange={(e) => setProp((props: BarCardProps) => props.neighborhood = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Description</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Description</label>
                 <textarea
                     value={description || ''}
                     onChange={(e) => setProp((props: BarCardProps) => props.description = e.target.value)}
-                    style={{ width: '100%', padding: '5px', minHeight: '100px' }}
+                    style={settingsStyles.textarea}
                 />
             </div>
             <ImageUploadField

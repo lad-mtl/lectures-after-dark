@@ -1,35 +1,9 @@
-import { useNode, useEditor } from '@craftjs/core';
+import { useNode } from '@craftjs/core';
 import { Card, CardContent } from './ui/Card';
 import { Calendar, MapPin, DollarSign } from 'lucide-react';
 import { ImageUploadField } from './ImageUploadField';
-
-
-// Safe hook that returns editor state or defaults when outside Editor
-const useSafeEditor = () => {
-    try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useEditor((state) => ({
-            enabled: state.options.enabled
-        }));
-    } catch {
-        return { enabled: false };
-    }
-};
-
-// Safe hook that returns node connectors or no-ops when outside Editor
-const useSafeNode = () => {
-    try {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useNode();
-    } catch {
-        return {
-            connectors: {
-                connect: (ref: HTMLElement | null) => ref as HTMLElement,
-                drag: (ref: HTMLElement | null) => ref as HTMLElement
-            }
-        };
-    }
-};
+import { useEditorAwareNode, useEditorAwareState } from '../hooks/useEditorAwareNode';
+import { settingsStyles } from './settings/settingsStyles';
 
 interface EventCardProps {
     category?: string;
@@ -60,8 +34,8 @@ export const EventCard = ({
     attendeeCount = '23+',
     eventbriteUrl = 'https://www.eventbrite.com'
 }: EventCardProps) => {
-    const { connectors: { connect, drag } } = useSafeNode();
-    const { enabled } = useSafeEditor();
+    const { connectors: { connect, drag } } = useEditorAwareNode();
+    const { enabled } = useEditorAwareState();
 
     const cardContent = (
         <div className="max-w-[380px] h-full p-[10px] bg-cream border-2 border-cream-dark rounded-lg shadow-event-card hover:shadow-event-card-hover transition-all duration-300">
@@ -199,104 +173,80 @@ const EventCardSettings = () => {
         eventbriteUrl: node.data.props.eventbriteUrl,
     }));
 
-    const inputStyle = {
-        width: '100%',
-        padding: '8px 10px',
-        fontSize: '14px',
-        border: '1px solid #cbd5e1',
-        borderRadius: '6px',
-        background: '#ffffff',
-        color: '#1e293b',
-        outline: 'none',
-        transition: 'border-color 0.2s',
-    };
-
-    const labelStyle = {
-        display: 'block',
-        marginBottom: '6px',
-        fontSize: '13px',
-        fontWeight: 500,
-        color: '#475569',
-    };
-
-    const fieldStyle = {
-        marginBottom: '14px',
-    };
-
     return (
         <div>
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Category</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Category</label>
                 <input
                     type="text"
                     value={category || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.category = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., Psychology, Music, Dance"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Title</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Title</label>
                 <input
                     type="text"
                     value={title || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.title = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Day (for badge)</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Day (for badge)</label>
                 <input
                     type="text"
                     value={day || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.day = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., 22"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Month (for badge)</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Month (for badge)</label>
                 <input
                     type="text"
                     value={month || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.month = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., JAN"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Full Date</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Full Date</label>
                 <input
                     type="text"
                     value={date || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.date = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., January 22, 2025"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Time</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Time</label>
                 <input
                     type="text"
                     value={time || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.time = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., 06:00 PM"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Location</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Location</label>
                 <input
                     type="text"
                     value={location || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.location = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                 />
             </div>
 
@@ -306,46 +256,46 @@ const EventCardSettings = () => {
                 onChange={(newUrl) => setProp((props: EventCardProps) => props.image = newUrl)}
             />
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Price</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Price</label>
                 <input
                     type="text"
                     value={price || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.price = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., From $99.99"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Organizer</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Organizer</label>
                 <input
                     type="text"
                     value={organizer || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.organizer = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., World Fusion Events"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Attendee Count</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Attendee Count</label>
                 <input
                     type="text"
                     value={attendeeCount || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.attendeeCount = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                     placeholder="e.g., 23+"
                 />
             </div>
 
-            <div style={fieldStyle}>
-                <label style={labelStyle}>Eventbrite URL</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Eventbrite URL</label>
                 <input
                     type="text"
                     value={eventbriteUrl || ''}
                     onChange={(e) => setProp((props: EventCardProps) => props.eventbriteUrl = e.target.value)}
-                    style={inputStyle}
+                    style={settingsStyles.input}
                 />
             </div>
         </div>

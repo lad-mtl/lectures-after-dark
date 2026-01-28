@@ -24,6 +24,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Topbar } from '../components/Topbar';
 import PageTabs from '../components/PageTabs';
+import { EDITOR_CANVAS_MIN_HEIGHT } from '../constants';
 
 const MAIN_RESOLVER = {
     Hero, Instagram, IdeaSection, HowToJoin, WhyWeDoIt, UpcomingEvents, EventCard, EventCardRedesign, FAQ,
@@ -33,14 +34,59 @@ const MAIN_RESOLVER = {
     SponsorsHeader, SponsorsWhy, SponsorsOpportunities, SponsorsCTA
 };
 
+const PAGE_COMPONENTS: Record<string, React.ReactNode> = {
+    home: (
+        <>
+            <Hero />
+            <UpcomingEvents />
+            <IdeaSection />
+            <WhyWeDoIt />
+            <Instagram />
+            <FAQ />
+        </>
+    ),
+    bars: (
+        <>
+            <BarsHeader />
+            <BarsInfo />
+            <BarsList />
+            <BarsCTA />
+        </>
+    ),
+    speakers: (
+        <>
+            <SpeakersHeader />
+            <SpeakersInfo />
+            <SpeakersList />
+            <SpeakersCTA />
+        </>
+    ),
+    about: (
+        <>
+            <AboutHeader />
+            <AboutMission />
+        </>
+    ),
+    sponsors: (
+        <>
+            <SponsorsHeader />
+            <SponsorsWhy />
+            <SponsorsOpportunities />
+            <SponsorsCTA />
+        </>
+    ),
+    'test-tailwind': <TestTailwind />,
+};
+
 const Admin: React.FC = () => {
     const [activePage, setActivePage] = useState('home');
     const pageData = useQuery(api.pages.getPage, { slug: activePage });
-    console.log("activePage", activePage);
 
     if (pageData === undefined) {
         return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading Editor...</div>;
     }
+
+    const pageComponents = PAGE_COMPONENTS[activePage] ?? null;
 
     return (
         <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -50,63 +96,11 @@ const Admin: React.FC = () => {
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                     <div style={{ flex: 1, overflow: 'auto', padding: '20px', background: '#e0e0e0' }}>
                         <div style={{ background: 'white', minHeight: '100%', boxShadow: '0 0 10px rgba(0,0,0,0.1)', position: 'relative', transform: 'translate(0)' }}>
-
-                            {activePage === 'home' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <Hero />
-                                        <UpcomingEvents />
-                                        <IdeaSection />
-                                        <WhyWeDoIt />
-                                        <Instagram />
-                                        <FAQ />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : activePage === 'bars' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <BarsHeader />
-                                        <BarsInfo />
-                                        <BarsList />
-                                        <BarsCTA />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : activePage === 'speakers' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <SpeakersHeader />
-                                        <SpeakersInfo />
-                                        <SpeakersList />
-                                        <SpeakersCTA />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : activePage === 'about' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <AboutHeader />
-                                        <AboutMission />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : activePage === 'sponsors' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <SponsorsHeader />
-                                        <SponsorsWhy />
-                                        <SponsorsOpportunities />
-                                        <SponsorsCTA />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : activePage === 'test-tailwind' ? (
-                                <MigratingFrame json={pageData?.layout}>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas>
-                                        <TestTailwind />
-                                    </Element>
-                                </MigratingFrame>
-                            ) : (
-                                <MigratingFrame>
-                                    <Element is="div" style={{ minHeight: '800px' }} canvas />
-                                </MigratingFrame>
-                            )}
+                            <MigratingFrame json={pageData?.layout}>
+                                <Element is="div" style={{ minHeight: EDITOR_CANVAS_MIN_HEIGHT }} canvas>
+                                    {pageComponents}
+                                </Element>
+                            </MigratingFrame>
                         </div>
                     </div>
                     <SettingsPanel />

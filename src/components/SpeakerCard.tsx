@@ -3,6 +3,7 @@ import { Card } from './Card';
 import styles from './SpeakerCard.module.css';
 import { Twitter, Linkedin, Globe } from 'lucide-react';
 import { ImageUploadField } from './ImageUploadField';
+import { settingsStyles } from './settings/settingsStyles';
 
 interface SpeakerCardProps {
     name?: string;
@@ -71,57 +72,57 @@ const SpeakerCardSettings = () => {
                 value={image || ''}
                 onChange={(newUrl) => setProp((props: SpeakerCardProps) => props.image = newUrl)}
             />
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Name</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Name</label>
                 <input
                     type="text"
                     value={name || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.name = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Topic</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Topic</label>
                 <input
                     type="text"
                     value={topic || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.topic = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Bio</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Bio</label>
                 <textarea
                     value={bio || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.bio = e.target.value)}
-                    style={{ width: '100%', padding: '5px', minHeight: '100px' }}
+                    style={settingsStyles.textarea}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Twitter URL</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Twitter URL</label>
                 <input
                     type="text"
                     value={twitter || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.twitter = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>LinkedIn URL</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>LinkedIn URL</label>
                 <input
                     type="text"
                     value={linkedin || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.linkedin = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
-            <div style={{ marginBottom: '10px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Website URL</label>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Website URL</label>
                 <input
                     type="text"
                     value={website || ''}
                     onChange={(e) => setProp((props: SpeakerCardProps) => props.website = e.target.value)}
-                    style={{ width: '100%', padding: '5px' }}
+                    style={settingsStyles.input}
                 />
             </div>
         </div>

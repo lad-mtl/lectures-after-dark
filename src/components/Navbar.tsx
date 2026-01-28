@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { X } from 'lucide-react';
 import styles from './Navbar.module.css';
+import { NAVBAR_SCROLL_THRESHOLD_PERCENT } from '../constants';
 
 
 const Navbar: React.FC = () => {
@@ -16,8 +17,7 @@ const Navbar: React.FC = () => {
                 return;
             }
 
-            // Show navbar after scrolling 20% of the viewport height
-            const threshold = window.innerHeight * 0.2;
+            const threshold = window.innerHeight * NAVBAR_SCROLL_THRESHOLD_PERCENT;
             if (window.scrollY > threshold) {
                 setIsVisible(true);
             } else {

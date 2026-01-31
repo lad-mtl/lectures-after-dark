@@ -6,12 +6,14 @@ interface BarsCTAProps {
     title?: string;
     description?: string;
     buttonText?: string;
+    buttonLink?: string;
 }
 
 export const BarsCTA = ({
     title = "Bring the conversation to your bar.",
     description = "Transform your venue into a hub of intellectual exchange. Host a Lectures After Dark event.",
-    buttonText = "Partner With Us"
+    buttonText = "Partner With Us",
+    buttonLink = "/"
 }: BarsCTAProps) => {
     const { connectors: { connect, drag } } = useNode();
     return (
@@ -23,17 +25,18 @@ export const BarsCTA = ({
             <div className={styles.ctaContent}>
                 <h2 className={styles.ctaTitle}>{title}</h2>
                 <p className={styles.ctaText}>{description}</p>
-                <button className="btn btn-primary">{buttonText}</button>
+                <a target='_blank' href={buttonLink} className="btn btn-primary">{buttonLink}</a>
             </div>
         </section>
     );
 };
 
 const BarsCTASettings = () => {
-    const { actions: { setProp }, title, description, buttonText } = useNode((node) => ({
+    const { actions: { setProp }, title, description, buttonText, buttonLink } = useNode((node) => ({
         title: node.data.props.title,
         description: node.data.props.description,
         buttonText: node.data.props.buttonText,
+        buttonLink: node.data.props.buttonLink,
     }));
     return (
         <div>
@@ -61,6 +64,15 @@ const BarsCTASettings = () => {
                     type="text"
                     value={buttonText}
                     onChange={e => setProp((p: BarsCTAProps) => p.buttonText = e.target.value)}
+                    style={settingsStyles.input}
+                />
+            </div>
+            <div style={settingsStyles.field}>
+                <label style={settingsStyles.label}>Button Link</label>
+                <input
+                    type="text"
+                    value={buttonLink}
+                    onChange={e => setProp((p: BarsCTAProps) => p.buttonLink = e.target.value)}
                     style={settingsStyles.input}
                 />
             </div>

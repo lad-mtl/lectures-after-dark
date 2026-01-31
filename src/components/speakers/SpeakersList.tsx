@@ -1,6 +1,5 @@
-import { useNode, Element } from '@craftjs/core';
+import { useNode } from '@craftjs/core';
 import styles from '../../pages/Speakers.module.css';
-import { SpeakerCard } from '../SpeakerCard';
 import { settingsStyles } from '../settings/settingsStyles';
 
 interface SpeakersListProps {

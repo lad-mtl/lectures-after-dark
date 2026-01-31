@@ -1,7 +1,8 @@
 import React from 'react';
 import { Editor, Element } from '@craftjs/core';
 import { MigratingFrame } from '../components/MigratingFrame';
-import { AboutHeader, AboutMission, OurVision } from '../components/About';
+import { AboutHeader, AboutMission, OurVision, OurTeam } from '../components/About';
+import { TeamMemberCard } from '../components/TeamMemberCard';
 
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
@@ -14,12 +15,13 @@ const About: React.FC = () => {
     }
 
     return (
-        <Editor enabled={false} resolver={{ AboutHeader, AboutMission, OurVision }}>
+        <Editor enabled={false} resolver={{ AboutHeader, AboutMission, OurVision, OurTeam, TeamMemberCard }}>
             <MigratingFrame json={pageData?.layout}>
                 <Element is="div" canvas>
                     <AboutHeader />
                     <AboutMission />
                     <OurVision />
+                    <OurTeam />
                 </Element>
             </MigratingFrame>
         </Editor>

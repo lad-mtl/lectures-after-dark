@@ -13,7 +13,8 @@ import { SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA } from '../comp
 import { SpeakerCard } from '../components/SpeakerCard';
 import { BarsHeader, BarsInfo, BarsList, BarsCTA } from '../components/Bars';
 import { BarCard } from '../components/BarCard';
-import { AboutHeader, AboutMission } from '../components/About';
+import { AboutHeader, AboutMission, OurVision, OurTeam } from '../components/About';
+import { TeamMemberCard } from '../components/TeamMemberCard';
 import { SponsorsHeader, SponsorsWhy, SponsorsOpportunities, SponsorsCTA } from '../components/Sponsors';
 import { FAQ } from '../components/FAQ';
 import { TestTailwind } from '../components/TestTailwind';
@@ -30,7 +31,7 @@ const MAIN_RESOLVER = {
     Hero, Instagram, IdeaSection, HowToJoin, WhyWeDoIt, UpcomingEvents, EventCard, EventCardRedesign, FAQ,
     SpeakersHeader, SpeakersInfo, SpeakersList, SpeakersCTA, SpeakerCard,
     BarsHeader, BarsInfo, BarsList, BarsCTA, BarCard,
-    AboutHeader, AboutMission, TestTailwind,
+    AboutHeader, AboutMission, OurVision, OurTeam, TestTailwind, TeamMemberCard,
     SponsorsHeader, SponsorsWhy, SponsorsOpportunities, SponsorsCTA
 };
 
@@ -65,6 +66,8 @@ const PAGE_COMPONENTS: Record<string, React.ReactNode> = {
         <>
             <AboutHeader />
             <AboutMission />
+            <OurVision />
+            <OurTeam />
         </>
     ),
     sponsors: (

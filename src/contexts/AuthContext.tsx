@@ -12,7 +12,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const AUTH_STORAGE_KEY = 'admin_authenticated'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize auth state from localStorage using lazy initialization
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const stored = localStorage.getItem(AUTH_STORAGE_KEY)
     return stored === 'true'

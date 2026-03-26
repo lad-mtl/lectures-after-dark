@@ -11,6 +11,7 @@ import Venues from './pages/Venues';
 import TestEventCardPage from './pages/TestEventCardPage';
 import TestCardPage from './pages/TestCardPage';
 import Sponsors from './pages/Sponsors';
+import NotFound from './pages/NotFound';
 
 function App() {
   const location = useLocation();
@@ -32,6 +33,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/test" element={<TestCardPage />} />
         <Route path="/test-event-card" element={<TestEventCardPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </main>

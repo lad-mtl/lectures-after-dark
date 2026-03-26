@@ -11,7 +11,7 @@
     "type-check": "npx tsc --noEmit --pretty",
     "check": "pnpm run lint:fix && pnpm run type-check && pnpm run build",
     "preview": "vite preview",
-    "tina:dev": "tinacms dev -c \"pnpm dev\"",
+    "tina:dev": "TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"pnpm dev\"",
     "tina:build": "tinacms build"
   },
   "dependencies": {

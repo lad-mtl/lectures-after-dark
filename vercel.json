@@ -5,6 +5,10 @@
             "destination": "/api/tina/:path*"
         },
         {
+            "source": "/admin/:path*",
+            "destination": "/admin/:path*"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

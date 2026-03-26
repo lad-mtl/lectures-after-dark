@@ -20,13 +20,10 @@ export const EventCardRedesign = ({
     eventbriteUrl = 'https://www.eventbrite.com'
 }: EventCardRedesignProps) => {
     const cardContent = (
-        <div className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black">
-            {/* Background Image */}
-            <img
-                src={image}
-                alt={title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
+        <div
+            className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black bg-cover bg-center"
+            style={{ backgroundImage: `url(${image})` }}
+        >
 
             {/* Dark gradient overlay at bottom for text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 via-50% to-transparent pointer-events-none"></div>
@@ -75,7 +72,7 @@ export const EventCardRedesign = ({
 
     return (
         <div
-            className="aspect-[4/5] max-w-[340px] w-full"
+            className="aspect-[4/5] w-full"
         >
             <a
                 href={eventbriteUrl}

@@ -11,7 +11,7 @@
     "type-check": "npx tsc --noEmit --pretty",
     "check": "pnpm run lint:fix && pnpm run type-check && pnpm run build",
     "preview": "vite preview",
-    "tina:dev": "TINA_PUBLIC_IS_LOCAL=true tinacms dev",
+    "tina:dev": "__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=${TINA_ALLOWED_HOST:-cms-lad.s.abu.lan} TINA_PUBLIC_IS_LOCAL=true tinacms dev",
     "tina:build": "tinacms build",
     "tina:start": "node scripts/tina-production-server.mjs",
     "workers:dev": "wrangler dev",

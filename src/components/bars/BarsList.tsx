@@ -1,6 +1,6 @@
 import styles from '../../pages/Venues.module.css';
 import { BarCard } from '../BarCard';
-import { useVenues } from '../../hooks/useTinaContent';
+import { useVenues } from '../../hooks/useContent';
 
 interface BarsListProps {
     title?: string;
@@ -33,7 +33,7 @@ export const BarsList = ({
                         ))}
                     </div>
                 ) : (
-                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No venues yet. Add venues in the TinaCMS admin.</p>
+                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No venues yet. Add venues in the Strapi admin.</p>
                 )}
             </div>
         </section>

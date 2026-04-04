@@ -34,91 +34,82 @@ export interface FaqData {
 
 export interface ContentEnv {
   CONTENT_CACHE?: KVNamespace;
-  TINA_CONTENT_API_URL: string;
-  TINA_CONTENT_API_TOKEN?: string;
-  TINA_TIMEOUT_MS?: string;
+  STRAPI_CONTENT_API_URL: string;
+  STRAPI_CONTENT_API_TOKEN?: string;
+  STRAPI_TIMEOUT_MS?: string;
 }
 
 type ResourceDefinition<T> = {
   cacheKey: string;
-  query: string;
+  pathname: string;
   normalize: (payload: unknown) => T;
 };
 
+type StrapiEntity<T> = {
+  id?: number | string;
+  documentId?: string;
+  attributes?: T;
+} & T;
+
 const DEFAULT_TIMEOUT_MS = 3000;
+
+function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
+  const source = (entity.attributes ?? entity) as T;
+  const { id: _id, documentId: _documentId, attributes: _attributes, ...rest } =
+    source as T & {
+      id?: unknown;
+      documentId?: unknown;
+      attributes?: unknown;
+    };
+
+  return {
+    ...rest,
+    id: String(entity.documentId ?? entity.id ?? ""),
+  };
+}
+
+function buildStrapiUrl(baseUrl: string, pathname: string) {
+  return `${baseUrl.replace(/\/+$/, "")}${pathname}`;
+}
 
 const resources = {
   "/api/content/speakers": {
     cacheKey: "content:speakers",
-    query: `query {
-      speakerConnection {
-        edges {
-          node {
-            id
-            name
-            topic
-            bio
-            image
-            twitter
-            linkedin
-            website
-            order
-          }
-        }
-      }
-    }`,
+    pathname:
+      "/speakers?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=topic&fields[2]=bio&fields[3]=image&fields[4]=twitter&fields[5]=linkedin&fields[6]=website&fields[7]=order",
     normalize: (payload: unknown) => {
-      const data = payload as {
-        speakerConnection?: { edges?: Array<{ node: SpeakerData | null }> };
-      };
+      const data = payload as { data?: Array<StrapiEntity<Omit<SpeakerData, "id">>> | null };
 
-      return (data.speakerConnection?.edges ?? [])
-        .map((edge) => edge.node)
-        .filter((node): node is SpeakerData => Boolean(node))
+      return (data.data ?? [])
+        .map((node) => normalizeStrapiEntity(node))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
   "/api/content/venues": {
     cacheKey: "content:venues",
-    query: `query {
-      venueConnection {
-        edges {
-          node {
-            id
-            name
-            neighborhood
-            description
-            imageUrl
-            mapsLink
-            order
-          }
-        }
-      }
-    }`,
+    pathname:
+      "/venues?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=neighborhood&fields[2]=description&fields[3]=imageUrl&fields[4]=mapsLink&fields[5]=order",
     normalize: (payload: unknown) => {
-      const data = payload as {
-        venueConnection?: { edges?: Array<{ node: VenueData | null }> };
-      };
+      const data = payload as { data?: Array<StrapiEntity<Omit<VenueData, "id">>> | null };
 
-      return (data.venueConnection?.edges ?? [])
-        .map((edge) => edge.node)
-        .filter((node): node is VenueData => Boolean(node))
+      return (data.data ?? [])
+        .map((node) => normalizeStrapiEntity(node))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
   "/api/content/faq": {
     cacheKey: "content:faq",
-    query: `query {
-      faq(relativePath: "faq.json") {
-        items {
-          question
-          answer
-        }
-      }
-    }`,
+    pathname: "/faq?populate[items][fields][0]=question&populate[items][fields][1]=answer",
     normalize: (payload: unknown) => {
-      const data = payload as { faq?: FaqData | null };
-      return data.faq ?? { items: [] };
+      const data = payload as { data?: StrapiEntity<FaqData> | null };
+      const entity = data.data;
+
+      if (!entity) {
+        return { items: [] };
+      }
+
+      const faq = entity.attributes ?? entity;
+      return { items: faq.items ?? [] };
     },
   },
 } satisfies Record<string, ResourceDefinition<unknown>>;
@@ -165,42 +156,35 @@ async function fetchFreshContent(
   resource: ResourceDefinition<unknown>,
 ) {
   const controller = new AbortController();
-  const timeoutMs = Number(env.TINA_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const timeoutMs = Number(env.STRAPI_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const headers = new Headers({
-      "content-type": "application/json",
       accept: "application/json",
     });
 
-    if (env.TINA_CONTENT_API_TOKEN) {
-      headers.set("authorization", `Bearer ${env.TINA_CONTENT_API_TOKEN}`);
+    if (env.STRAPI_CONTENT_API_TOKEN) {
+      headers.set("authorization", `Bearer ${env.STRAPI_CONTENT_API_TOKEN}`);
     }
 
-    const response = await fetch(env.TINA_CONTENT_API_URL, {
-      method: "POST",
+    const response = await fetch(buildStrapiUrl(env.STRAPI_CONTENT_API_URL, resource.pathname), {
+      method: "GET",
       headers,
-      body: JSON.stringify({ query: resource.query }),
       signal: controller.signal,
     });
 
     if (!response.ok) {
-      throw new Error(`Tina upstream returned ${response.status}`);
+      throw new Error(`Strapi upstream returned ${response.status}`);
     }
 
-    const body = (await response.json()) as {
-      data?: unknown;
-      errors?: Array<{ message?: string }>;
-    };
+    const body = (await response.json()) as { data?: unknown; error?: { message?: string } };
 
-    if (body.errors?.length) {
-      throw new Error(
-        body.errors.map((error) => error.message ?? "Unknown Tina error").join("; "),
-      );
+    if (body.error) {
+      throw new Error(body.error.message ?? "Unknown Strapi error");
     }
 
-    const normalized = resource.normalize(body.data ?? {});
+    const normalized = resource.normalize(body);
     const fetchedAt = new Date().toISOString();
 
     await writeSnapshot(env, resource, normalized, fetchedAt);
@@ -235,15 +219,14 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
           "x-content-source": "stale-cache",
           "x-content-fetched-at": snapshot.fetchedAt,
           "x-content-fallback-reason":
-            error instanceof Error ? error.message : "tina-unreachable",
+            error instanceof Error ? error.message : "strapi-unreachable",
         },
       });
     }
 
     return jsonResponse(
-      { error: "Tina content is unavailable and no cached fallback exists." },
+      { error: "Strapi content is unavailable and no cached fallback exists." },
       { status: 503 },
     );
   }
 }
-

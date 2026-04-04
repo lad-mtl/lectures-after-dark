@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './FAQ.module.css';
 import { Plus } from 'lucide-react';
-import { useFaq } from '../hooks/useTinaContent';
+import { useFaq } from '../hooks/useContent';
 
 interface FAQProps {
     title?: string;

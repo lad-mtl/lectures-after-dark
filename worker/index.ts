@@ -3,9 +3,9 @@ import { handleContentRequest } from "./content";
 interface Env {
   ASSETS: Fetcher;
   CONTENT_CACHE?: KVNamespace;
-  TINA_CONTENT_API_URL: string;
-  TINA_CONTENT_API_TOKEN?: string;
-  TINA_TIMEOUT_MS?: string;
+  STRAPI_CONTENT_API_URL: string;
+  STRAPI_CONTENT_API_TOKEN?: string;
+  STRAPI_TIMEOUT_MS?: string;
 }
 
 export default {

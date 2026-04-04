@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const CONTENT_API_BASE = "/api/content";
 
@@ -34,13 +34,13 @@ export interface FaqData {
 }
 
 async function fetchContent<T>(resource: string): Promise<T> {
-  const res = await fetch(`${CONTENT_API_BASE}/${resource}`);
+  const response = await fetch(`${CONTENT_API_BASE}/${resource}`);
 
-  if (!res.ok) {
-    throw new Error(`Content request failed: ${res.status}`);
+  if (!response.ok) {
+    throw new Error(`Content request failed: ${response.status}`);
   }
 
-  return res.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
 
 export function useSpeakers() {

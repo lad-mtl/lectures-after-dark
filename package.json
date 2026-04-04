@@ -11,9 +11,10 @@
     "type-check": "npx tsc --noEmit --pretty",
     "check": "pnpm run lint:fix && pnpm run type-check && pnpm run build",
     "preview": "vite preview",
-    "tina:dev": "node scripts/tina-dev-allow-all.mjs",
-    "tina:build": "tinacms build",
-    "tina:start": "node scripts/tina-production-server.mjs",
+    "strapi:dev": "pnpm --dir strapi run develop",
+    "strapi:build": "pnpm --dir strapi run build",
+    "strapi:start": "pnpm --dir strapi run start",
+    "strapi:seed": "pnpm --dir strapi run seed",
     "workers:dev": "wrangler dev",
     "workers:deploy": "wrangler deploy"
   },
@@ -29,22 +30,15 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
-    "@tinacms/datalayer": "^2.0.13",
-    "@upstash/redis": "^1.37.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^6.28.0",
-    "tailwindcss": "^4.1.18",
-    "tinacms": "^3.7.0",
-    "tinacms-authjs": "^21.0.0",
-    "tinacms-gitprovider-github": "^4.1.0",
-    "upstash-redis-level": "^1.1.1"
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260317.1",
     "@eslint/js": "^9.39.1",
-    "@tinacms/cli": "^2.2.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",

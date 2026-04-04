@@ -9,8 +9,12 @@ export default defineConfig({
     ? new LocalAuthProvider()
     : new UsernamePasswordAuthJSProvider(),
   build: {
+    host: true,
     outputFolder: "admin",
     publicFolder: "public",
+  },
+  server: {
+    allowedOrigins: ["private", "http://cms-lad.s.abu.lan"],
   },
   media: {
     tina: {

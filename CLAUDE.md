@@ -68,5 +68,6 @@ pnpm tina:build
 ## Local Dev Notes
 
 - Run `pnpm workers:dev` and `pnpm dev` in separate terminals
+- Run `pnpm tina:dev` separately when you need the local Tina admin/backend
 - Vite proxies `/api/content/*` to the local Worker on `127.0.0.1:8787`
-- `pnpm tina:dev` remains available for local editing flows
+- `pnpm tina:dev` no longer starts the Vite frontend as a child process

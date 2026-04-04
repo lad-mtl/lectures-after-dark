@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const TINA_API_URL = "/api/tina/gql";
+const CONTENT_API_BASE = "/api/content";
 
 export interface SpeakerData {
   id: string;
@@ -33,15 +33,14 @@ export interface FaqData {
   items?: (FaqItem | null)[] | null;
 }
 
-async function tinaQuery<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
-  const res = await fetch(TINA_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!res.ok) throw new Error(`TinaCMS query failed: ${res.status}`);
-  const json = await res.json();
-  return json.data;
+async function fetchContent<T>(resource: string): Promise<T> {
+  const res = await fetch(`${CONTENT_API_BASE}/${resource}`);
+
+  if (!res.ok) {
+    throw new Error(`Content request failed: ${res.status}`);
+  }
+
+  return res.json() as Promise<T>;
 }
 
 export function useSpeakers() {
@@ -49,31 +48,9 @@ export function useSpeakers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    tinaQuery<{ speakerConnection: { edges: { node: SpeakerData }[] } }>(
-      `query {
-        speakerConnection {
-          edges {
-            node {
-              id
-              name
-              topic
-              bio
-              image
-              twitter
-              linkedin
-              website
-              order
-            }
-          }
-        }
-      }`
-    )
+    fetchContent<SpeakerData[]>("speakers")
       .then((data) => {
-        const nodes = data.speakerConnection.edges
-          .map((edge) => edge.node)
-          .filter(Boolean)
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        setSpeakers(nodes);
+        setSpeakers(data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -87,29 +64,9 @@ export function useVenues() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    tinaQuery<{ venueConnection: { edges: { node: VenueData }[] } }>(
-      `query {
-        venueConnection {
-          edges {
-            node {
-              id
-              name
-              neighborhood
-              description
-              imageUrl
-              mapsLink
-              order
-            }
-          }
-        }
-      }`
-    )
+    fetchContent<VenueData[]>("venues")
       .then((data) => {
-        const nodes = data.venueConnection.edges
-          .map((edge) => edge.node)
-          .filter(Boolean)
-          .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-        setVenues(nodes);
+        setVenues(data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -123,18 +80,9 @@ export function useFaq() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    tinaQuery<{ faq: FaqData }>(
-      `query {
-        faq(relativePath: "faq.json") {
-          items {
-            question
-            answer
-          }
-        }
-      }`
-    )
+    fetchContent<FaqData>("faq")
       .then((data) => {
-        setFaq(data.faq);
+        setFaq(data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));

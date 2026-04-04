@@ -7,5 +7,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["./**/*.ts", "../tina/**/*.ts"]
+  "include": ["./**/*.ts"]
 }

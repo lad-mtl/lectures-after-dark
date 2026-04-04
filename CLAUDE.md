@@ -1,58 +1,72 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This repository has two runtime pieces:
 
-## Project Overview
+- `src/`: React + Vite marketing site
+- `worker/`: Cloudflare Worker that serves the SPA and proxies public Tina reads
 
-Lectures After Dark is an event platform. Built with React + TypeScript + Vite, TinaCMS (self-hosted) for content management, and Tailwind CSS for styling.
+TinaCMS remains the content system, but it is expected to run as a separate service in production.
 
 ## Common Commands
 
 ```bash
-pnpm dev          # Start Vite dev server
-pnpm tina:dev     # Start Vite + TinaCMS dev server (enables content editing)
-pnpm tina:build   # Build TinaCMS (generates types + admin UI)
-pnpm build        # TypeScript check + Vite production build
-pnpm lint         # Run ESLint
-pnpm lint:fix     # Fix ESLint issues (--max-warnings 0)
-pnpm type-check   # TypeScript checking only
-pnpm check        # Full validation: lint:fix + type-check + build
-pnpm workers:dev  # Start Cloudflare Workers local dev server
-pnpm workers:deploy # Deploy to Cloudflare Workers
+pnpm install
+pnpm dev
+pnpm build
+pnpm type-check
+pnpm workers:dev
+pnpm workers:deploy
+pnpm tina:dev
+pnpm tina:build
 ```
-
-## Environment Variables
-
-- `GITHUB_OWNER`, `GITHUB_REPO`, `GITHUB_BRANCH` — GitHub repo details for TinaCMS git provider
-- `GITHUB_PERSONAL_ACCESS_TOKEN` — GitHub PAT for TinaCMS content commits
-- `KV_REST_API_URL`, `KV_REST_API_TOKEN` — Upstash Redis for TinaCMS database
-- `NEXTAUTH_SECRET` — Auth.js secret for TinaCMS production auth
 
 ## Architecture
 
-### Routing
+### Frontend
 
-React Router in `src/App.tsx`. Pages: `/`, `/speakers`, `/bars`, `/about`, `/contact`, `/sponsors`.
+- React Router lives in `src/App.tsx`
+- Content hooks live in `src/hooks/useTinaContent.ts`
+- The browser reads content from `/api/content/*`
 
-### TinaCMS (Content Management)
+### Worker
 
-TinaCMS (self-hosted) manages structured content: speakers, venues, and FAQ. Content lives as JSON files in `content/` and is edited via the TinaCMS admin UI at `/admin/index.html`.
+- Entry: `worker/index.ts`
+- Tina proxy + stale fallback logic: `worker/content.ts`
+- Public routes:
+  - `/api/content/speakers`
+  - `/api/content/venues`
+  - `/api/content/faq`
+- On Tina success, the Worker refreshes KV snapshots
+- On Tina timeout/failure, the Worker serves the last cached snapshot if available
 
-- **Config:** `tina/config.ts` defines three collections (speaker, venue, faq)
-- **Database:** `tina/database.ts` — uses local filesystem in dev, Vercel KV (Upstash Redis) in production
-- **Generated types:** `tina/__generated__/` — auto-generated client and TypeScript types (do not edit)
-- **Content files:** `content/speakers/*.json`, `content/venues/*.json`, `content/faq/faq.json`
-- **Data hooks:** `src/hooks/useTinaContent.ts` — `useSpeakers()`, `useVenues()`, `useFaq()` fetch content from TinaCMS GraphQL API
-- **Backend API:** `worker/tina-handler.ts` — Cloudflare Worker handler for production TinaCMS backend
-- **Worker entry:** `worker/index.ts` — routes API requests, serves static assets, SPA fallback
-- **Vite proxy:** `/api/tina/gql` proxied to `http://localhost:4001/graphql` during dev
+### Tina
 
-Components are pure presentational. `SpeakerCard` and `BarCard` receive data from TinaCMS via list components (`SpeakersList`, `BarsList`). FAQ fetches its items via `useFaq()`.
+- Tina schema/config lives in `tina/`
+- Content remains file-backed under `content/`
+- Local Tina authoring still uses `pnpm tina:dev`
+- Production public reads should come through the Worker proxy, not from the browser directly to Tina
 
-### Tailwind Theme
+## Required Environment
 
-Custom design tokens in `tailwind.config.js`: color palette (midnight, warm-brown, amber, cream, gold), custom fonts (headline, serif, body), card shadows, and section spacing.
+### Worker
 
-### Build Optimization
+- `TINA_CONTENT_API_URL`
+- `TINA_CONTENT_API_TOKEN` (optional)
+- `TINA_TIMEOUT_MS` (optional)
+- `CONTENT_CACHE` KV binding
 
-Vite config splits vendor into a separate chunk. React Compiler (Babel plugin) is enabled. Deployed to Cloudflare Workers with Assets binding for static file serving. Worker entry point (`worker/index.ts`) handles API routing and SPA fallback. Config in `wrangler.toml`.
+### Tina
+
+- `GITHUB_OWNER`
+- `GITHUB_REPO`
+- `GITHUB_BRANCH`
+- `GITHUB_PERSONAL_ACCESS_TOKEN`
+- `KV_REST_API_URL`
+- `KV_REST_API_TOKEN`
+- `NEXTAUTH_SECRET`
+
+## Local Dev Notes
+
+- Run `pnpm workers:dev` and `pnpm dev` in separate terminals
+- Vite proxies `/api/content/*` to the local Worker on `127.0.0.1:8787`
+- `pnpm tina:dev` remains available for local editing flows

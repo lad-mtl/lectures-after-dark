@@ -34,6 +34,10 @@ export default defineConfig({
       overlay: false, // Reduce overhead
     },
     proxy: {
+      '/api/content': {
+        target: 'http://127.0.0.1:8787',
+        changeOrigin: true,
+      },
       '/api/tina/gql': {
         target: 'http://localhost:4001',
         changeOrigin: true,

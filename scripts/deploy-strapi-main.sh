@@ -32,11 +32,19 @@ target_head="$(git rev-parse "${target_ref}")"
 current_head="$(git rev-parse HEAD)"
 worktree_dirty="$(git status --porcelain)"
 
-if [[ "${current_head}" == "${target_head}" && -z "${worktree_dirty}" ]]; then
+if [[ "${current_head}" == "${target_head}" ]]; then
+  if [[ -n "${worktree_dirty}" ]]; then
+    git reset --hard "${target_ref}"
+  fi
+
   if sudo -n "${SYSTEMCTL_BIN}" is-active --quiet "${SERVICE_NAME}"; then
     echo "Strapi is already running at ${target_ref} (${target_head})."
     exit 0
   fi
+
+  sudo -n "${SYSTEMCTL_BIN}" start "${SERVICE_NAME}"
+  sudo -n "${SYSTEMCTL_BIN}" --no-pager --full status "${SERVICE_NAME}"
+  exit 0
 fi
 
 git checkout -B "${DEPLOY_REF}" "${target_ref}"

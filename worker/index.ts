@@ -1,7 +1,7 @@
 import { handleContentRequest } from "./content";
 
 interface Env {
-  ASSETS: Fetcher;
+  ASSETS?: Fetcher;
   CONTENT_CACHE?: KVNamespace;
   STRAPI_CONTENT_API_URL: string;
   STRAPI_CONTENT_API_TOKEN?: string;
@@ -18,6 +18,12 @@ export default {
       if (contentResponse) {
         return contentResponse;
       }
+    }
+
+    if (!env.ASSETS) {
+      return new Response("Static assets binding is not configured.", {
+        status: 500,
+      });
     }
 
     // Serve static assets

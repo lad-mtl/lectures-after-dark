@@ -13,6 +13,7 @@ id = "c1817edf009b4a94ab217e3bf4131d4c"
 
 [assets]
 directory = "dist"
+binding = "ASSETS"
 
 [observability]
 enabled = false

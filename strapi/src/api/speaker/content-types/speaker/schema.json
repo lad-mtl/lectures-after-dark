@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "speakers",
+  "info": {
+    "singularName": "speaker",
+    "pluralName": "speakers",
+    "displayName": "Speaker"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "topic": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "text"
+    },
+    "image": {
+      "type": "string"
+    },
+    "twitter": {
+      "type": "string"
+    },
+    "linkedin": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

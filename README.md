@@ -1,201 +1,121 @@
 # Lectures After Dark
 
-Event platform with a visual page builder. Admins customize pages via drag-and-drop at `/admin`.
+Marketing site for Lectures After Dark.
 
-**Stack:** React 19, TypeScript, Vite, Tailwind CSS, Convex, CraftJS
+## Stack
 
-## Setup
+- Frontend: React 19 + Vite
+- Edge layer: Cloudflare Workers
+- CMS: self-hosted Strapi 5
+- Content fallback cache: Cloudflare KV
+
+## Local Development
+
+Install dependencies once:
 
 ```bash
 pnpm install
+pnpm --dir strapi install
+```
+
+Run the frontend, Worker, and Strapi in separate terminals:
+
+```bash
+pnpm strapi:dev
+pnpm workers:dev
 pnpm dev
 ```
 
-## Project Structure
+The public frontend reads content from `/api/content/*`, which Vite proxies to the local Worker. The Worker fetches Strapi content server-to-server from the configured Strapi REST API and can fall back to cached snapshots from KV.
 
-```
-src/
-├── components/           # UI components (CraftJS-enabled)
-│   ├── speakers/         # Speaker page sections
-│   ├── bars/             # Bars page sections
-│   ├── about/            # About page sections
-│   ├── sponsors/         # Sponsors page sections
-│   ├── settings/         # Shared settings panel styles
-│   └── ui/               # Generic UI primitives
-├── pages/                # Route pages
-│   ├── Admin.tsx         # Editor interface
-│   └── Home.tsx          # Public home page
-├── hooks/                # Shared hooks
-│   └── useEditorAwareNode.ts
-├── constants/            # App constants
-└── contexts/             # React contexts
+## Worker Setup
 
-convex/
-└── pages.ts              # Database queries/mutations for page layouts
+The Worker expects these secrets/bindings:
+
+- `STRAPI_CONTENT_API_URL`: Strapi REST API base URL used for public read queries
+- `STRAPI_CONTENT_API_TOKEN`: optional bearer token if your Strapi host protects reads
+- `STRAPI_TIMEOUT_MS`: optional upstream timeout override
+- `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
+
+For a local Strapi instance, use:
+
+```env
+STRAPI_CONTENT_API_URL=http://127.0.0.1:1337/api
 ```
 
-## How CraftJS Works
+For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinheiro/projects/lectures-after-dark/.dev.vars) automatically. The repo includes a local default and a copyable example:
 
-CraftJS provides drag-and-drop editing. The system has two contexts:
-
-| Context | Location | Editor State | Components Are |
-|---------|----------|--------------|----------------|
-| Admin   | `/admin` | `enabled={true}` (default) | Draggable, editable |
-| Public  | `/`, etc | `enabled={false}` | Static, read-only |
-
-### The Editor Wrapper
-
-Pages wrap content in `<Editor>` with a component resolver:
-
-```tsx
-// Admin.tsx - editing enabled
-<Editor resolver={{ Hero, FAQ, ... }}>
-  <MigratingFrame json={savedLayout}>
-    <Element is="div" canvas>
-      <Hero />
-      <FAQ />
-    </Element>
-  </MigratingFrame>
-</Editor>
-
-// Home.tsx - editing disabled (public view)
-<Editor enabled={false} resolver={{ Hero, FAQ, ... }}>
-  ...
-</Editor>
+```bash
+cp .dev.vars.example .dev.vars
 ```
 
-- **resolver**: Maps component names to implementations (required for deserialization)
-- **MigratingFrame**: Loads saved JSON from Convex, merges with current component defaults
-- **Element with canvas**: Creates a drop zone where components can be reordered
+Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
 
-## Convex Persistence
+## Strapi Setup
 
-Convex stores page layouts as JSON strings in a `pages` table:
+Seed data still lives in:
 
-```
-pages: { slug: "home", layout: "{...serialized CraftJS state...}" }
-```
+- `content/speakers/*.json`
+- `content/venues/*.json`
+- `content/faq/faq.json`
 
-- `getPage(slug)` - Fetch layout for a page
-- `savePage(slug, layout)` - Save/update layout
-- Admin saves trigger `savePage`; public pages call `getPage` on load
+The Strapi app lives in:
 
-## Editing Existing Sections
+- `strapi/`
 
-Each component has a settings panel. To modify what's editable:
+Build and seed it with:
 
-1. Find the component in `src/components/`
-2. The `ComponentSettings` function defines the settings UI
-3. Add/remove form fields and wire them to `setProp`
-
-```tsx
-// In the settings component
-const { actions: { setProp }, title } = useNode((node) => ({
-    title: node.data.props.title,
-}));
-
-// Add a new field
-<input
-    value={title}
-    onChange={e => setProp((p: Props) => p.title = e.target.value)}
-/>
+```bash
+pnpm strapi:build
+pnpm strapi:seed
 ```
 
-## Adding New Sections
+The local admin is available at `http://127.0.0.1:1337/admin`.
 
-### 1. Create the Component
+Strapi requires Node `20` through `24`. If you are using SQLite locally, make sure `better-sqlite3` is built under that supported Node runtime.
 
-```tsx
-// src/components/MySection.tsx
-import { useNode } from '@craftjs/core';
-import { settingsStyles } from './settings/settingsStyles';
+## Commands
 
-interface MySectionProps {
-    heading?: string;
-}
-
-export const MySection = ({ heading = "Default Heading" }: MySectionProps) => {
-    const { connectors: { connect, drag } } = useNode();
-
-    return (
-        <section ref={(ref) => ref && connect(drag(ref))}>
-            <h2>{heading}</h2>
-        </section>
-    );
-};
-
-// Settings panel for the admin sidebar
-const MySectionSettings = () => {
-    const { actions: { setProp }, heading } = useNode((node) => ({
-        heading: node.data.props.heading,
-    }));
-
-    return (
-        <div style={settingsStyles.field}>
-            <label style={settingsStyles.label}>Heading</label>
-            <input
-                style={settingsStyles.input}
-                value={heading}
-                onChange={e => setProp((p: MySectionProps) => p.heading = e.target.value)}
-            />
-        </div>
-    );
-};
-
-// CraftJS configuration
-(MySection as any).craft = {
-    props: { heading: "Default Heading" },      // Default values
-    related: { settings: MySectionSettings },   // Settings panel
-};
+```bash
+pnpm dev
+pnpm build
+pnpm type-check
+pnpm workers:dev
+pnpm workers:deploy
+pnpm strapi:dev
+pnpm strapi:build
+pnpm strapi:start
+pnpm strapi:seed
 ```
 
-### 2. Register in Admin.tsx
+## Public Content Endpoints
 
-```tsx
-// Add to imports
-import { MySection } from '../components/MySection';
+The frontend reads normalized content from:
 
-// Add to resolver (enables serialization/deserialization)
-const MAIN_RESOLVER = {
-    Hero, FAQ, MySection, ...
-};
+- `/api/content/speakers`
+- `/api/content/venues`
+- `/api/content/faq`
 
-// Add to page components (sets initial layout)
-const PAGE_COMPONENTS = {
-    home: (
-        <>
-            <Hero />
-            <MySection />  // Add here
-            <FAQ />
-        </>
-    ),
-};
+## Strapi systemd
+
+For an LXC or other Linux host, the repo includes a helper to install or update a `systemd` unit for Strapi:
+
+```bash
+cp .env.strapi.service.example .env.strapi.service
+sudo ./scripts/install-strapi-systemd.sh
 ```
 
-### 3. Register in Public Pages (if needed)
+The script:
 
-If the section appears on public pages, add it to that page's resolver:
+- installs dependencies unless `--skip-install` is passed
+- runs `pnpm strapi:build` unless `--skip-build` is passed
+- writes `/etc/systemd/system/lectures-after-dark-strapi.service` by default
+- enables the unit
+- starts it if stopped
+- restarts it if already running
 
-```tsx
-// src/pages/Home.tsx
-<Editor enabled={false} resolver={{ Hero, FAQ, MySection, ... }}>
+Tail logs with:
+
+```bash
+journalctl -u lectures-after-dark-strapi.service -f
 ```
-
-## Key Patterns
-
-| Pattern | Purpose |
-|---------|---------|
-| `useNode()` | Get CraftJS connectors for drag/drop |
-| `connect(drag(ref))` | Make element draggable and a drop target |
-| `.craft = { props, related }` | Define defaults and settings panel |
-| `useEditorAwareNode()` | Safe hook that works outside Editor context |
-| `settingsStyles` | Consistent styling for settings panels |
-
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Dev server |
-| `pnpm build` | Production build |
-| `pnpm type-check` | Type checking |
-| `pnpm check` | Full validation |

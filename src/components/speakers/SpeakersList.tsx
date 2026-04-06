@@ -1,6 +1,6 @@
 import styles from '../../pages/Speakers.module.css';
 import { SpeakerCard } from '../SpeakerCard';
-import { useSpeakers } from '../../hooks/useTinaContent';
+import { useSpeakers } from '../../hooks/useContent';
 
 interface SpeakersListProps {
     title?: string;
@@ -35,7 +35,7 @@ export const SpeakersList = ({
                         ))}
                     </div>
                 ) : (
-                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No speakers yet. Add speakers in the TinaCMS admin.</p>
+                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No speakers yet. Add speakers in the Strapi admin.</p>
                 )}
             </div>
         </section>

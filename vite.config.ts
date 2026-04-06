@@ -34,10 +34,9 @@ export default defineConfig({
       overlay: false, // Reduce overhead
     },
     proxy: {
-      '/api/tina/gql': {
-        target: 'http://localhost:4001',
+      '/api/content': {
+        target: 'http://127.0.0.1:8787',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/tina\/gql/, '/graphql'),
       },
     },
   },

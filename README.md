@@ -119,3 +119,35 @@ Tail logs with:
 ```bash
 journalctl -u lectures-after-dark-strapi.service -f
 ```
+
+## Automated Strapi Deploys
+
+The repo includes a host-local auto-deploy path for `main`, which avoids inbound SSH from CI.
+
+Use these scripts on the Strapi host:
+
+- [`scripts/deploy-strapi-main.sh`](/Users/augusto.pinheiro/projects/lectures-after-dark/scripts/deploy-strapi-main.sh)
+- [`scripts/install-strapi-autodeploy.sh`](/Users/augusto.pinheiro/projects/lectures-after-dark/scripts/install-strapi-autodeploy.sh)
+
+Recommended setup:
+
+1. Clone this repo into a dedicated deployment checkout on the Strapi host.
+2. Make sure that checkout can run `git fetch origin main` non-interactively.
+This can be HTTPS + credential helper or a GitHub deploy key.
+3. Install the main Strapi service with [`scripts/install-strapi-systemd.sh`](/Users/augusto.pinheiro/projects/lectures-after-dark/scripts/install-strapi-systemd.sh).
+4. Allow the deploy user to restart the Strapi service without an interactive password prompt.
+5. Install the auto-deploy timer:
+
+```bash
+sudo ./scripts/install-strapi-autodeploy.sh --repo-root /path/to/lectures-after-dark
+```
+
+The timer checks `origin/main` every 2 minutes by default. When it sees a new commit, it resets the deployment checkout to `origin/main`, installs dependencies, rebuilds `strapi/`, and restarts the `lectures-after-dark-strapi` service.
+
+Because the deploy script uses a hard reset, the remote checkout should be used only for deployment.
+
+Example `sudoers` entry for the deploy user:
+
+```sudoers
+deployuser ALL=NOPASSWD: /usr/bin/systemctl restart lectures-after-dark-strapi, /usr/bin/systemctl status lectures-after-dark-strapi, /usr/bin/systemctl is-active lectures-after-dark-strapi
+```

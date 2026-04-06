@@ -11,6 +11,9 @@ importers:
       '@strapi/plugin-users-permissions':
         specifier: 5.41.1
         version: 5.41.1(663d00739b7cd1a1eb267d57b4a2b0fe)
+      '@strapi/provider-email-nodemailer':
+        specifier: 5.41.1
+        version: 5.41.1
       '@strapi/strapi':
         specifier: 5.41.1
         version: 5.41.1(@babel/runtime@7.29.2)(@codemirror/autocomplete@6.20.1)(@codemirror/language@6.12.3)(@codemirror/lint@6.9.5)(@codemirror/search@6.6.0)(@codemirror/state@6.6.0)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.41.0)(@emotion/is-prop-valid@1.4.0)(@swc/helpers@0.5.21)(@types/hoist-non-react-statics@3.3.7(@types/react@18.3.28))(@types/node@20.19.39)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(better-sqlite3@12.8.0)(codemirror@5.65.21)(esbuild@0.25.12)(koa@2.16.4)(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(redux@4.2.1)(styled-components@6.3.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.46.1)(type-fest@4.41.0)
@@ -1979,6 +1982,10 @@ packages:
       react-dom: ^17.0.0 || ^18.0.0
       react-router-dom: ^6.30.3
       styled-components: ^6.0.0
+
+  '@strapi/provider-email-nodemailer@5.41.1':
+    resolution: {integrity: sha512-UBeP7Ba4pGYSeXOVqmWM9ra7VcAO0fCEstX9qnazeOF8NZ6+FitrcGrgSTe8K5wLuEpL6rmnrICkUlnVY8R3eQ==}
+    engines: {node: '>=20.0.0 <=24.x.x', npm: '>=6.0.0'}
 
   '@strapi/provider-email-sendmail@5.41.1':
     resolution: {integrity: sha512-wEWO8soqsgDu+ZX1xZkxcLqJGLdMfA/sGTn6lumnQrVfQjG+zpLRaoRkX9137JQT1aNqPAhBIQla0+WCxMkH3A==}
@@ -4739,6 +4746,10 @@ packages:
 
   nodemailer-shared@1.1.0:
     resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
+
+  nodemailer@8.0.1:
+    resolution: {integrity: sha512-5kcldIXmaEjZcHR6F28IKGSgpmZHaF1IXLWFTG+Xh3S+Cce4MiakLtWY+PlBU69fLbRa8HlaGIrC/QolUpHkhg==}
+    engines: {node: '>=6.0.0'}
 
   nodemon@3.0.2:
     resolution: {integrity: sha512-9qIN2LNTrEzpOPBaWHTm4Asy1LxXLSickZStAQ4IZe7zsoIpD/A7LWxhZV3t4Zu352uBcqVnRsDXSMR2Sc3lTA==}
@@ -8750,6 +8761,10 @@ snapshots:
       - supports-color
       - typescript
 
+  '@strapi/provider-email-nodemailer@5.41.1':
+    dependencies:
+      nodemailer: 8.0.1
+
   '@strapi/provider-email-sendmail@5.41.1':
     dependencies:
       '@strapi/utils': 5.41.1
@@ -12047,6 +12062,8 @@ snapshots:
   nodemailer-shared@1.1.0:
     dependencies:
       nodemailer-fetch: 1.6.0
+
+  nodemailer@8.0.1: {}
 
   nodemon@3.0.2:
     dependencies:

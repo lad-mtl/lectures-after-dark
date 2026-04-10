@@ -46,8 +46,8 @@ const Contact: React.FC = () => {
                             <p className={styles.infoText}>
                                 For questions about tickets, events, or general information.
                             </p>
-                            <a href="mailto:hello@lecturesafterdark.ca" className={styles.infoLink}>
-                                hello@lecturesafterdark.ca
+                            <a href="mailto:core@lecturesafterdark.ca" className={styles.infoLink}>
+                                core@lecturesafterdark.ca
                             </a>
                         </div>
 
@@ -59,8 +59,8 @@ const Contact: React.FC = () => {
                             <p className={styles.infoText}>
                                 Interested in sponsoring an event or collaborating with us?
                             </p>
-                            <a href="mailto:partners@lecturesafterdark.ca" className={styles.infoLink}>
-                                partners@lecturesafterdark.ca
+                            <a href="mailto:marketing@lecturesafterdark.ca" className={styles.infoLink}>
+                                marketing@lecturesafterdark.ca
                             </a>
                         </div>
 

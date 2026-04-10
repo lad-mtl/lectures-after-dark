@@ -7,12 +7,16 @@ import { NAVBAR_SCROLL_THRESHOLD_PERCENT } from '../constants';
 
 const Navbar: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
+    const [isHoverPreviewVisible, setIsHoverPreviewVisible] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
+    const isHomePage = location.pathname === '/';
+    const shouldShowNav = isVisible || isHoverPreviewVisible || isMobileMenuOpen;
+    const shouldEnableHoverPreview = isHomePage && !isVisible && !isMobileMenuOpen;
 
     useEffect(() => {
         const handleScroll = () => {
-            if (location.pathname !== '/') {
+            if (!isHomePage) {
                 setIsVisible(true);
                 return;
             }
@@ -30,13 +34,14 @@ const Navbar: React.FC = () => {
 
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [location.pathname]);
+    }, [isHomePage]);
 
     // Close mobile menu when route changes
     useEffect(() => {
         // Wrap in setTimeout to avoid synchronous state update warning during render phase
         const timer = setTimeout(() => {
             setIsMobileMenuOpen(false);
+            setIsHoverPreviewVisible(false);
         }, 0);
         return () => clearTimeout(timer);
     }, [location.pathname]);
@@ -63,7 +68,20 @@ const Navbar: React.FC = () => {
 
     return (
         <>
-            <nav className={`${styles.nav} ${isVisible ? styles.navVisible : ''}`}>
+            {shouldEnableHoverPreview && (
+                <div
+                    className={styles.hoverTrigger}
+                    aria-hidden="true"
+                    onMouseEnter={() => setIsHoverPreviewVisible(true)}
+                    onMouseLeave={() => setIsHoverPreviewVisible(false)}
+                />
+            )}
+
+            <nav
+                className={`${styles.nav} ${shouldShowNav ? styles.navVisible : ''}`}
+                onMouseEnter={() => setIsHoverPreviewVisible(true)}
+                onMouseLeave={() => setIsHoverPreviewVisible(false)}
+            >
                 <div className={styles.container}>
                     <NavLink to="/" className={styles.logo}>
                         <img

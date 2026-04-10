@@ -24,6 +24,13 @@ export interface VenueData {
   order?: number | null;
 }
 
+export interface PageCtaContent {
+  ctaTitle?: string | null;
+  ctaDescription?: string | null;
+  ctaButtonText?: string | null;
+  ctaButtonLink?: string | null;
+}
+
 export interface FaqItem {
   question: string;
   answer?: string | null;
@@ -106,6 +113,38 @@ export function useVenues() {
   }, []);
 
   return { venues, loading };
+}
+
+export function useSpeakerPageContent() {
+  const [pageContent, setPageContent] = useState<PageCtaContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent<PageCtaContent>("speaker-page")
+      .then((data) => {
+        setPageContent(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { pageContent, loading };
+}
+
+export function useVenuePageContent() {
+  const [pageContent, setPageContent] = useState<PageCtaContent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent<PageCtaContent>("venue-page")
+      .then((data) => {
+        setPageContent(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { pageContent, loading };
 }
 
 export function useFaq() {

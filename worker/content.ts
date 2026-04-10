@@ -29,6 +29,13 @@ export interface VenueData {
   order?: number | null;
 }
 
+export interface PageCtaContent {
+  ctaTitle?: string | null;
+  ctaDescription?: string | null;
+  ctaButtonText?: string | null;
+  ctaButtonLink?: string | null;
+}
+
 export interface FaqData {
   items?: Array<{
     question: string;
@@ -509,6 +516,48 @@ const resources = {
       return (data.data ?? [])
         .map((node) => normalizeStrapiEntity(node))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    },
+  },
+  "/api/content/speaker-page": {
+    cacheKey: "content:speaker-page",
+    pathname:
+      "/speaker-page?fields[0]=ctaTitle&fields[1]=ctaDescription&fields[2]=ctaButtonText&fields[3]=ctaButtonLink",
+    normalize: (payload: unknown) => {
+      const data = payload as { data?: StrapiEntity<PageCtaContent> | null };
+      const entity = data.data;
+
+      if (!entity) {
+        return {};
+      }
+
+      const page = entity.attributes ?? entity;
+      return {
+        ctaTitle: page.ctaTitle ?? null,
+        ctaDescription: page.ctaDescription ?? null,
+        ctaButtonText: page.ctaButtonText ?? null,
+        ctaButtonLink: page.ctaButtonLink ?? null,
+      };
+    },
+  },
+  "/api/content/venue-page": {
+    cacheKey: "content:venue-page",
+    pathname:
+      "/venue-page?fields[0]=ctaTitle&fields[1]=ctaDescription&fields[2]=ctaButtonText&fields[3]=ctaButtonLink",
+    normalize: (payload: unknown) => {
+      const data = payload as { data?: StrapiEntity<PageCtaContent> | null };
+      const entity = data.data;
+
+      if (!entity) {
+        return {};
+      }
+
+      const page = entity.attributes ?? entity;
+      return {
+        ctaTitle: page.ctaTitle ?? null,
+        ctaDescription: page.ctaDescription ?? null,
+        ctaButtonText: page.ctaButtonText ?? null,
+        ctaButtonLink: page.ctaButtonLink ?? null,
+      };
     },
   },
   "/api/content/faq": {

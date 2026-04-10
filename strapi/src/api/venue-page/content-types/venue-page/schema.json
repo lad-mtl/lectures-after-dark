@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "venue_pages",
+  "info": {
+    "singularName": "venue-page",
+    "pluralName": "venue-pages",
+    "displayName": "Venue Page"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ctaTitle": {
+      "type": "string"
+    },
+    "ctaDescription": {
+      "type": "text"
+    },
+    "ctaButtonText": {
+      "type": "string"
+    },
+    "ctaButtonLink": {
+      "type": "string"
+    }
+  }
+}

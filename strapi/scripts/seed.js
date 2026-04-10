@@ -73,6 +73,48 @@ async function seedFaq(strapi) {
   return "created";
 }
 
+async function seedSpeakerPage(strapi) {
+  const speakerPagePath = path.join(repoRoot, "content", "speaker-page", "speaker-page.json");
+  const data = readJson(speakerPagePath);
+  const existing = await strapi.db
+    .query("api::speaker-page.speaker-page")
+    .findOne({ where: {} });
+
+  if (existing) {
+    await strapi.entityService.update("api::speaker-page.speaker-page", existing.id, {
+      data,
+    });
+
+    return "updated";
+  }
+
+  await strapi.entityService.create("api::speaker-page.speaker-page", {
+    data,
+  });
+  return "created";
+}
+
+async function seedVenuePage(strapi) {
+  const venuePagePath = path.join(repoRoot, "content", "venue-page", "venue-page.json");
+  const data = readJson(venuePagePath);
+  const existing = await strapi.db
+    .query("api::venue-page.venue-page")
+    .findOne({ where: {} });
+
+  if (existing) {
+    await strapi.entityService.update("api::venue-page.venue-page", existing.id, {
+      data,
+    });
+
+    return "updated";
+  }
+
+  await strapi.entityService.create("api::venue-page.venue-page", {
+    data,
+  });
+  return "created";
+}
+
 async function seedTeamMembers(strapi) {
   const teamMembersDir = path.join(repoRoot, "content", "team-members");
   const files = fs.existsSync(teamMembersDir)
@@ -100,6 +142,8 @@ async function main() {
     const speakers = await seedSpeakers(strapi);
     const venues = await seedVenues(strapi);
     const faq = await seedFaq(strapi);
+    const speakerPage = await seedSpeakerPage(strapi);
+    const venuePage = await seedVenuePage(strapi);
     const teamMembers = await seedTeamMembers(strapi);
 
     console.log(
@@ -108,6 +152,8 @@ async function main() {
           speakers,
           venues,
           faq,
+          speakerPage,
+          venuePage,
           teamMembers,
         },
         null,

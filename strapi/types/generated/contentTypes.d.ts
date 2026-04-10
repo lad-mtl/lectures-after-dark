@@ -490,6 +490,71 @@ export interface ApiSpeakerSpeaker extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSpeakerPageSpeakerPage extends Struct.SingleTypeSchema {
+  collectionName: 'speaker_pages';
+  info: {
+    displayName: 'Speaker Page';
+    pluralName: 'speaker-pages';
+    singularName: 'speaker-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctaButtonLink: Schema.Attribute.String;
+    ctaButtonText: Schema.Attribute.String;
+    ctaDescription: Schema.Attribute.Text;
+    ctaTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::speaker-page.speaker-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
+  collectionName: 'team_members';
+  info: {
+    displayName: 'Team Member';
+    pluralName: 'team-members';
+    singularName: 'team-member';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    image: Schema.Attribute.String;
+    linkText: Schema.Attribute.String;
+    linkUrl: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::team-member.team-member'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
   collectionName: 'venues';
   info: {
@@ -513,6 +578,37 @@ export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     neighborhood: Schema.Attribute.String & Schema.Attribute.Required;
     order: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVenuePageVenuePage extends Struct.SingleTypeSchema {
+  collectionName: 'venue_pages';
+  info: {
+    displayName: 'Venue Page';
+    pluralName: 'venue-pages';
+    singularName: 'venue-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctaButtonLink: Schema.Attribute.String;
+    ctaButtonText: Schema.Attribute.String;
+    ctaDescription: Schema.Attribute.Text;
+    ctaTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::venue-page.venue-page'
+    > &
+      Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1032,7 +1128,10 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::faq.faq': ApiFaqFaq;
+      'api::speaker-page.speaker-page': ApiSpeakerPageSpeakerPage;
       'api::speaker.speaker': ApiSpeakerSpeaker;
+      'api::team-member.team-member': ApiTeamMemberTeamMember;
+      'api::venue-page.venue-page': ApiVenuePageVenuePage;
       'api::venue.venue': ApiVenueVenue;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

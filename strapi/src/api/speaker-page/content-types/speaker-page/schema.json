@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "speaker_pages",
+  "info": {
+    "singularName": "speaker-page",
+    "pluralName": "speaker-pages",
+    "displayName": "Speaker Page"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ctaTitle": {
+      "type": "string"
+    },
+    "ctaDescription": {
+      "type": "text"
+    },
+    "ctaButtonText": {
+      "type": "string"
+    },
+    "ctaButtonLink": {
+      "type": "string"
+    }
+  }
+}

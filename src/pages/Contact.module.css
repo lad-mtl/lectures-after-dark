@@ -121,6 +121,13 @@
     min-height: 48px;
 }
 
+.input:disabled,
+.textarea:disabled,
+.submitBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .input:focus,
 .textarea:focus {
     outline: none;
@@ -154,6 +161,20 @@
     background-color: #c44623;
     /* Slightly darker amber */
     transform: translateY(-2px);
+}
+
+.statusMessage {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.statusSuccess {
+    color: #9fd8a7;
+}
+
+.statusError {
+    color: #ffb199;
 }
 
 /* Small phones */

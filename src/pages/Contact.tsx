@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import styles from './Contact.module.css';
 import { Mail, MapPin, MessageSquare } from 'lucide-react';
 
+type InquiryType = 'general' | 'partnerships';
+
 const Contact: React.FC = () => {
     const [formData, setFormData] = useState({
+        inquiryType: 'general' as InquiryType,
         name: '',
         email: '',
         subject: '',
         message: ''
     });
+    const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+    const [statusMessage, setStatusMessage] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -18,12 +23,39 @@ const Contact: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission logic here
-        console.log('Form submitted:', formData);
-        alert('Thank you for your message. We will get back to you shortly.');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setSubmitState('submitting');
+        setStatusMessage('');
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json() as { error?: string };
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Unable to send your message right now.');
+            }
+
+            setSubmitState('success');
+            setStatusMessage('Thanks. Your message has been sent.');
+            setFormData({
+                inquiryType: 'general',
+                name: '',
+                email: '',
+                subject: '',
+                message: ''
+            });
+        } catch (error) {
+            setSubmitState('error');
+            setStatusMessage(error instanceof Error ? error.message : 'Unable to send your message right now.');
+        }
     };
 
     return (
@@ -78,6 +110,21 @@ const Contact: React.FC = () => {
                     <div className={styles.formSection}>
                         <form onSubmit={handleSubmit}>
                             <div className={styles.formGroup}>
+                                <label htmlFor="inquiryType" className={styles.label}>Inquiry Type</label>
+                                <select
+                                    id="inquiryType"
+                                    name="inquiryType"
+                                    value={formData.inquiryType}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                    disabled={submitState === 'submitting'}
+                                >
+                                    <option value="general">General Inquiries</option>
+                                    <option value="partnerships">Partnerships</option>
+                                </select>
+                            </div>
+
+                            <div className={styles.formGroup}>
                                 <label htmlFor="name" className={styles.label}>Name</label>
                                 <input
                                     type="text"
@@ -86,6 +133,7 @@ const Contact: React.FC = () => {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className={styles.input}
+                                    disabled={submitState === 'submitting'}
                                     required
                                 />
                             </div>
@@ -99,6 +147,7 @@ const Contact: React.FC = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className={styles.input}
+                                    disabled={submitState === 'submitting'}
                                     required
                                 />
                             </div>
@@ -112,6 +161,7 @@ const Contact: React.FC = () => {
                                     value={formData.subject}
                                     onChange={handleChange}
                                     className={styles.input}
+                                    disabled={submitState === 'submitting'}
                                     required
                                 />
                             </div>
@@ -124,13 +174,24 @@ const Contact: React.FC = () => {
                                     value={formData.message}
                                     onChange={handleChange}
                                     className={styles.textarea}
+                                    disabled={submitState === 'submitting'}
                                     required
                                 ></textarea>
                             </div>
 
-                            <button type="submit" className={styles.submitBtn}>
-                                Send Message
+                            <button type="submit" className={styles.submitBtn} disabled={submitState === 'submitting'}>
+                                {submitState === 'submitting' ? 'Sending...' : 'Send Message'}
                             </button>
+
+                            {statusMessage && (
+                                <p
+                                    className={`${styles.statusMessage} ${submitState === 'error' ? styles.statusError : styles.statusSuccess}`}
+                                    role="status"
+                                    aria-live="polite"
+                                >
+                                    {statusMessage}
+                                </p>
+                            )}
                         </form>
                     </div>
                 </div>

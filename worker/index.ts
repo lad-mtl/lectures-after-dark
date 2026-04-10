@@ -1,4 +1,5 @@
 import { handleContentRequest } from "./content";
+import { handleContactRequest } from "./contact";
 
 interface Env {
   ASSETS?: Fetcher;
@@ -14,6 +15,10 @@ interface Env {
   INSTAGRAM_ACCESS_TOKEN?: string;
   INSTAGRAM_POSTS_LIMIT?: string;
   INSTAGRAM_TIMEOUT_MS?: string;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  CONTACT_CORE_EMAIL?: string;
+  CONTACT_MARKETING_EMAIL?: string;
 }
 
 export default {
@@ -25,6 +30,14 @@ export default {
 
       if (contentResponse) {
         return contentResponse;
+      }
+    }
+
+    if (url.pathname === "/api/contact") {
+      const contactResponse = await handleContactRequest(request, env);
+
+      if (contactResponse) {
+        return contactResponse;
       }
     }
 

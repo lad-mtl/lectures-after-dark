@@ -6,6 +6,9 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 STRAPI_CONTENT_API_URL = "https://cms.lecturesafterdark.ca/api"
 STRAPI_TIMEOUT_MS = "3000"
+RESEND_FROM_EMAIL = "Lectures After Dark <contact-form@mail.lecturesafterdark.ca>"
+CONTACT_CORE_EMAIL = "core@lecturesafterdark.ca"
+CONTACT_MARKETING_EMAIL = "marketing@lecturesafterdark.ca"
 
 [[kv_namespaces]]
 binding = "CONTENT_CACHE"

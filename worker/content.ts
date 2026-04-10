@@ -49,6 +49,15 @@ export interface EventData {
   eventbriteUrl: string;
 }
 
+export interface InstagramPostData {
+  id: string;
+  caption?: string | null;
+  imageUrl: string;
+  mediaType?: string | null;
+  permalink: string;
+  timestamp?: string | null;
+}
+
 export interface ContentEnv {
   CONTENT_CACHE?: KVNamespace;
   STRAPI_CONTENT_API_URL: string;
@@ -58,6 +67,10 @@ export interface ContentEnv {
   EVENTBRITE_PRIVATE_TOKEN?: string;
   EVENTBRITE_ORGANIZER_ID?: string;
   EVENTBRITE_TIMEOUT_MS?: string;
+  INSTAGRAM_API_BASE_URL?: string;
+  INSTAGRAM_ACCESS_TOKEN?: string;
+  INSTAGRAM_POSTS_LIMIT?: string;
+  INSTAGRAM_TIMEOUT_MS?: string;
 }
 
 type ResourceDefinition<T> = CacheableResource & {
@@ -124,10 +137,37 @@ type EventbriteEventsResponse = {
   events?: EventbriteEvent[] | null;
 };
 
+type InstagramChildMedia = {
+  media_type?: string | null;
+  media_url?: string | null;
+  thumbnail_url?: string | null;
+};
+
+type InstagramMedia = {
+  id?: number | string;
+  caption?: string | null;
+  media_type?: string | null;
+  media_url?: string | null;
+  permalink?: string | null;
+  thumbnail_url?: string | null;
+  timestamp?: string | null;
+  children?: {
+    data?: InstagramChildMedia[] | null;
+  } | null;
+};
+
+type InstagramMediaResponse = {
+  data?: InstagramMedia[] | null;
+};
+
 const DEFAULT_TIMEOUT_MS = 3000;
 const DEFAULT_EVENTBRITE_API_BASE_URL = "https://www.eventbriteapi.com/v3";
+const DEFAULT_INSTAGRAM_API_BASE_URL = "https://graph.instagram.com";
 const EVENTS_CACHE_RESOURCE: CacheableResource = {
   cacheKey: "content:events",
+};
+const INSTAGRAM_CACHE_RESOURCE: CacheableResource = {
+  cacheKey: "content:instagram",
 };
 
 function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
@@ -337,6 +377,55 @@ function getEventImageUrl(event: EventbriteEvent) {
   ];
 
   return mediaCandidates.find(Boolean) ?? null;
+}
+
+function getInstagramChildImageUrl(media: InstagramMedia) {
+  const children = media.children?.data ?? [];
+
+  for (const child of children) {
+    const imageUrl = readString(child.media_url) || readString(child.thumbnail_url);
+
+    if (imageUrl) {
+      return imageUrl;
+    }
+  }
+
+  return null;
+}
+
+function getInstagramImageUrl(media: InstagramMedia) {
+  const mediaType = readString(media.media_type).toUpperCase();
+  const mediaUrl = readString(media.media_url);
+  const thumbnailUrl = readString(media.thumbnail_url);
+
+  if (mediaType === "VIDEO") {
+    return thumbnailUrl || mediaUrl || null;
+  }
+
+  if (mediaType === "CAROUSEL_ALBUM") {
+    return mediaUrl || thumbnailUrl || getInstagramChildImageUrl(media);
+  }
+
+  return mediaUrl || thumbnailUrl || getInstagramChildImageUrl(media);
+}
+
+function normalizeInstagramMedia(media: InstagramMedia): InstagramPostData | null {
+  const imageUrl = getInstagramImageUrl(media);
+  const permalink = readString(media.permalink);
+  const mediaType = readString(media.media_type).toUpperCase() || null;
+
+  if (!imageUrl || !permalink) {
+    return null;
+  }
+
+  return {
+    id: String(media.id ?? permalink),
+    caption: readString(media.caption) || null,
+    imageUrl,
+    mediaType,
+    permalink,
+    timestamp: readString(media.timestamp) || null,
+  };
 }
 
 function isUpcomingEvent(event: EventbriteEvent, now: number) {
@@ -577,6 +666,61 @@ async function fetchFreshEvents(env: ContentEnv) {
   }
 }
 
+async function fetchFreshInstagram(env: ContentEnv) {
+  const controller = new AbortController();
+  const timeoutMs = Number(env.INSTAGRAM_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const limit = Number(env.INSTAGRAM_POSTS_LIMIT ?? "6");
+    const normalizedLimit = String(Number.isFinite(limit) && limit > 0 ? limit : 6);
+    const userAccessToken = env.INSTAGRAM_ACCESS_TOKEN?.trim();
+
+    if (!userAccessToken) {
+      throw new Error("Instagram configuration is missing.");
+    }
+
+    const baseUrl = env.INSTAGRAM_API_BASE_URL?.trim() || DEFAULT_INSTAGRAM_API_BASE_URL;
+    const url = new URL(`${baseUrl.replace(/\/+$/, "")}/me/media`);
+
+    url.searchParams.set(
+      "fields",
+      "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,media_url,thumbnail_url}",
+    );
+    url.searchParams.set("limit", normalizedLimit);
+    url.searchParams.set("access_token", userAccessToken);
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Instagram upstream returned ${response.status}`);
+    }
+
+    const body = (await response.json()) as InstagramMediaResponse;
+    const posts = (body.data ?? [])
+      .map((media) => normalizeInstagramMedia(media))
+      .filter((post): post is InstagramPostData => Boolean(post));
+
+    const fetchedAt = new Date().toISOString();
+    await writeSnapshot(env, INSTAGRAM_CACHE_RESOURCE, posts, fetchedAt);
+
+    return jsonResponse(posts, {
+      headers: {
+        "x-content-source": "live",
+        "x-content-fetched-at": fetchedAt,
+      },
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function handleContentRequest(request: Request, env: ContentEnv) {
   const pathname = new URL(request.url).pathname;
 
@@ -599,6 +743,30 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
 
       return jsonResponse(
         { error: "Eventbrite content is unavailable and no cached fallback exists." },
+        { status: 503 },
+      );
+    }
+  }
+
+  if (pathname === "/api/content/instagram") {
+    try {
+      return await fetchFreshInstagram(env);
+    } catch (error) {
+      const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
+
+      if (snapshot) {
+        return jsonResponse(snapshot.data, {
+          headers: {
+            "x-content-source": "stale-cache",
+            "x-content-fetched-at": snapshot.fetchedAt,
+            "x-content-fallback-reason":
+              error instanceof Error ? error.message : "instagram-unreachable",
+          },
+        });
+      }
+
+      return jsonResponse(
+        { error: "Instagram content is unavailable and no cached fallback exists." },
         { status: 503 },
       );
     }

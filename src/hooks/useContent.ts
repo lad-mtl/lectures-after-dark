@@ -46,6 +46,15 @@ export interface EventData {
   eventbriteUrl: string;
 }
 
+export interface InstagramPostData {
+  id: string;
+  caption?: string | null;
+  imageUrl: string;
+  mediaType?: string | null;
+  permalink: string;
+  timestamp?: string | null;
+}
+
 async function fetchContent<T>(resource: string): Promise<T> {
   const response = await fetch(`${CONTENT_API_BASE}/${resource}`);
 
@@ -118,4 +127,20 @@ export function useEvents() {
   }, []);
 
   return { events, loading };
+}
+
+export function useInstagramPosts() {
+  const [posts, setPosts] = useState<InstagramPostData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent<InstagramPostData[]>("instagram")
+      .then((data) => {
+        setPosts(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { posts, loading };
 }

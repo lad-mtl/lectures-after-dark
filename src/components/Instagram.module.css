@@ -24,6 +24,11 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
+    align-items: start;
+}
+
+.postCard {
+    display: block;
 }
 
 .imageWrapper {
@@ -32,23 +37,104 @@
     position: relative;
     overflow: hidden;
     cursor: pointer;
+    display: block;
+    border-radius: 0.75rem;
 }
 
 .imageWrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
     opacity: 0.7;
+    filter: brightness(0.82);
 }
 
 .imageWrapper:hover img {
     transform: scale(1.1);
     opacity: 1;
+    filter: brightness(1.08);
+}
+
+.postType {
+    position: absolute;
+    top: 0.75rem;
+    z-index: 1;
+    padding: 0.35rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(15, 13, 10, 0.78);
+    color: white;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    backdrop-filter: blur(8px);
+}
+
+.postType {
+    left: 0.75rem;
+}
+
+.captionOverlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 3.8rem 0.85rem 0.75rem;
+    background: linear-gradient(180deg, rgba(15, 13, 10, 0) 10%, rgba(15, 13, 10, 0.58) 100%);
+}
+
+.caption {
+    font-family: var(--font-body);
+    color: rgba(255, 255, 255, 0.74);
+    font-size: 0.74rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+    text-align: left;
+}
+
+.skeleton {
+    background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.06) 25%, rgba(0, 0, 0, 0.12) 50%, rgba(0, 0, 0, 0.06) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.emptyState {
+    grid-column: 1 / -1;
+    padding: 2rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.emptyState p {
+    margin-bottom: 0.75rem;
+    color: var(--warm-brown);
+}
+
+.emptyState a {
+    font-family: var(--font-body);
+    color: var(--midnight);
+    text-decoration: underline;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 @media (max-width: 768px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .caption {
+        font-size: 0.72rem;
     }
 }

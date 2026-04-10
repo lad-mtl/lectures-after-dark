@@ -39,6 +39,10 @@ The Worker expects these secrets/bindings:
 - `EVENTBRITE_PRIVATE_TOKEN`: Eventbrite private token used for server-side event reads
 - `EVENTBRITE_ORGANIZER_ID`: Eventbrite organizer/account ID to read upcoming events from
 - `EVENTBRITE_TIMEOUT_MS`: optional Eventbrite upstream timeout override
+- `INSTAGRAM_API_BASE_URL`: optional Instagram API base URL, defaults to `https://graph.instagram.com`
+- `INSTAGRAM_ACCESS_TOKEN`: Instagram user access token used for basic media reads
+- `INSTAGRAM_POSTS_LIMIT`: optional number of latest posts to request
+- `INSTAGRAM_TIMEOUT_MS`: optional Instagram upstream timeout override
 - `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
 
 For a local Strapi instance, use:
@@ -55,6 +59,7 @@ cp .dev.vars.example .dev.vars
 
 Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
 Eventbrite requests also flow through the Worker so the private token never reaches the browser.
+Instagram requests also flow through the Worker so the access token never reaches the browser. The site uses only the basic Instagram access-token flow, so it renders fields that are available from that endpoint.
 
 ## Strapi Setup
 
@@ -101,6 +106,7 @@ The frontend reads normalized content from:
 - `/api/content/venues`
 - `/api/content/faq`
 - `/api/content/events`
+- `/api/content/instagram`
 
 ## Strapi systemd
 

@@ -10,6 +10,10 @@ interface Env {
   EVENTBRITE_PRIVATE_TOKEN?: string;
   EVENTBRITE_ORGANIZER_ID?: string;
   EVENTBRITE_TIMEOUT_MS?: string;
+  INSTAGRAM_API_BASE_URL?: string;
+  INSTAGRAM_ACCESS_TOKEN?: string;
+  INSTAGRAM_POSTS_LIMIT?: string;
+  INSTAGRAM_TIMEOUT_MS?: string;
 }
 
 export default {

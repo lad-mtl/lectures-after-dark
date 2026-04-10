@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
+import { INSTAGRAM_PROFILE_URL } from '../constants';
 
 const Footer: React.FC = () => {
     return (
@@ -32,8 +33,11 @@ const Footer: React.FC = () => {
                     <div className={styles.col}>
                         <h4>Connect</h4>
                         <ul>
-                            <li><a href="#">Instagram</a></li>
-                            <li><a href="#">Twitter</a></li>
+                            <li>
+                                <a href={INSTAGRAM_PROFILE_URL} target="_blank" rel="noopener noreferrer">
+                                    Instagram
+                                </a>
+                            </li>
                             <li><Link to="/contact">Contact Us</Link></li>
                         </ul>
                     </div>

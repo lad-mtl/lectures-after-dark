@@ -1,4 +1,5 @@
 import { EventCardRedesign } from './EventCardRedesign';
+import { useEvents } from '../hooks/useContent';
 
 interface UpcomingEventsProps {
     title?: string;
@@ -9,6 +10,9 @@ export const UpcomingEvents = ({
     title = "UPCOMING EVENTS",
     subtitle = "Curated nights for the curious mind.",
 }: UpcomingEventsProps) => {
+    const { events, loading } = useEvents();
+    const upcomingEvents = events.slice(0, 3);
+
     return (
         <section
             id="events"
@@ -39,38 +43,39 @@ export const UpcomingEvents = ({
                 </div>
 
                 {/* Cards Grid */}
-                <div
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                >
-                    {/* Default cards - will be replaced by saved state from database */}
-                    <EventCardRedesign
-                        title="The Psychology of Ambition: Why Some People Win and Most Don't"
-                        day="22"
-                        month="JAN"
-                        time="7:00"
-                        location="Montreal"
-                        price="$29.99"
-                        image="/the_psychology_of_ambition.webp"
-                    />
-                    <EventCardRedesign
-                        title="Modern Dating is Negotiating"
-                        day="29"
-                        month="JAN"
-                        time="6:30"
-                        location="Montreal"
-                        price="$25.00"
-                        image="/modern_dating.webp"
-                    />
-                    <EventCardRedesign
-                        title="How Power Really Works"
-                        day="05"
-                        month="FEB"
-                        time="8:00"
-                        location="Montreal"
-                        price="$35.00"
-                        image="/how_power_works.webp"
-                    />
-                </div>
+                {loading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="aspect-[4/5] w-full rounded-2xl bg-midnight/10 animate-pulse"
+                            />
+                        ))}
+                    </div>
+                ) : upcomingEvents.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {upcomingEvents.map((event) => (
+                            <EventCardRedesign
+                                key={event.id}
+                                title={event.title}
+                                day={event.day}
+                                month={event.month}
+                                timeLabel={event.timeLabel}
+                                locationLabel={event.locationLabel}
+                                priceLabel={event.priceLabel}
+                                imageUrl={event.imageUrl}
+                                eventbriteUrl={event.eventbriteUrl}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="rounded-2xl border border-midnight/10 bg-white/70 px-6 py-10 text-center">
+                        <p className="font-headline text-3xl text-midnight">No upcoming events right now.</p>
+                        <p className="mt-3 font-serif text-base text-warm-brown">
+                            Check back soon for the next lecture night.
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     );

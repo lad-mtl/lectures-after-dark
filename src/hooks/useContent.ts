@@ -33,6 +33,19 @@ export interface FaqData {
   items?: (FaqItem | null)[] | null;
 }
 
+export interface EventData {
+  id: string;
+  title: string;
+  startsAt: string;
+  day: string;
+  month: string;
+  timeLabel: string;
+  locationLabel: string;
+  priceLabel: string;
+  imageUrl: string | null;
+  eventbriteUrl: string;
+}
+
 async function fetchContent<T>(resource: string): Promise<T> {
   const response = await fetch(`${CONTENT_API_BASE}/${resource}`);
 
@@ -89,4 +102,20 @@ export function useFaq() {
   }, []);
 
   return { faq, loading };
+}
+
+export function useEvents() {
+  const [events, setEvents] = useState<EventData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent<EventData[]>("events")
+      .then((data) => {
+        setEvents(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { events, loading };
 }

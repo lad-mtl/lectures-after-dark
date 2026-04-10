@@ -2,10 +2,10 @@ interface EventCardRedesignProps {
     title?: string;
     day?: string;
     month?: string;
-    time?: string;
-    location?: string;
-    price?: string;
-    image?: string;
+    timeLabel?: string;
+    locationLabel?: string;
+    priceLabel?: string;
+    imageUrl?: string | null;
     eventbriteUrl?: string;
 }
 
@@ -13,16 +13,18 @@ export const EventCardRedesign = ({
     title = "The Psychology of Ambition: Why Some People Win and Most Don't",
     day = "22",
     month = "JAN",
-    time = "7:00",
-    location = "Montreal",
-    price = "$29.99",
-    image = '/the_psychology_of_ambition.webp',
+    timeLabel = "7:00 PM",
+    locationLabel = "Montreal",
+    priceLabel = "$29.99",
+    imageUrl = '/the_psychology_of_ambition.webp',
     eventbriteUrl = 'https://www.eventbrite.com'
 }: EventCardRedesignProps) => {
+    const backgroundImage = imageUrl || '/banner.png';
+
     const cardContent = (
         <div
             className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black bg-cover bg-center"
-            style={{ backgroundImage: `url(${image})` }}
+            style={{ backgroundImage: `url(${backgroundImage})` }}
         >
 
             {/* Dark gradient overlay at bottom for text readability */}
@@ -48,15 +50,15 @@ export const EventCardRedesign = ({
                         <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                         </svg>
-                        <span className="text-white/80 text-sm">{location}</span>
+                        <span className="text-white/80 text-sm">{locationLabel}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                         <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                         </svg>
-                        <span className="text-white/80 text-sm">{time}</span>
+                        <span className="text-white/80 text-sm">{timeLabel}</span>
                     </div>
-                    <span className="text-white/80 text-sm">{price}</span>
+                    <span className="text-white/80 text-sm">{priceLabel}</span>
                 </div>
 
                 {/* Title */}

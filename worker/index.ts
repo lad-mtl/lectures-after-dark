@@ -6,6 +6,10 @@ interface Env {
   STRAPI_CONTENT_API_URL: string;
   STRAPI_CONTENT_API_TOKEN?: string;
   STRAPI_TIMEOUT_MS?: string;
+  EVENTBRITE_API_BASE_URL?: string;
+  EVENTBRITE_PRIVATE_TOKEN?: string;
+  EVENTBRITE_ORGANIZER_ID?: string;
+  EVENTBRITE_TIMEOUT_MS?: string;
 }
 
 export default {

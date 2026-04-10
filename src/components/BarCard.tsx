@@ -1,4 +1,4 @@
-import styles from '../pages/Venues.module.css';
+import styles from './BarCard.module.css';
 import { MapPin } from 'lucide-react';
 
 interface BarCardProps {
@@ -18,17 +18,17 @@ export const BarCard = ({
 }: BarCardProps) => {
     return (
         <div
-            className={styles.speakerCard}
+            className={styles.card}
         >
-            <a target='_blank' href={mapsLink}>
+            <a target='_blank' href={mapsLink} rel="noopener noreferrer" className={styles.cardLink}>
                 <div className={styles.imageWrapper}>
-                    <img src={imageUrl} alt={name} className={styles.speakerImage} />
+                    <img src={imageUrl} alt={name} className={styles.image} />
                 </div>
-                <h3 className={styles.speakerName}>{name}</h3>
-                <span className={styles.speakerTopic} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h3 className={styles.name}>{name}</h3>
+                <span className={styles.neighborhood}>
                     <MapPin size={14} /> {neighborhood}
                 </span>
-                <p className={styles.speakerBio}>{description}</p>
+                <p className={styles.description}>{description}</p>
             </a>
         </div>
     );

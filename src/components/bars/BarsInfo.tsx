@@ -9,8 +9,8 @@ interface BarsInfoProps {
 
 export const BarsInfo = ({
     title = "Information for Hosts",
-    text1 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    text2 = "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    text1 = "We partner with bars and lounges that already know how to set a mood. We bring the audience, programming, and concept. You bring the space and hospitality.",
+    text2 = "If your venue feels intimate, polished, and built for good conversation, it is likely a fit.",
     imageUrl = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
 }: BarsInfoProps) => {
     return (

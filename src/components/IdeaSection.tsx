@@ -1,4 +1,6 @@
 
+import styles from './IdeaSection.module.css';
+
 interface IdeaSectionProps {
     title?: string;
     description1?: string;
@@ -13,29 +15,28 @@ export const IdeaSection = ({
     return (
         <section
             id="about"
-            className="py-32 bg-white relative overflow-hidden"
+            className={styles.section}
         >
             <div className="container">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center">
+                <div className={styles.content}>
                     <div>
-                        {/* Title with gold accent bar */}
-                        <div className="flex items-center gap-6 !mb-8">
-                            <div className="w-16 h-1 bg-gold"></div>
-                            <h2 className="font-headline text-5xl text-midnight md:text-[3.5rem]">{title}</h2>
+                        <div className={styles.titleRow}>
+                            <div className={styles.accentBar}></div>
+                            <h2 className={styles.title}>{title}</h2>
                         </div>
 
-                        <p className="font-serif text-xl leading-[2] text-warm-brown !mb-10">{description1}</p>
-                        <p className="font-serif text-xl leading-[2] text-warm-brown !mb-12">{description2}</p>
+                        <p className={styles.text}>{description1}</p>
+                        <p className={styles.text}>{description2}</p>
                     </div>
 
-                    <div className="relative">
-                        <div className="relative p-1 bg-gradient-to-br from-gold/20 to-transparent rounded-lg">
+                    <div>
+                        <div className={styles.imageFrame}>
                             <picture>
                                 <source srcSet="/idea.webp" type="image/webp" />
                                 <img
                                     src="/idea.png"
                                     alt="Cocktails and Conversation"
-                                    className="w-full rounded-lg shadow-2xl"
+                                    className={styles.image}
                                     loading="lazy"
                                     decoding="async"
                                 />

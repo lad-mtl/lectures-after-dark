@@ -1,0 +1,75 @@
+.section {
+    padding: clamp(4rem, 8vw, 6rem) 0;
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 4rem);
+    align-items: center;
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.accentBar {
+    width: 4rem;
+    height: 0.25rem;
+    background: var(--gold);
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.title {
+    font-family: var(--font-headline);
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--midnight);
+    line-height: 1.1;
+}
+
+.text {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    line-height: 1.8;
+    color: var(--warm-brown);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.text:last-child {
+    margin-bottom: 0;
+}
+
+.imageFrame {
+    position: relative;
+    padding: 0.25rem;
+    background: linear-gradient(to bottom right, rgba(204, 153, 102, 0.2), transparent);
+    border-radius: 0.5rem;
+}
+
+.image {
+    width: 100%;
+    border-radius: 0.5rem;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
+}
+
+@media (max-width: 768px) {
+    .content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .titleRow {
+        gap: 1rem;
+    }
+
+    .accentBar {
+        width: 3rem;
+    }
+}

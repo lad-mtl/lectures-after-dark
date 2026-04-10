@@ -23,7 +23,7 @@ export const SponsorCard = ({
                 image={image}
                 imageHeight="200px"
                 padding="medium"
-                hoverable={true}
+                hoverable={false}
             >
                 <h3 className={styles.sponsorName}>{name}</h3>
                 <span className={styles.sponsorTier}>{tier}</span>

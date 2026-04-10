@@ -28,7 +28,7 @@ export const SpeakerCard = ({
                 image={image}
                 imageHeight="200px"
                 padding="medium"
-                hoverable={true}
+                hoverable={false}
             >
                 <h3 className={styles.speakerName}>{name}</h3>
                 <span className={styles.speakerTopic}>{topic}</span>

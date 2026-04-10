@@ -1,5 +1,6 @@
 import { EventCardRedesign } from './EventCardRedesign';
 import { useEvents } from '../hooks/useContent';
+import styles from './UpcomingEvents.module.css';
 
 interface UpcomingEventsProps {
     title?: string;
@@ -14,25 +15,18 @@ export const UpcomingEvents = ({
     return (
         <section
             id="events"
-            className="py-16 bg-cream"
+            className={styles.section}
         >
-            <div className="container mx-auto px-4">
-                {/* Header with decorative elements */}
-                <div className="container">
-                    <div className="flex !mb-8 max-md:flex-col max-md:items-start max-md:!mb-6">
-                        <div className="">
-                            {/* Title with gold accent */}
-                            <div className="flex items-center gap-4 mb-2">
-                                <div className="w-12 h-1 bg-gradient-to-r from-gold to-amber rounded-full max-md:w-8"></div>
-                                <h2 className="font-headline text-5xl text-midnight max-md:text-4xl">{title}</h2>
-                            </div>
-                        </div>
+            <div className="container">
+                <div className={styles.header}>
+                    <div className={styles.titleRow}>
+                        <div className={styles.accentBar}></div>
+                        <h2 className={styles.title}>{title}</h2>
                     </div>
                 </div>
 
-                {/* Cards Grid */}
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className={styles.grid}>
                         {Array.from({ length: 3 }).map((_, index) => (
                             <div
                                 key={index}
@@ -41,7 +35,7 @@ export const UpcomingEvents = ({
                         ))}
                     </div>
                 ) : upcomingEvents.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className={styles.grid}>
                         {upcomingEvents.map((event) => (
                             <EventCardRedesign
                                 key={event.id}
@@ -57,9 +51,9 @@ export const UpcomingEvents = ({
                         ))}
                     </div>
                 ) : (
-                    <div className="rounded-2xl border border-midnight/10 bg-white/70 px-6 py-10 text-center">
-                        <p className="font-headline text-3xl text-midnight">No upcoming events right now.</p>
-                        <p className="mt-3 font-serif text-base text-warm-brown">
+                    <div className={styles.emptyState}>
+                        <p className={styles.emptyTitle}>No upcoming events right now.</p>
+                        <p className={styles.emptyText}>
                             Check back soon for the next lecture night.
                         </p>
                     </div>

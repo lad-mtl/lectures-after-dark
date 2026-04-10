@@ -23,9 +23,12 @@ export const EventCardRedesign = ({
 
     const cardContent = (
         <div
-            className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black bg-cover bg-center"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
+            className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black"
         >
+            <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{ backgroundImage: `url(${backgroundImage})` }}
+            ></div>
 
             {/* Dark gradient overlay at bottom for text readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 via-50% to-transparent pointer-events-none"></div>

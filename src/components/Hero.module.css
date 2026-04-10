@@ -115,28 +115,6 @@
     box-shadow: 0 0 20px rgba(255, 111, 0, 0.2);
 }
 
-.btnSecondary {
-    background-color: transparent;
-    color: var(--cream);
-    border: 1px solid var(--cream);
-    padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(1.5rem, 3vw, 2rem);
-    font-family: var(--font-headline);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    transition: all 0.3s ease;
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btnSecondary:hover {
-    background-color: rgba(245, 240, 232, 0.1);
-    border-color: var(--amber);
-    color: var(--amber);
-}
-
 @keyframes glow {
     from {
         filter: drop-shadow(0 0 5px rgba(255, 111, 0, 0.2));
@@ -184,8 +162,7 @@
         gap: 1rem;
     }
 
-    .btnPrimary,
-    .btnSecondary {
+    .btnPrimary {
         width: 100%;
         min-width: unset;
     }
@@ -198,8 +175,7 @@
         justify-content: center;
     }
 
-    .btnPrimary,
-    .btnSecondary {
+    .btnPrimary {
         flex: 0 1 auto;
     }
 }
@@ -207,8 +183,7 @@
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
 
-    .btnPrimary:hover,
-    .btnSecondary:hover {
+    .btnPrimary:hover {
         transform: none;
         box-shadow: none;
     }

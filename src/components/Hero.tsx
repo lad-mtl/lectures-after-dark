@@ -5,14 +5,12 @@ interface HeroProps {
     title?: string;
     subtitle?: string;
     buttonText?: string;
-    secondaryButtonText?: string;
 }
 
 export const Hero = ({
     title = "Lectures After Dark",
     subtitle = "Where Ambition, Psychology & Culture Collide",
-    buttonText = "Upcoming Events",
-    secondaryButtonText = "Join Our Email List"
+    buttonText = "Upcoming Events"
 }: HeroProps) => {
     return (
         <section
@@ -60,9 +58,6 @@ export const Hero = ({
                 <div className={styles.buttonGroup}>
                     <a href="#events" className={styles.btnPrimary}>
                         {buttonText}
-                    </a>
-                    <a href="#email-list" className={styles.btnSecondary}>
-                        {secondaryButtonText}
                     </a>
                 </div>
             </div>

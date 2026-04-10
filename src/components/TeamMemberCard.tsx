@@ -27,6 +27,8 @@ export const TeamMemberCard = ({
                 imageHeight="200px"
                 padding="medium"
                 hoverable={true}
+                showPointerCursor={false}
+                liftOnHover={false}
             >
                 <h3 className={styles.memberName}>{name}</h3>
                 <span className={styles.memberTitle}>{title}</span>

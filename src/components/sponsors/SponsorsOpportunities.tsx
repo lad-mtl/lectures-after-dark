@@ -1,4 +1,5 @@
 import { SponsorCard } from '../SponsorCard';
+import styles from '../../pages/Sponsors.module.css';
 
 interface SponsorsOpportunitiesProps {
     title?: string;
@@ -9,12 +10,12 @@ export const SponsorsOpportunities = ({
 }: SponsorsOpportunitiesProps) => {
     return (
         <section
-            className="py-20 px-8 bg-cream text-midnight"
+            className={styles.opportunitiesSection}
         >
-            <div className="container mx-auto">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl text-center !mb-10 text-midnight">{title}</h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" style={{ gridAutoRows: '1fr' }}>
-                    <div style={{ display: 'flex' }}>
+            <div className="container">
+                <h2 className={styles.sectionTitle}>{title}</h2>
+                <div className={styles.opportunitiesGrid}>
+                    <div className={styles.cardWrapper}>
                         <SponsorCard
                             name="Beverage Partner"
                             tier="Ideal for: Craft breweries, cocktail brands, wine distributors"
@@ -22,7 +23,7 @@ export const SponsorsOpportunities = ({
                             image="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&auto=format&fit=crop&q=80"
                         />
                     </div>
-                    <div style={{ display: 'flex' }}>
+                    <div className={styles.cardWrapper}>
                         <SponsorCard
                             name="Title Sponsor"
                             tier="Ideal for: Publishers, educational platforms, productivity tools"
@@ -30,7 +31,7 @@ export const SponsorsOpportunities = ({
                             image="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop&q=80"
                         />
                     </div>
-                    <div style={{ display: 'flex' }}>
+                    <div className={styles.cardWrapper}>
                         <SponsorCard
                             name="Speaker Series Sponsor"
                             tier="Ideal for: Tech companies, consulting firms"

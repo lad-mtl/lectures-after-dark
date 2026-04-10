@@ -12,12 +12,15 @@
 }
 
 /* Hover Effects */
-.card.hoverable {
+.card.pointerCursor {
     cursor: pointer;
 }
 
-.card.hoverable:hover {
+.card.hoverable.liftOnHover:hover {
     transform: translateY(-8px);
+}
+
+.card.hoverable:hover {
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2);
     border-color: var(--gold);
 }
@@ -91,8 +94,11 @@
         border-radius: 6px;
     }
 
-    .card.hoverable:hover {
+    .card.hoverable.liftOnHover:hover {
         transform: translateY(-4px);
+    }
+
+    .card.hoverable:hover {
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     }
 
@@ -114,8 +120,11 @@
 
 /* Touch Device Optimizations */
 @media (hover: none) and (pointer: coarse) {
-    .card.hoverable:hover {
+    .card.hoverable.liftOnHover:hover {
         transform: none;
+    }
+
+    .card.hoverable:hover {
         box-shadow: none;
         border-color: var(--border-color);
     }
@@ -137,7 +146,7 @@
         transition: none;
     }
 
-    .card.hoverable:hover {
+    .card.hoverable.liftOnHover:hover {
         transform: none;
     }
 

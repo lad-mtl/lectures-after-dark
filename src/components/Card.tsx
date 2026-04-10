@@ -7,6 +7,8 @@ export interface CardProps {
     imageHeight?: string;
     padding?: 'none' | 'small' | 'medium' | 'large';
     hoverable?: boolean;
+    showPointerCursor?: boolean;
+    liftOnHover?: boolean;
     className?: string;
     children?: ReactNode;
     onClick?: () => void;
@@ -18,6 +20,8 @@ export const Card = ({
     imageHeight = '240px',
     padding = 'medium',
     hoverable = true,
+    showPointerCursor = hoverable,
+    liftOnHover = hoverable,
     className = '',
     children,
     onClick
@@ -27,6 +31,8 @@ export const Card = ({
         styles[variant],
         styles[`padding-${padding}`],
         hoverable && styles.hoverable,
+        showPointerCursor && styles.pointerCursor,
+        liftOnHover && styles.liftOnHover,
         className
     ].filter(Boolean).join(' ');
 

@@ -1,0 +1,216 @@
+.pageWrapper {
+    padding-top: clamp(60px, 12vw, 80px);
+    min-height: 100vh;
+    background-color: var(--bg-primary);
+}
+
+.header {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: clamp(3rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem) clamp(2rem, 6vw, 4rem);
+    background: linear-gradient(to bottom, rgba(26, 22, 18, 0.8), var(--bg-primary)),
+        url('https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.title {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    color: var(--cream);
+    margin-bottom: clamp(0.75rem, 2vw, 1rem);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: var(--cream-dark);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.infoSection {
+    padding: clamp(4rem, 8vw, 6rem) clamp(1rem, 4vw, 2rem);
+    background-color: var(--cream);
+    color: var(--midnight);
+}
+
+.infoContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 4rem);
+    align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.infoText h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--midnight);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    line-height: 1.1;
+}
+
+.infoText p {
+    color: var(--warm-brown);
+    margin-bottom: clamp(1rem, 3vw, 1.5rem);
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    line-height: 1.7;
+}
+
+.infoText p:last-child {
+    margin-bottom: 0;
+}
+
+.infoImage {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.infoImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.opportunitiesSection {
+    padding: clamp(2.5rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
+    background-color: var(--bg-secondary);
+}
+
+.sectionTitle {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    color: var(--cream);
+    text-align: center;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.opportunitiesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+.cardWrapper {
+    display: flex;
+}
+
+.ctaSection {
+    position: relative;
+    padding: clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 2rem);
+    text-align: center;
+    background: url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctaOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(26, 22, 18, 0.82), rgba(26, 22, 18, 0.92));
+    z-index: 1;
+}
+
+.ctaContent {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.ctaTitle {
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    color: var(--cream);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.ctaText {
+    font-family: var(--font-serif);
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+    color: var(--cream-dark);
+    max-width: 600px;
+    margin-bottom: 1rem;
+}
+
+.ctaButton {
+    background-color: var(--amber);
+    color: var(--midnight);
+    border: 1px solid var(--amber);
+    padding: clamp(0.9rem, 2vw, 1rem) clamp(1.75rem, 4vw, 2.5rem);
+    font-family: var(--font-headline);
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctaButton:hover {
+    background-color: transparent;
+    color: var(--amber);
+    box-shadow: 0 0 20px rgba(255, 111, 0, 0.2);
+}
+
+@media (max-width: 480px) {
+    .pageWrapper {
+        padding-top: 60px;
+    }
+
+    .header {
+        padding: 2.5rem 1rem 1.5rem;
+    }
+
+    .infoContent {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .opportunitiesGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .infoContent {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .opportunitiesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .ctaButton:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .ctaButton:active {
+        transform: scale(0.98);
+    }
+}

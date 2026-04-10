@@ -170,13 +170,6 @@ video {
   color: #475569 !important;
 }
 
-/* Responsive breakpoints */
-@media (max-width: 768px) {
-  body {
-    padding-top: 80px; /* Push content down for fixed navbar on mobile */
-  }
-}
-
 @media (max-width: 480px) {
   .section-padding {
     padding: 2.5rem 0;

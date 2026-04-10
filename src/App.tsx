@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import './App.css';
 import Home from './pages/Home';
 import Speakers from './pages/Speakers';
 import About from './pages/About';
@@ -15,6 +16,7 @@ import NotFound from './pages/NotFound';
 
 function App() {
   const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   // Scroll to top when route changes
   useEffect(() => {
@@ -22,7 +24,7 @@ function App() {
   }, [location.pathname]);
 
   return (
-    <main className="!pt-0 lg:!pt-20">
+    <main className={`appShell ${isHomePage ? 'appShellHome' : 'appShellWithNavbarOffset'}`}>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

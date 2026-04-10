@@ -73,6 +73,26 @@ async function seedFaq(strapi) {
   return "created";
 }
 
+async function seedTeamMembers(strapi) {
+  const teamMembersDir = path.join(repoRoot, "content", "team-members");
+  const files = fs.existsSync(teamMembersDir)
+    ? fs
+        .readdirSync(teamMembersDir)
+        .filter((file) => file.endsWith(".json"))
+        .sort()
+    : [];
+
+  await strapi.db.query("api::team-member.team-member").deleteMany({ where: {} });
+
+  for (const file of files) {
+    await strapi.db.query("api::team-member.team-member").create({
+      data: readJson(path.join(teamMembersDir, file)),
+    });
+  }
+
+  return files.length;
+}
+
 async function main() {
   const strapi = await loadApp();
 
@@ -80,6 +100,7 @@ async function main() {
     const speakers = await seedSpeakers(strapi);
     const venues = await seedVenues(strapi);
     const faq = await seedFaq(strapi);
+    const teamMembers = await seedTeamMembers(strapi);
 
     console.log(
       JSON.stringify(
@@ -87,6 +108,7 @@ async function main() {
           speakers,
           venues,
           faq,
+          teamMembers,
         },
         null,
         2,

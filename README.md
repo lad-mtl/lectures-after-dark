@@ -66,6 +66,7 @@ Instagram requests also flow through the Worker so the access token never reache
 Seed data still lives in:
 
 - `content/speakers/*.json`
+- `content/team-members/*.json`
 - `content/venues/*.json`
 - `content/faq/faq.json`
 
@@ -103,6 +104,7 @@ pnpm strapi:seed
 The frontend reads normalized content from:
 
 - `/api/content/speakers`
+- `/api/content/team-members`
 - `/api/content/venues`
 - `/api/content/faq`
 - `/api/content/events`

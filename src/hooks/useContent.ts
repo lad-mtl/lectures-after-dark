@@ -46,6 +46,17 @@ export interface EventData {
   eventbriteUrl: string;
 }
 
+export interface TeamMemberData {
+  id: string;
+  name: string;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  order?: number | null;
+}
+
 export interface InstagramPostData {
   id: string;
   caption?: string | null;
@@ -127,6 +138,22 @@ export function useEvents() {
   }, []);
 
   return { events, loading };
+}
+
+export function useTeamMembers() {
+  const [teamMembers, setTeamMembers] = useState<TeamMemberData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent<TeamMemberData[]>("team-members")
+      .then((data) => {
+        setTeamMembers(data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { teamMembers, loading };
 }
 
 export function useInstagramPosts() {

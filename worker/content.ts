@@ -49,6 +49,17 @@ export interface EventData {
   eventbriteUrl: string;
 }
 
+export interface TeamMemberData {
+  id: string;
+  name: string;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  linkUrl?: string | null;
+  linkText?: string | null;
+  order?: number | null;
+}
+
 export interface InstagramPostData {
   id: string;
   caption?: string | null;
@@ -513,6 +524,18 @@ const resources = {
 
       const faq = entity.attributes ?? entity;
       return { items: faq.items ?? [] };
+    },
+  },
+  "/api/content/team-members": {
+    cacheKey: "content:team-members",
+    pathname:
+      "/team-members?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=title&fields[2]=description&fields[3]=image&fields[4]=linkUrl&fields[5]=linkText&fields[6]=order",
+    normalize: (payload: unknown) => {
+      const data = payload as { data?: Array<StrapiEntity<Omit<TeamMemberData, "id">>> | null };
+
+      return (data.data ?? [])
+        .map((node) => normalizeStrapiEntity(node))
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
 } satisfies Record<string, ResourceDefinition<unknown>>;

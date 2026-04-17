@@ -14,14 +14,48 @@ import TestCardPage from './pages/TestCardPage';
 import Sponsors from './pages/Sponsors';
 import NotFound from './pages/NotFound';
 
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
+  }
+}
+
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+let gaLoaded = false;
+
+function loadGa(id: string) {
+  if (gaLoaded) return;
+  gaLoaded = true;
+  const script = document.createElement('script');
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+  document.head.appendChild(script);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function gtag() {
+    window.dataLayer.push(arguments);
+  };
+  window.gtag('js', new Date());
+  window.gtag('config', id, { send_page_view: false });
+}
+
 function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
-  // Scroll to top when route changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!GA_MEASUREMENT_ID) return;
+    loadGa(GA_MEASUREMENT_ID);
+    window.gtag('event', 'page_view', {
+      page_path: location.pathname + location.search,
+      page_location: window.location.href,
+      page_title: document.title,
+    });
+  }, [location.pathname, location.search]);
 
   return (
     <main className={`appShell ${isHomePage ? 'appShellHome' : 'appShellWithNavbarOffset'}`}>

@@ -195,17 +195,46 @@ export function useTeamMembers() {
   return { teamMembers, loading };
 }
 
+const INSTAGRAM_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+
 export function useInstagramPosts() {
   const [posts, setPosts] = useState<InstagramPostData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchContent<InstagramPostData[]>("instagram")
-      .then((data) => {
-        setPosts(data);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    let cancelled = false;
+
+    const load = () =>
+      fetchContent<InstagramPostData[]>("instagram")
+        .then((data) => {
+          if (!cancelled) {
+            setPosts(data);
+          }
+        })
+        .catch(console.error)
+        .finally(() => {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        });
+
+    load();
+
+    const interval = setInterval(load, INSTAGRAM_REFRESH_INTERVAL_MS);
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        load();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   return { posts, loading };

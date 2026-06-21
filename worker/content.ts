@@ -89,6 +89,7 @@ export interface ContentEnv {
   INSTAGRAM_ACCESS_TOKEN?: string;
   INSTAGRAM_POSTS_LIMIT?: string;
   INSTAGRAM_TIMEOUT_MS?: string;
+  INSTAGRAM_CACHE_TTL_MS?: string;
 }
 
 type ResourceDefinition<T> = CacheableResource & {
@@ -181,6 +182,7 @@ type InstagramMediaResponse = {
 const DEFAULT_TIMEOUT_MS = 3000;
 const DEFAULT_EVENTBRITE_API_BASE_URL = "https://www.eventbriteapi.com/v3";
 const DEFAULT_INSTAGRAM_API_BASE_URL = "https://graph.instagram.com";
+const DEFAULT_INSTAGRAM_CACHE_TTL_MS = 10 * 60 * 1000;
 const EVENTS_CACHE_RESOURCE: CacheableResource = {
   cacheKey: "content:events",
 };
@@ -626,6 +628,11 @@ async function readSnapshot(
   >;
 }
 
+function snapshotAgeMs(snapshot: CachedSnapshot<unknown>) {
+  const fetchedAt = Date.parse(snapshot.fetchedAt);
+  return Number.isFinite(fetchedAt) ? Date.now() - fetchedAt : Number.POSITIVE_INFINITY;
+}
+
 async function fetchFreshContent(
   env: ContentEnv,
   resource: ResourceDefinition<unknown>,
@@ -793,7 +800,11 @@ async function fetchFreshInstagram(env: ContentEnv) {
   }
 }
 
-export async function handleContentRequest(request: Request, env: ContentEnv) {
+export async function handleContentRequest(
+  request: Request,
+  env: ContentEnv,
+  ctx?: ExecutionContext,
+) {
   const pathname = new URL(request.url).pathname;
 
   if (pathname === "/api/content/events") {
@@ -821,24 +832,54 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
   }
 
   if (pathname === "/api/content/instagram") {
-    try {
-      return await fetchFreshInstagram(env);
-    } catch (error) {
-      const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
+    const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
 
-      if (snapshot) {
+    if (snapshot) {
+      const ttlMs = Number(env.INSTAGRAM_CACHE_TTL_MS ?? DEFAULT_INSTAGRAM_CACHE_TTL_MS);
+      const maxAge = Number.isFinite(ttlMs) && ttlMs > 0 ? ttlMs : DEFAULT_INSTAGRAM_CACHE_TTL_MS;
+
+      // Fresh snapshot: serve from cache without touching the Instagram API.
+      if (snapshotAgeMs(snapshot) < maxAge) {
         return jsonResponse(snapshot.data, {
           headers: {
-            "x-content-source": "stale-cache",
+            "x-content-source": "cache",
             "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason":
-              error instanceof Error ? error.message : "instagram-unreachable",
           },
         });
       }
 
+      // Stale snapshot: serve it immediately and refresh in the background so
+      // the next request gets fresh posts (stale-while-revalidate).
+      const revalidate = fetchFreshInstagram(env).catch((error) => {
+        console.error(
+          "Instagram background refresh failed:",
+          error instanceof Error ? error.message : error,
+        );
+      });
+
+      if (ctx) {
+        ctx.waitUntil(revalidate);
+      } else {
+        await revalidate;
+      }
+
+      return jsonResponse(snapshot.data, {
+        headers: {
+          "x-content-source": "stale-revalidating",
+          "x-content-fetched-at": snapshot.fetchedAt,
+        },
+      });
+    }
+
+    // No snapshot yet: fetch synchronously to seed the cache.
+    try {
+      return await fetchFreshInstagram(env);
+    } catch (error) {
       return jsonResponse(
-        { error: "Instagram content is unavailable and no cached fallback exists." },
+        {
+          error: "Instagram content is unavailable and no cached fallback exists.",
+          reason: error instanceof Error ? error.message : "instagram-unreachable",
+        },
         { status: 503 },
       );
     }

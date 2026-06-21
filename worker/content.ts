@@ -89,6 +89,7 @@ export interface ContentEnv {
   INSTAGRAM_ACCESS_TOKEN?: string;
   INSTAGRAM_POSTS_LIMIT?: string;
   INSTAGRAM_TIMEOUT_MS?: string;
+  INSTAGRAM_CACHE_TTL_MS?: string;
 }
 
 type ResourceDefinition<T> = CacheableResource & {
@@ -181,12 +182,60 @@ type InstagramMediaResponse = {
 const DEFAULT_TIMEOUT_MS = 3000;
 const DEFAULT_EVENTBRITE_API_BASE_URL = "https://www.eventbriteapi.com/v3";
 const DEFAULT_INSTAGRAM_API_BASE_URL = "https://graph.instagram.com";
+const DEFAULT_INSTAGRAM_CACHE_TTL_MS = 10 * 60 * 1000;
 const EVENTS_CACHE_RESOURCE: CacheableResource = {
   cacheKey: "content:events",
 };
 const INSTAGRAM_CACHE_RESOURCE: CacheableResource = {
-  cacheKey: "content:instagram",
+  cacheKey: "content:instagram:v2",
 };
+const INSTAGRAM_IMAGE_PROXY_PATH = "/api/content/instagram/image";
+const INSTAGRAM_ALLOWED_IMAGE_HOSTS = ["cdninstagram.com", "fbcdn.net", "instagram.com"];
+
+function isAllowedInstagramImageHost(hostname: string) {
+  const host = hostname.toLowerCase();
+  return INSTAGRAM_ALLOWED_IMAGE_HOSTS.some(
+    (allowed) => host === allowed || host.endsWith(`.${allowed}`),
+  );
+}
+
+function buildInstagramImageProxyUrl(imageUrl: string) {
+  return `${INSTAGRAM_IMAGE_PROXY_PATH}?url=${encodeURIComponent(imageUrl)}`;
+}
+
+async function handleInstagramImageProxy(request: Request) {
+  const requestUrl = new URL(request.url);
+  const target = requestUrl.searchParams.get("url");
+
+  if (!target) {
+    return jsonResponse({ error: "Missing url parameter." }, { status: 400 });
+  }
+
+  let targetUrl: URL;
+  try {
+    targetUrl = new URL(target);
+  } catch {
+    return jsonResponse({ error: "Invalid url parameter." }, { status: 400 });
+  }
+
+  if (targetUrl.protocol !== "https:" || !isAllowedInstagramImageHost(targetUrl.hostname)) {
+    return jsonResponse({ error: "Disallowed image host." }, { status: 400 });
+  }
+
+  const upstream = await fetch(targetUrl.toString(), {
+    headers: { accept: "image/*" },
+  });
+
+  if (!upstream.ok || !upstream.body) {
+    return new Response("Image unavailable.", { status: 502 });
+  }
+
+  const headers = new Headers();
+  headers.set("content-type", upstream.headers.get("content-type") ?? "image/jpeg");
+  headers.set("cache-control", "public, max-age=86400, s-maxage=86400");
+
+  return new Response(upstream.body, { status: upstream.status, headers });
+}
 
 function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
   const source = (entity.attributes ?? entity) as T;
@@ -439,7 +488,7 @@ function normalizeInstagramMedia(media: InstagramMedia): InstagramPostData | nul
   return {
     id: String(media.id ?? permalink),
     caption: readString(media.caption) || null,
-    imageUrl,
+    imageUrl: buildInstagramImageProxyUrl(imageUrl),
     mediaType,
     permalink,
     timestamp: readString(media.timestamp) || null,
@@ -626,6 +675,11 @@ async function readSnapshot(
   >;
 }
 
+function snapshotAgeMs(snapshot: CachedSnapshot<unknown>) {
+  const fetchedAt = Date.parse(snapshot.fetchedAt);
+  return Number.isFinite(fetchedAt) ? Date.now() - fetchedAt : Number.POSITIVE_INFINITY;
+}
+
 async function fetchFreshContent(
   env: ContentEnv,
   resource: ResourceDefinition<unknown>,
@@ -793,7 +847,11 @@ async function fetchFreshInstagram(env: ContentEnv) {
   }
 }
 
-export async function handleContentRequest(request: Request, env: ContentEnv) {
+export async function handleContentRequest(
+  request: Request,
+  env: ContentEnv,
+  ctx?: ExecutionContext,
+) {
   const pathname = new URL(request.url).pathname;
 
   if (pathname === "/api/content/events") {
@@ -820,25 +878,59 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
     }
   }
 
-  if (pathname === "/api/content/instagram") {
-    try {
-      return await fetchFreshInstagram(env);
-    } catch (error) {
-      const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
+  if (pathname === INSTAGRAM_IMAGE_PROXY_PATH) {
+    return handleInstagramImageProxy(request);
+  }
 
-      if (snapshot) {
+  if (pathname === "/api/content/instagram") {
+    const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
+
+    if (snapshot) {
+      const ttlMs = Number(env.INSTAGRAM_CACHE_TTL_MS ?? DEFAULT_INSTAGRAM_CACHE_TTL_MS);
+      const maxAge = Number.isFinite(ttlMs) && ttlMs > 0 ? ttlMs : DEFAULT_INSTAGRAM_CACHE_TTL_MS;
+
+      // Fresh snapshot: serve from cache without touching the Instagram API.
+      if (snapshotAgeMs(snapshot) < maxAge) {
         return jsonResponse(snapshot.data, {
           headers: {
-            "x-content-source": "stale-cache",
+            "x-content-source": "cache",
             "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason":
-              error instanceof Error ? error.message : "instagram-unreachable",
           },
         });
       }
 
+      // Stale snapshot: serve it immediately and refresh in the background so
+      // the next request gets fresh posts (stale-while-revalidate).
+      const revalidate = fetchFreshInstagram(env).catch((error) => {
+        console.error(
+          "Instagram background refresh failed:",
+          error instanceof Error ? error.message : error,
+        );
+      });
+
+      if (ctx) {
+        ctx.waitUntil(revalidate);
+      } else {
+        await revalidate;
+      }
+
+      return jsonResponse(snapshot.data, {
+        headers: {
+          "x-content-source": "stale-revalidating",
+          "x-content-fetched-at": snapshot.fetchedAt,
+        },
+      });
+    }
+
+    // No snapshot yet: fetch synchronously to seed the cache.
+    try {
+      return await fetchFreshInstagram(env);
+    } catch (error) {
       return jsonResponse(
-        { error: "Instagram content is unavailable and no cached fallback exists." },
+        {
+          error: "Instagram content is unavailable and no cached fallback exists.",
+          reason: error instanceof Error ? error.message : "instagram-unreachable",
+        },
         { status: 503 },
       );
     }

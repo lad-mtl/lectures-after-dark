@@ -187,8 +187,55 @@ const EVENTS_CACHE_RESOURCE: CacheableResource = {
   cacheKey: "content:events",
 };
 const INSTAGRAM_CACHE_RESOURCE: CacheableResource = {
-  cacheKey: "content:instagram",
+  cacheKey: "content:instagram:v2",
 };
+const INSTAGRAM_IMAGE_PROXY_PATH = "/api/content/instagram/image";
+const INSTAGRAM_ALLOWED_IMAGE_HOSTS = ["cdninstagram.com", "fbcdn.net", "instagram.com"];
+
+function isAllowedInstagramImageHost(hostname: string) {
+  const host = hostname.toLowerCase();
+  return INSTAGRAM_ALLOWED_IMAGE_HOSTS.some(
+    (allowed) => host === allowed || host.endsWith(`.${allowed}`),
+  );
+}
+
+function buildInstagramImageProxyUrl(imageUrl: string) {
+  return `${INSTAGRAM_IMAGE_PROXY_PATH}?url=${encodeURIComponent(imageUrl)}`;
+}
+
+async function handleInstagramImageProxy(request: Request) {
+  const requestUrl = new URL(request.url);
+  const target = requestUrl.searchParams.get("url");
+
+  if (!target) {
+    return jsonResponse({ error: "Missing url parameter." }, { status: 400 });
+  }
+
+  let targetUrl: URL;
+  try {
+    targetUrl = new URL(target);
+  } catch {
+    return jsonResponse({ error: "Invalid url parameter." }, { status: 400 });
+  }
+
+  if (targetUrl.protocol !== "https:" || !isAllowedInstagramImageHost(targetUrl.hostname)) {
+    return jsonResponse({ error: "Disallowed image host." }, { status: 400 });
+  }
+
+  const upstream = await fetch(targetUrl.toString(), {
+    headers: { accept: "image/*" },
+  });
+
+  if (!upstream.ok || !upstream.body) {
+    return new Response("Image unavailable.", { status: 502 });
+  }
+
+  const headers = new Headers();
+  headers.set("content-type", upstream.headers.get("content-type") ?? "image/jpeg");
+  headers.set("cache-control", "public, max-age=86400, s-maxage=86400");
+
+  return new Response(upstream.body, { status: upstream.status, headers });
+}
 
 function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
   const source = (entity.attributes ?? entity) as T;
@@ -441,7 +488,7 @@ function normalizeInstagramMedia(media: InstagramMedia): InstagramPostData | nul
   return {
     id: String(media.id ?? permalink),
     caption: readString(media.caption) || null,
-    imageUrl,
+    imageUrl: buildInstagramImageProxyUrl(imageUrl),
     mediaType,
     permalink,
     timestamp: readString(media.timestamp) || null,
@@ -829,6 +876,10 @@ export async function handleContentRequest(
         { status: 503 },
       );
     }
+  }
+
+  if (pathname === INSTAGRAM_IMAGE_PROXY_PATH) {
+    return handleInstagramImageProxy(request);
   }
 
   if (pathname === "/api/content/instagram") {

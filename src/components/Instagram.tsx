@@ -52,6 +52,7 @@ export const Instagram = ({
                                     alt={post.caption?.trim() || `Instagram post ${index + 1}`}
                                     loading="lazy"
                                     decoding="async"
+                                    referrerPolicy="no-referrer"
                                 />
                                 <span className={styles.postType}>{getPostBadge(post)}</span>
                                 <div className={styles.captionOverlay}>

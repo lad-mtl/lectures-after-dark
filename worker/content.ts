@@ -81,14 +81,6 @@ export interface ContentEnv {
   STRAPI_CONTENT_API_URL: string;
   STRAPI_CONTENT_API_TOKEN?: string;
   STRAPI_TIMEOUT_MS?: string;
-  EVENTBRITE_API_BASE_URL?: string;
-  EVENTBRITE_PRIVATE_TOKEN?: string;
-  EVENTBRITE_ORGANIZER_ID?: string;
-  EVENTBRITE_TIMEOUT_MS?: string;
-  INSTAGRAM_API_BASE_URL?: string;
-  INSTAGRAM_ACCESS_TOKEN?: string;
-  INSTAGRAM_POSTS_LIMIT?: string;
-  INSTAGRAM_TIMEOUT_MS?: string;
 }
 
 type ResourceDefinition<T> = CacheableResource & {
@@ -102,100 +94,39 @@ type StrapiEntity<T> = {
   attributes?: T;
 } & T;
 
-type EventbriteMoney = {
-  currency?: string | null;
-  display?: string | null;
-  major_value?: string | null;
-  value?: number | string | null;
+type StrapiEventData = {
+  title?: string | null;
+  startsAt?: string | null;
+  locationLabel?: string | null;
+  priceLabel?: string | null;
+  imageUrl?: string | null;
+  eventbriteUrl?: string | null;
+  order?: number | null;
 };
 
-type EventbriteEvent = {
-  id?: number | string;
-  url?: string | null;
-  status?: string | null;
-  listed?: boolean | null;
-  online_event?: boolean | null;
-  is_free?: boolean | null;
-  name?: {
-    text?: string | null;
-  } | null;
-  start?: {
-    utc?: string | null;
-    local?: string | null;
-    timezone?: string | null;
-  } | null;
-  logo?: {
-    url?: string | null;
-    original?: {
-      url?: string | null;
-    } | null;
-  } | null;
-  venue?: {
-    name?: string | null;
-    address?: {
-      localized_area_display?: string | null;
-      localized_address_display?: string | null;
-      city?: string | null;
-      region?: string | null;
-      country?: string | null;
-    } | null;
-  } | null;
-  ticket_availability?: {
-    is_sold_out?: boolean | null;
-    minimum_ticket_price?: EventbriteMoney | null;
-    maximum_ticket_price?: EventbriteMoney | null;
-  } | null;
-  media?: unknown;
-  image?: unknown;
-  images?: unknown;
-  event_media?: unknown;
-};
-
-type EventbriteEventsResponse = {
-  events?: EventbriteEvent[] | null;
-};
-
-type InstagramChildMedia = {
-  media_type?: string | null;
-  media_url?: string | null;
-  thumbnail_url?: string | null;
-};
-
-type InstagramMedia = {
-  id?: number | string;
+type StrapiInstagramPostData = {
+  instagramId?: string | null;
   caption?: string | null;
-  media_type?: string | null;
-  media_url?: string | null;
+  imageUrl?: string | null;
+  mediaType?: string | null;
   permalink?: string | null;
-  thumbnail_url?: string | null;
   timestamp?: string | null;
-  children?: {
-    data?: InstagramChildMedia[] | null;
-  } | null;
-};
-
-type InstagramMediaResponse = {
-  data?: InstagramMedia[] | null;
+  order?: number | null;
 };
 
 const DEFAULT_TIMEOUT_MS = 3000;
-const DEFAULT_EVENTBRITE_API_BASE_URL = "https://www.eventbriteapi.com/v3";
-const DEFAULT_INSTAGRAM_API_BASE_URL = "https://graph.instagram.com";
-const EVENTS_CACHE_RESOURCE: CacheableResource = {
-  cacheKey: "content:events",
-};
-const INSTAGRAM_CACHE_RESOURCE: CacheableResource = {
-  cacheKey: "content:instagram",
-};
 
 function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
-  const source = (entity.attributes ?? entity) as T;
-  const { id: _id, documentId: _documentId, attributes: _attributes, ...rest } =
-    source as T & {
-      id?: unknown;
-      documentId?: unknown;
-      attributes?: unknown;
-    };
+  const source = (entity.attributes ?? entity) as T & {
+    id?: unknown;
+    documentId?: unknown;
+    attributes?: unknown;
+  };
+  const rest = { ...source };
+
+  delete rest.id;
+  delete rest.documentId;
+  delete rest.attributes;
 
   return {
     ...rest,
@@ -205,10 +136,6 @@ function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: Strapi
 
 function buildStrapiUrl(baseUrl: string, pathname: string) {
   return `${baseUrl.replace(/\/+$/, "")}${pathname}`;
-}
-
-function buildEventbriteUrl(baseUrl: string, organizerId: string) {
-  return `${baseUrl.replace(/\/+$/, "")}/organizations/${encodeURIComponent(organizerId)}/events/`;
 }
 
 function parseDate(value?: string | null) {
@@ -251,245 +178,56 @@ function formatEventStartParts(startsAt: string, timeZone?: string | null) {
   return { day, month, timeLabel };
 }
 
-function formatMoney(amount?: EventbriteMoney | null) {
-  if (!amount) {
-    return null;
-  }
-
-  if (amount.display?.trim()) {
-    return amount.display.trim();
-  }
-
-  const currency = amount.currency?.trim();
-  const majorValue = amount.major_value?.trim();
-
-  if (currency && majorValue) {
-    const parsed = Number(majorValue);
-
-    if (Number.isFinite(parsed)) {
-      return new Intl.NumberFormat("en-CA", {
-        style: "currency",
-        currency,
-      }).format(parsed);
-    }
-  }
-
-  return null;
-}
-
-function formatPriceLabel(event: EventbriteEvent) {
-  if (event.ticket_availability?.is_sold_out) {
-    return "Sold out";
-  }
-
-  if (event.is_free) {
-    return "Free";
-  }
-
-  const minimum = formatMoney(event.ticket_availability?.minimum_ticket_price);
-  const maximum = formatMoney(event.ticket_availability?.maximum_ticket_price);
-
-  if (minimum && maximum && minimum !== maximum) {
-    return `${minimum} - ${maximum}`;
-  }
-
-  return minimum ?? "See tickets";
-}
-
-function formatLocationLabel(event: EventbriteEvent) {
-  if (event.online_event) {
-    return "Online";
-  }
-
-  const address = event.venue?.address;
-  const area =
-    address?.localized_area_display?.trim() ??
-    [address?.city?.trim(), address?.region?.trim()].filter(Boolean).join(", ");
-
-  if (area) {
-    return area;
-  }
-
-  const venueName = event.venue?.name?.trim();
-
-  if (venueName) {
-    return venueName;
-  }
-
-  const addressDisplay = address?.localized_address_display?.trim();
-
-  return addressDisplay || "Location TBA";
-}
-
 function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function isVideoMedia(value: unknown) {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
+function normalizeStrapiEvent(
+  event: StrapiEventData & { id: string },
+  now: number,
+): EventData | null {
+  const title = readString(event.title);
+  const startsAt = readString(event.startsAt);
+  const eventbriteUrl = readString(event.eventbriteUrl);
+  const startsAtTimestamp = parseDate(startsAt);
 
-  const media = value as Record<string, unknown>;
-  const joined = [
-    readString(media.type),
-    readString(media.kind),
-    readString(media.media_type),
-    readString(media.mime_type),
-    readString(media.file_type),
-    readString(media.url),
-    readString((media.original as Record<string, unknown> | undefined)?.url),
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  return joined.includes("video") || joined.includes(".mp4") || joined.includes(".mov");
-}
-
-function extractMediaUrl(value: unknown): string | null {
-  if (!value || typeof value !== "object") {
+  if (!title || !startsAt || !eventbriteUrl || !startsAtTimestamp || startsAtTimestamp <= now) {
     return null;
   }
 
-  const media = value as Record<string, unknown>;
-  const candidates = [
-    readString(media.url),
-    readString((media.original as Record<string, unknown> | undefined)?.url),
-    readString((media.image as Record<string, unknown> | undefined)?.url),
-    readString(
-      ((media.image as Record<string, unknown> | undefined)?.original as Record<string, unknown> | undefined)
-        ?.url,
-    ),
-  ];
+  const { day, month, timeLabel } = formatEventStartParts(startsAt);
 
-  return candidates.find(Boolean) ?? null;
+  return {
+    id: event.id || eventbriteUrl,
+    title,
+    startsAt,
+    day,
+    month,
+    timeLabel,
+    locationLabel: readString(event.locationLabel) || "Location TBA",
+    priceLabel: readString(event.priceLabel) || "See tickets",
+    imageUrl: readString(event.imageUrl) || null,
+    eventbriteUrl,
+  };
 }
 
-function firstNonVideoMediaUrl(value: unknown): string | null {
-  if (!Array.isArray(value)) {
-    return null;
-  }
-
-  for (const item of value) {
-    if (isVideoMedia(item)) {
-      continue;
-    }
-
-    const url = extractMediaUrl(item);
-
-    if (url) {
-      return url;
-    }
-  }
-
-  return null;
-}
-
-function getEventImageUrl(event: EventbriteEvent) {
-  const mediaCandidates = [
-    firstNonVideoMediaUrl(event.media),
-    firstNonVideoMediaUrl(event.images),
-    firstNonVideoMediaUrl(event.event_media),
-    !isVideoMedia(event.image) ? extractMediaUrl(event.image) : null,
-    !isVideoMedia(event.logo) ? extractMediaUrl(event.logo) : null,
-  ];
-
-  return mediaCandidates.find(Boolean) ?? null;
-}
-
-function getInstagramChildImageUrl(media: InstagramMedia) {
-  const children = media.children?.data ?? [];
-
-  for (const child of children) {
-    const imageUrl = readString(child.media_url) || readString(child.thumbnail_url);
-
-    if (imageUrl) {
-      return imageUrl;
-    }
-  }
-
-  return null;
-}
-
-function getInstagramImageUrl(media: InstagramMedia) {
-  const mediaType = readString(media.media_type).toUpperCase();
-  const mediaUrl = readString(media.media_url);
-  const thumbnailUrl = readString(media.thumbnail_url);
-
-  if (mediaType === "VIDEO") {
-    return thumbnailUrl || mediaUrl || null;
-  }
-
-  if (mediaType === "CAROUSEL_ALBUM") {
-    return mediaUrl || thumbnailUrl || getInstagramChildImageUrl(media);
-  }
-
-  return mediaUrl || thumbnailUrl || getInstagramChildImageUrl(media);
-}
-
-function normalizeInstagramMedia(media: InstagramMedia): InstagramPostData | null {
-  const imageUrl = getInstagramImageUrl(media);
-  const permalink = readString(media.permalink);
-  const mediaType = readString(media.media_type).toUpperCase() || null;
+function normalizeStrapiInstagramPost(
+  post: StrapiInstagramPostData & { id: string },
+): InstagramPostData | null {
+  const imageUrl = readString(post.imageUrl);
+  const permalink = readString(post.permalink);
 
   if (!imageUrl || !permalink) {
     return null;
   }
 
   return {
-    id: String(media.id ?? permalink),
-    caption: readString(media.caption) || null,
+    id: readString(post.instagramId) || post.id || permalink,
+    caption: readString(post.caption) || null,
     imageUrl,
-    mediaType,
+    mediaType: readString(post.mediaType).toUpperCase() || null,
     permalink,
-    timestamp: readString(media.timestamp) || null,
-  };
-}
-
-function isUpcomingEvent(event: EventbriteEvent, now: number) {
-  const startsAt = parseDate(event.start?.utc) ?? parseDate(event.start?.local);
-  const status = event.status?.toLowerCase().trim();
-
-  if (!startsAt || startsAt <= now) {
-    return false;
-  }
-
-  if (!event.url?.trim()) {
-    return false;
-  }
-
-  if (event.listed === false) {
-    return false;
-  }
-
-  return !["canceled", "completed", "ended", "draft"].includes(status ?? "");
-}
-
-function normalizeEventbriteEvent(event: EventbriteEvent): EventData | null {
-  const startsAt = event.start?.utc?.trim() || event.start?.local?.trim();
-  const title = event.name?.text?.trim();
-  const eventbriteUrl = event.url?.trim();
-
-  if (!startsAt || !title || !eventbriteUrl) {
-    return null;
-  }
-
-  const { day, month, timeLabel } = formatEventStartParts(
-    startsAt,
-    event.start?.timezone,
-  );
-
-  return {
-    id: String(event.id ?? eventbriteUrl),
-    title,
-    startsAt,
-    day,
-    month,
-    timeLabel,
-    locationLabel: formatLocationLabel(event),
-    priceLabel: formatPriceLabel(event),
-    imageUrl: getEventImageUrl(event),
-    eventbriteUrl,
+    timestamp: readString(post.timestamp) || null,
   };
 }
 
@@ -587,6 +325,34 @@ const resources = {
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
+  "/api/content/events": {
+    cacheKey: "content:events",
+    pathname:
+      "/events?sort[0]=startsAt:asc&pagination[pageSize]=20&fields[0]=title&fields[1]=startsAt&fields[2]=locationLabel&fields[3]=priceLabel&fields[4]=imageUrl&fields[5]=eventbriteUrl&fields[6]=order",
+    normalize: (payload: unknown) => {
+      const data = payload as { data?: Array<StrapiEntity<StrapiEventData>> | null };
+      const now = Date.now();
+
+      return (data.data ?? [])
+        .map((node) => normalizeStrapiEntity(node))
+        .map((event) => normalizeStrapiEvent(event, now))
+        .filter((event): event is EventData => Boolean(event))
+        .sort((left, right) => (parseDate(left.startsAt) ?? 0) - (parseDate(right.startsAt) ?? 0));
+    },
+  },
+  "/api/content/instagram": {
+    cacheKey: "content:instagram",
+    pathname:
+      "/instagram-posts?sort[0]=timestamp:desc&pagination[pageSize]=6&fields[0]=instagramId&fields[1]=caption&fields[2]=imageUrl&fields[3]=mediaType&fields[4]=permalink&fields[5]=timestamp&fields[6]=order",
+    normalize: (payload: unknown) => {
+      const data = payload as { data?: Array<StrapiEntity<StrapiInstagramPostData>> | null };
+
+      return (data.data ?? [])
+        .map((node) => normalizeStrapiEntity(node))
+        .map((post) => normalizeStrapiInstagramPost(post))
+        .filter((post): post is InstagramPostData => Boolean(post));
+    },
+  },
 } satisfies Record<string, ResourceDefinition<unknown>>;
 
 function jsonResponse(body: unknown, init?: ResponseInit) {
@@ -675,174 +441,8 @@ async function fetchFreshContent(
   }
 }
 
-async function fetchFreshEvents(env: ContentEnv) {
-  const organizerId = env.EVENTBRITE_ORGANIZER_ID?.trim();
-  const token = env.EVENTBRITE_PRIVATE_TOKEN?.trim();
-
-  if (!organizerId || !token) {
-    throw new Error("Eventbrite configuration is missing.");
-  }
-
-  const controller = new AbortController();
-  const timeoutMs = Number(env.EVENTBRITE_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const baseUrl = env.EVENTBRITE_API_BASE_URL?.trim() || DEFAULT_EVENTBRITE_API_BASE_URL;
-    const url = new URL(buildEventbriteUrl(baseUrl, organizerId));
-
-    url.searchParams.set("status", "live");
-    url.searchParams.set("time_filter", "current_future");
-    url.searchParams.set("order_by", "start_asc");
-    url.searchParams.set("expand", "ticket_availability,venue");
-    url.searchParams.set("page_size", "20");
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Eventbrite upstream returned ${response.status}`);
-    }
-
-    const body = (await response.json()) as EventbriteEventsResponse;
-    const now = Date.now();
-
-    const events = (body.events ?? [])
-      .filter((event) => isUpcomingEvent(event, now))
-      .sort((left, right) => {
-        const leftStart = parseDate(left.start?.utc) ?? parseDate(left.start?.local) ?? 0;
-        const rightStart = parseDate(right.start?.utc) ?? parseDate(right.start?.local) ?? 0;
-
-        return leftStart - rightStart;
-      })
-      .map((event) => normalizeEventbriteEvent(event))
-      .filter((event): event is EventData => Boolean(event));
-
-    const fetchedAt = new Date().toISOString();
-    await writeSnapshot(env, EVENTS_CACHE_RESOURCE, events, fetchedAt);
-
-    return jsonResponse(events, {
-      headers: {
-        "x-content-source": "live",
-        "x-content-fetched-at": fetchedAt,
-      },
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function fetchFreshInstagram(env: ContentEnv) {
-  const controller = new AbortController();
-  const timeoutMs = Number(env.INSTAGRAM_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const limit = Number(env.INSTAGRAM_POSTS_LIMIT ?? "6");
-    const normalizedLimit = String(Number.isFinite(limit) && limit > 0 ? limit : 6);
-    const userAccessToken = env.INSTAGRAM_ACCESS_TOKEN?.trim();
-
-    if (!userAccessToken) {
-      throw new Error("Instagram configuration is missing.");
-    }
-
-    const baseUrl = env.INSTAGRAM_API_BASE_URL?.trim() || DEFAULT_INSTAGRAM_API_BASE_URL;
-    const url = new URL(`${baseUrl.replace(/\/+$/, "")}/me/media`);
-
-    url.searchParams.set(
-      "fields",
-      "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,children{media_type,media_url,thumbnail_url}",
-    );
-    url.searchParams.set("limit", normalizedLimit);
-    url.searchParams.set("access_token", userAccessToken);
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Instagram upstream returned ${response.status}`);
-    }
-
-    const body = (await response.json()) as InstagramMediaResponse;
-    const posts = (body.data ?? [])
-      .map((media) => normalizeInstagramMedia(media))
-      .filter((post): post is InstagramPostData => Boolean(post));
-
-    const fetchedAt = new Date().toISOString();
-    await writeSnapshot(env, INSTAGRAM_CACHE_RESOURCE, posts, fetchedAt);
-
-    return jsonResponse(posts, {
-      headers: {
-        "x-content-source": "live",
-        "x-content-fetched-at": fetchedAt,
-      },
-    });
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
 export async function handleContentRequest(request: Request, env: ContentEnv) {
   const pathname = new URL(request.url).pathname;
-
-  if (pathname === "/api/content/events") {
-    try {
-      return await fetchFreshEvents(env);
-    } catch (error) {
-      const snapshot = await readSnapshot(env, EVENTS_CACHE_RESOURCE);
-
-      if (snapshot) {
-        return jsonResponse(snapshot.data, {
-          headers: {
-            "x-content-source": "stale-cache",
-            "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason":
-              error instanceof Error ? error.message : "eventbrite-unreachable",
-          },
-        });
-      }
-
-      return jsonResponse(
-        { error: "Eventbrite content is unavailable and no cached fallback exists." },
-        { status: 503 },
-      );
-    }
-  }
-
-  if (pathname === "/api/content/instagram") {
-    try {
-      return await fetchFreshInstagram(env);
-    } catch (error) {
-      const snapshot = await readSnapshot(env, INSTAGRAM_CACHE_RESOURCE);
-
-      if (snapshot) {
-        return jsonResponse(snapshot.data, {
-          headers: {
-            "x-content-source": "stale-cache",
-            "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason":
-              error instanceof Error ? error.message : "instagram-unreachable",
-          },
-        });
-      }
-
-      return jsonResponse(
-        { error: "Instagram content is unavailable and no cached fallback exists." },
-        { status: 503 },
-      );
-    }
-  }
 
   const resource = resources[pathname as keyof typeof resources];
 

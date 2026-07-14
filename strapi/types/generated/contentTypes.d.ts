@@ -430,6 +430,37 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEventEvent extends Struct.CollectionTypeSchema {
+  collectionName: 'events';
+  info: {
+    displayName: 'Event';
+    pluralName: 'events';
+    singularName: 'event';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    eventbriteUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    imageUrl: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
+      Schema.Attribute.Private;
+    locationLabel: Schema.Attribute.String;
+    order: Schema.Attribute.Integer;
+    priceLabel: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    startsAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFaqFaq extends Struct.SingleTypeSchema {
   collectionName: 'faqs';
   info: {
@@ -447,6 +478,72 @@ export interface ApiFaqFaq extends Struct.SingleTypeSchema {
     items: Schema.Attribute.Component<'shared.faq-item', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::faq.faq'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiInstagramPostInstagramPost
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'instagram_posts';
+  info: {
+    displayName: 'Instagram Post';
+    pluralName: 'instagram-posts';
+    singularName: 'instagram-post';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    caption: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    imageUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    instagramId: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::instagram-post.instagram-post'
+    > &
+      Schema.Attribute.Private;
+    mediaType: Schema.Attribute.String;
+    order: Schema.Attribute.Integer;
+    permalink: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    timestamp: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSpeakerPageSpeakerPage extends Struct.SingleTypeSchema {
+  collectionName: 'speaker_pages';
+  info: {
+    displayName: 'Speaker Page';
+    pluralName: 'speaker-pages';
+    singularName: 'speaker-page';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctaButtonLink: Schema.Attribute.String;
+    ctaButtonText: Schema.Attribute.String;
+    ctaDescription: Schema.Attribute.Text;
+    ctaTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::speaker-page.speaker-page'
+    > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -490,37 +587,6 @@ export interface ApiSpeakerSpeaker extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiSpeakerPageSpeakerPage extends Struct.SingleTypeSchema {
-  collectionName: 'speaker_pages';
-  info: {
-    displayName: 'Speaker Page';
-    pluralName: 'speaker-pages';
-    singularName: 'speaker-page';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    ctaButtonLink: Schema.Attribute.String;
-    ctaButtonText: Schema.Attribute.String;
-    ctaDescription: Schema.Attribute.Text;
-    ctaTitle: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::speaker-page.speaker-page'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
   collectionName: 'team_members';
   info: {
@@ -555,36 +621,6 @@ export interface ApiTeamMemberTeamMember extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
-  collectionName: 'venues';
-  info: {
-    displayName: 'Venue';
-    pluralName: 'venues';
-    singularName: 'venue';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    imageUrl: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::venue.venue'> &
-      Schema.Attribute.Private;
-    mapsLink: Schema.Attribute.String;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    neighborhood: Schema.Attribute.String & Schema.Attribute.Required;
-    order: Schema.Attribute.Integer;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiVenuePageVenuePage extends Struct.SingleTypeSchema {
   collectionName: 'venue_pages';
   info: {
@@ -609,6 +645,36 @@ export interface ApiVenuePageVenuePage extends Struct.SingleTypeSchema {
       'api::venue-page.venue-page'
     > &
       Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
+  collectionName: 'venues';
+  info: {
+    displayName: 'Venue';
+    pluralName: 'venues';
+    singularName: 'venue';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    imageUrl: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::venue.venue'> &
+      Schema.Attribute.Private;
+    mapsLink: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    neighborhood: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1127,7 +1193,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::event.event': ApiEventEvent;
       'api::faq.faq': ApiFaqFaq;
+      'api::instagram-post.instagram-post': ApiInstagramPostInstagramPost;
       'api::speaker-page.speaker-page': ApiSpeakerPageSpeakerPage;
       'api::speaker.speaker': ApiSpeakerSpeaker;
       'api::team-member.team-member': ApiTeamMemberTeamMember;

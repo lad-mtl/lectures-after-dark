@@ -38,6 +38,8 @@ pnpm strapi:seed
   - `/api/content/speakers`
   - `/api/content/venues`
   - `/api/content/faq`
+  - `/api/content/events`
+  - `/api/content/instagram`
 - On Strapi success, the Worker refreshes KV snapshots
 - On Strapi timeout/failure, the Worker serves the last cached snapshot if available
 

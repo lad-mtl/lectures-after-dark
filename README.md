@@ -35,14 +35,6 @@ The Worker expects these secrets/bindings:
 - `STRAPI_CONTENT_API_URL`: Strapi REST API base URL used for public read queries
 - `STRAPI_CONTENT_API_TOKEN`: optional bearer token if your Strapi host protects reads
 - `STRAPI_TIMEOUT_MS`: optional upstream timeout override
-- `EVENTBRITE_API_BASE_URL`: optional Eventbrite API base URL, defaults to `https://www.eventbriteapi.com/v3`
-- `EVENTBRITE_PRIVATE_TOKEN`: Eventbrite private token used for server-side event reads
-- `EVENTBRITE_ORGANIZER_ID`: Eventbrite organizer/account ID to read upcoming events from
-- `EVENTBRITE_TIMEOUT_MS`: optional Eventbrite upstream timeout override
-- `INSTAGRAM_API_BASE_URL`: optional Instagram API base URL, defaults to `https://graph.instagram.com`
-- `INSTAGRAM_ACCESS_TOKEN`: Instagram user access token used for basic media reads
-- `INSTAGRAM_POSTS_LIMIT`: optional number of latest posts to request
-- `INSTAGRAM_TIMEOUT_MS`: optional Instagram upstream timeout override
 - `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
 
 For a local Strapi instance, use:
@@ -58,8 +50,7 @@ cp .dev.vars.example .dev.vars
 ```
 
 Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
-Eventbrite requests also flow through the Worker so the private token never reaches the browser.
-Instagram requests also flow through the Worker so the access token never reaches the browser. The site uses only the basic Instagram access-token flow, so it renders fields that are available from that endpoint.
+Events and Instagram posts are read from Strapi through the Worker. If you sync Eventbrite or Instagram data with a cron job, write those records into Strapi instead of exposing third-party API tokens to the Worker or browser.
 
 ## Strapi Setup
 
@@ -69,6 +60,8 @@ Seed data still lives in:
 - `content/team-members/*.json`
 - `content/venues/*.json`
 - `content/faq/faq.json`
+
+Events and Instagram posts are Strapi-backed collection types intended to be populated through the Strapi admin or an external sync job.
 
 The Strapi app lives in:
 

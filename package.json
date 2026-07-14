@@ -18,16 +18,6 @@
     "workers:dev": "wrangler dev",
     "workers:deploy": "wrangler deploy"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "core-js",
-      "esbuild",
-      "protobufjs",
-      "sharp",
-      "workerd"
-    ]
-  },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "lucide-react": "^0.562.0",

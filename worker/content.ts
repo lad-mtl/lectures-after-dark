@@ -54,6 +54,7 @@ export interface EventData {
   priceLabel: string;
   imageUrl: string | null;
   eventbriteUrl: string;
+  isPast: boolean;
 }
 
 export interface TeamMemberData {
@@ -191,7 +192,7 @@ function normalizeStrapiEvent(
   const eventbriteUrl = readString(event.eventbriteUrl);
   const startsAtTimestamp = parseDate(startsAt);
 
-  if (!title || !startsAt || !eventbriteUrl || !startsAtTimestamp || startsAtTimestamp <= now) {
+  if (!title || !startsAt || !eventbriteUrl || !startsAtTimestamp) {
     return null;
   }
 
@@ -208,6 +209,7 @@ function normalizeStrapiEvent(
     priceLabel: readString(event.priceLabel) || "See tickets",
     imageUrl: readString(event.imageUrl) || null,
     eventbriteUrl,
+    isPast: startsAtTimestamp <= now,
   };
 }
 

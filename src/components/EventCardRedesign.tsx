@@ -7,6 +7,7 @@ interface EventCardRedesignProps {
     priceLabel?: string;
     imageUrl?: string | null;
     eventbriteUrl?: string;
+    isPast?: boolean;
 }
 
 export const EventCardRedesign = ({
@@ -17,7 +18,8 @@ export const EventCardRedesign = ({
     locationLabel = "Montreal",
     priceLabel = "$29.99",
     imageUrl = '/the_psychology_of_ambition.webp',
-    eventbriteUrl = 'https://www.eventbrite.com'
+    eventbriteUrl = 'https://www.eventbrite.com',
+    isPast = false,
 }: EventCardRedesignProps) => {
     const backgroundImage = imageUrl || '/banner.png';
 
@@ -26,16 +28,21 @@ export const EventCardRedesign = ({
             className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black"
         >
             <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                className={`absolute inset-0 bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-[1.02] ${isPast ? 'grayscale saturate-0 contrast-110' : ''}`}
                 style={{ backgroundImage: `url(${backgroundImage})` }}
             ></div>
 
             {/* Dark gradient overlay at bottom for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 via-50% to-transparent pointer-events-none"></div>
+            <div className={`absolute inset-0 bg-gradient-to-t pointer-events-none ${isPast ? 'from-black/95 via-zinc-900/65 via-50% to-zinc-900/20' : 'from-black/90 via-black/40 via-50% to-transparent'}`}></div>
 
             {/* Date Badge at Top Center */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2">
                 <div className="backdrop-blur-md bg-black/40 border border-white/20 rounded-xl px-5 py-2.5 text-center">
+                    {isPast && (
+                        <div className="mb-1 text-[9px] font-semibold tracking-[0.18em] text-white/65 uppercase">
+                            Past
+                        </div>
+                    )}
                     <div className="text-white/90 text-[10px] font-medium tracking-[0.15em] uppercase">
                         {month}
                     </div>
@@ -77,7 +84,7 @@ export const EventCardRedesign = ({
 
     return (
         <div
-            className="aspect-[4/5] w-full"
+            className="aspect-[16/10] w-full"
         >
             <a
                 href={eventbriteUrl}

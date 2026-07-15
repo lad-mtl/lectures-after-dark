@@ -7,3 +7,5 @@ export const NAVBAR_SCROLL_THRESHOLD_PERCENT = 0.1;
 export const INSTAGRAM_USERNAME = "lad_mtl";
 export const INSTAGRAM_HANDLE = `@${INSTAGRAM_USERNAME}`;
 export const INSTAGRAM_PROFILE_URL = `https://www.instagram.com/${INSTAGRAM_USERNAME}/`;
+
+export const EVENTBRITE_PROFILE_URL = "https://www.eventbrite.ca/o/lectures-after-dark-121002246833";

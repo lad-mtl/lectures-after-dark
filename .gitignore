@@ -25,3 +25,4 @@ dist-ssr
 
 tina/__generated__/
 .dev.vars
+.wrangler/

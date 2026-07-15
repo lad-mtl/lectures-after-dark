@@ -51,6 +51,7 @@ export interface EventData {
   priceLabel: string;
   imageUrl: string | null;
   eventbriteUrl: string;
+  isPast: boolean;
 }
 
 export interface TeamMemberData {

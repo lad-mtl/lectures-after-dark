@@ -2,7 +2,7 @@ import styles from './Instagram.module.css';
 import { INSTAGRAM_HANDLE, INSTAGRAM_PROFILE_URL } from '../constants';
 import { type InstagramPostData, useInstagramPosts } from '../hooks/useContent';
 
-interface InstagramPost extends InstagramPostData {}
+type InstagramPost = InstagramPostData;
 
 interface InstagramProps {
     title?: string;
@@ -65,7 +65,7 @@ export const Instagram = ({
 
                     {!loading && !hasPosts && (
                         <div className={styles.emptyState}>
-                            <p>Latest posts will appear here after the Instagram API token is configured.</p>
+                            <p>Latest posts will appear here once they are added in Strapi.</p>
                             <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                                 Visit Instagram
                             </a>

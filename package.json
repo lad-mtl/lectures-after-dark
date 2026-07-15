@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "npx eslint",
-    "lint:fix": "npx eslint --fix --max-warnings 0",
-    "type-check": "npx tsc --noEmit --pretty",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix --max-warnings 0",
+    "type-check": "tsc --noEmit --pretty",
     "check": "pnpm run lint:fix && pnpm run type-check && pnpm run build",
     "preview": "vite preview",
     "strapi:dev": "pnpm --dir strapi run develop",
@@ -17,16 +17,6 @@
     "strapi:seed": "pnpm --dir strapi run seed",
     "workers:dev": "wrangler dev",
     "workers:deploy": "wrangler deploy"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "core-js",
-      "esbuild",
-      "protobufjs",
-      "sharp",
-      "workerd"
-    ]
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",

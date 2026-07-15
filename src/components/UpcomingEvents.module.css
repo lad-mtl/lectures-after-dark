@@ -4,20 +4,19 @@
 }
 
 .header {
-    margin-bottom: clamp(2rem, 5vw, 3rem);
+    margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .titleRow {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: 1.5rem;
 }
 
 .accentBar {
-    width: 3rem;
+    width: 4rem;
     height: 0.25rem;
-    background: linear-gradient(to right, var(--gold), var(--amber));
+    background: var(--gold);
     border-radius: 999px;
     flex-shrink: 0;
 }
@@ -29,10 +28,49 @@
     line-height: 1.1;
 }
 
+.eventbriteLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: 2px;
+    border: 1px solid var(--amber);
+    background: var(--amber);
+    color: var(--midnight);
+    padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(1.5rem, 3vw, 2rem);
+    font-family: var(--font-headline);
+    font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.eventbriteLink:hover {
+    background: transparent;
+    color: var(--amber);
+    box-shadow: 0 0 20px rgba(255, 111, 0, 0.18);
+}
+
+.ctaRow {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(2rem, 5vw, 3rem);
+}
+
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(1.5rem, 3vw, 2rem);
+}
+
+.statusText {
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    font-family: var(--font-serif);
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    color: var(--warm-brown);
 }
 
 .emptyState {
@@ -58,11 +96,23 @@
 
 @media (max-width: 1024px) {
     .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 768px) {
+    .titleRow {
+        gap: 1rem;
+    }
+
+    .accentBar {
+        width: 3rem;
+    }
+
+    .eventbriteLink {
+        width: 100%;
+    }
+
     .grid {
         grid-template-columns: 1fr;
     }

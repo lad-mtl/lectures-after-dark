@@ -5,3 +5,19 @@ RESEND_API_KEY=
 RESEND_FROM_EMAIL=Lectures After Dark <noreply@lecturesafterdark.ca>
 CONTACT_CORE_EMAIL=core@lecturesafterdark.ca
 CONTACT_MARKETING_EMAIL=marketing@lecturesafterdark.ca
+
+# Newsletter configuration. Cloudflare bindings are configured in wrangler.toml.
+SITE_URL=http://127.0.0.1:8787
+NEWSLETTER_FROM_EMAIL=Lectures After Dark <newsletter@mail.lecturesafterdark.ca>
+NEWSLETTER_REPLY_TO=marketing@lecturesafterdark.ca
+NEWSLETTER_ADMIN_EMAILS=core@lecturesafterdark.ca,marketing@lecturesafterdark.ca
+NEWSLETTER_ALLOW_LOCAL_ADMIN=true
+NEWSLETTER_TOKEN_SECRET=
+NEWSLETTER_ASSET_BASE_URL=
+TURNSTILE_SECRET_KEY=
+TURNSTILE_HOSTNAMES=127.0.0.1,localhost
+NEWSLETTER_REQUIRE_TURNSTILE=false
+EVENTBRITE_API_TOKEN=
+EVENTBRITE_ORGANIZER_ID=121002246833
+EVENTBRITE_WEBHOOK_SECRET=
+EVENTBRITE_SEND_DELAY_MINUTES=10

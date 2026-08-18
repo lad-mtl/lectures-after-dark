@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -13,6 +13,9 @@ import TestEventCardPage from './pages/TestEventCardPage';
 import TestCardPage from './pages/TestCardPage';
 import Sponsors from './pages/Sponsors';
 import NotFound from './pages/NotFound';
+import NewsletterStatus from './pages/NewsletterStatus';
+
+const NewsletterAdmin = lazy(() => import('./pages/NewsletterAdmin'));
 
 declare global {
   interface Window {
@@ -67,6 +70,15 @@ function App() {
         <Route path="/bars" element={<Venues />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/newsletter" element={<NewsletterStatus />} />
+        <Route
+          path="/newsletter/admin"
+          element={(
+            <Suspense fallback={<div className="routeLoading">Loading newsletter studio…</div>}>
+              <NewsletterAdmin />
+            </Suspense>
+          )}
+        />
         <Route path="/test" element={<TestCardPage />} />
         <Route path="/test-event-card" element={<TestEventCardPage />} />
         <Route path="*" element={<NotFound />} />

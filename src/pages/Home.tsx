@@ -4,6 +4,7 @@ import { WhyWeDoIt } from '../components/WhyWeDoIt';
 import { IdeaSection } from '../components/IdeaSection';
 import { Instagram } from '../components/Instagram';
 import { FAQ } from '../components/FAQ';
+import CTA from '../components/CTA';
 
 const Home = () => {
     return (
@@ -14,6 +15,7 @@ const Home = () => {
             <WhyWeDoIt />
             <Instagram />
             <FAQ />
+            <CTA />
         </div>
     );
 };

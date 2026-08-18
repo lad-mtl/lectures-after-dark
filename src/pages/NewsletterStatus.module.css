@@ -1,0 +1,61 @@
+.page {
+    min-height: 72vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(4rem, 10vw, 8rem) 1rem;
+    background:
+        radial-gradient(circle at center, rgba(61, 43, 31, 0.45), transparent 62%),
+        var(--midnight);
+}
+
+.card {
+    width: min(620px, 100%);
+    padding: clamp(2rem, 6vw, 4rem);
+    border: 1px solid var(--border-color);
+    background: rgba(42, 31, 26, 0.78);
+    text-align: center;
+}
+
+.icon {
+    color: var(--amber);
+    margin-bottom: 1.25rem;
+}
+
+.eyebrow {
+    color: var(--amber);
+    font-family: var(--font-headline);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.title {
+    margin: 0.5rem 0 1rem;
+    color: var(--cream);
+    font-size: clamp(2rem, 6vw, 3.25rem);
+}
+
+.message {
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    color: var(--text-secondary);
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+}
+
+.link {
+    display: inline-flex;
+    padding: 0.85rem 1.5rem;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    font-family: var(--font-headline);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.link:hover {
+    background: var(--amber);
+    color: var(--midnight);
+}

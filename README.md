@@ -52,6 +52,12 @@ cp .dev.vars.example .dev.vars
 Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
 Events and Instagram posts are read from Strapi through the Worker. If you sync Eventbrite or Instagram data with a cron job, write those records into Strapi instead of exposing third-party API tokens to the Worker or browser.
 
+## Newsletter
+
+The newsletter uses Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron Triggers, and Access. It includes double opt-in, a WYSIWYG/HTML campaign studio at `/newsletter/admin`, scheduled delivery, one-click unsubscribe, delivery event processing, and Eventbrite `event.published` automation.
+
+Cloudflare resource provisioning and configuration are documented in [`docs/newsletter-setup.md`](docs/newsletter-setup.md).
+
 ## Strapi Setup
 
 Seed data still lives in:

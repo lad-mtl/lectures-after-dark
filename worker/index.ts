@@ -1,7 +1,11 @@
 import { handleContentRequest } from "./content";
 import { handleContactRequest } from "./contact";
+import { handleNewsletterRequest } from "./newsletter/api";
+import { handleEventbriteWebhook } from "./newsletter/eventbrite";
+import { dispatchDueCampaigns, handleNewsletterQueue } from "./newsletter/queue";
+import type { NewsletterEnv } from "./newsletter/types";
 
-interface Env {
+interface Env extends NewsletterEnv {
   ASSETS?: Fetcher;
   CONTENT_CACHE?: KVNamespace;
   STRAPI_CONTENT_API_URL: string;
@@ -14,7 +18,7 @@ interface Env {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/api/content/")) {
@@ -30,6 +34,22 @@ export default {
 
       if (contactResponse) {
         return contactResponse;
+      }
+    }
+
+    if (url.pathname.startsWith("/api/newsletter/")) {
+      const newsletterResponse = await handleNewsletterRequest(request, env, ctx);
+
+      if (newsletterResponse) {
+        return newsletterResponse;
+      }
+    }
+
+    if (url.pathname.startsWith("/api/webhooks/eventbrite/")) {
+      const webhookResponse = await handleEventbriteWebhook(request, env);
+
+      if (webhookResponse) {
+        return webhookResponse;
       }
     }
 
@@ -56,5 +76,13 @@ export default {
     }
 
     return assetResponse;
+  },
+
+  async queue(batch: MessageBatch<unknown>, env: Env): Promise<void> {
+    await handleNewsletterQueue(batch, env);
+  },
+
+  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+    await dispatchDueCampaigns(env);
   },
 };

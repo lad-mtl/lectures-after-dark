@@ -12,6 +12,13 @@
   padding-top: 0;
 }
 
+.routeLoading {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+}
+
 @media (max-width: 768px) {
   .appShellWithNavbarOffset {
     padding-top: 80px;

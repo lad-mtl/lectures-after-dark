@@ -9,6 +9,15 @@ STRAPI_TIMEOUT_MS = "3000"
 RESEND_FROM_EMAIL = "Lectures After Dark <contact-form@mail.lecturesafterdark.ca>"
 CONTACT_CORE_EMAIL = "core@lecturesafterdark.ca"
 CONTACT_MARKETING_EMAIL = "marketing@lecturesafterdark.ca"
+SITE_URL = "https://lecturesafterdark.ca"
+NEWSLETTER_FROM_EMAIL = "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>"
+NEWSLETTER_REPLY_TO = "marketing@lecturesafterdark.ca"
+NEWSLETTER_ASSET_BASE_URL = "https://newsletter-media.lecturesafterdark.ca"
+NEWSLETTER_ADMIN_EMAILS = "core@lecturesafterdark.ca,marketing@lecturesafterdark.ca"
+NEWSLETTER_REQUIRE_TURNSTILE = "true"
+TURNSTILE_HOSTNAMES = "lecturesafterdark.ca"
+EVENTBRITE_ORGANIZER_ID = "121002246833"
+EVENTBRITE_SEND_DELAY_MINUTES = "10"
 
 [[kv_namespaces]]
 binding = "CONTENT_CACHE"
@@ -32,3 +41,34 @@ invocation_logs = true
 enabled = false
 persist = true
 head_sampling_rate = 1
+
+[[d1_databases]]
+binding = "NEWSLETTER_DB"
+database_name = "lectures-after-dark-newsletter"
+database_id = "1cb121e7-46fd-4610-8214-96f37551faed"
+migrations_dir = "worker/migrations"
+
+[[queues.producers]]
+queue = "lectures-after-dark-newsletter"
+binding = "NEWSLETTER_QUEUE"
+
+[[queues.consumers]]
+queue = "lectures-after-dark-newsletter"
+max_batch_size = 10
+max_retries = 5
+
+[[queues.consumers]]
+queue = "lectures-after-dark-email-events"
+max_batch_size = 10
+max_retries = 5
+
+[[r2_buckets]]
+bucket_name = "lectures-after-dark-newsletter-assets"
+binding = "NEWSLETTER_ASSETS"
+
+[[send_email]]
+name = "EMAIL"
+allowed_sender_addresses = ["newsletter@mail.lecturesafterdark.ca"]
+
+[triggers]
+crons = ["* * * * *"]

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -102,6 +102,7 @@ const NewsletterAdmin = () => {
     const [saving, setSaving] = useState(false);
     const [actionBusy, setActionBusy] = useState(false);
     const [previewHtml, setPreviewHtml] = useState(BLANK_HTML);
+    const previewFrameRef = useRef<HTMLIFrameElement>(null);
 
     const editor = useEditor({
         extensions: [
@@ -298,6 +299,10 @@ const NewsletterAdmin = () => {
         setHtmlMode((current) => !current);
     };
 
+    const resetPreviewScroll = () => {
+        previewFrameRef.current?.contentWindow?.scrollTo({ top: 0, left: 0 });
+    };
+
     const previewDocument = `<!doctype html><html><head><style>body{margin:0;padding:32px;background:#241c17;color:#d4c7b8;font:16px/1.7 Arial,sans-serif}h1,h2,h3{color:#f5f0e8;text-transform:uppercase;line-height:1.15}a{color:#ff8833}img{max-width:100%;height:auto}blockquote{border-left:3px solid #ff6f00;padding-left:16px;margin-left:0}</style></head><body>${previewHtml}</body></html>`;
 
     if (loading) return <div className={styles.statePage}>Loading newsletter studio…</div>;
@@ -403,31 +408,52 @@ const NewsletterAdmin = () => {
                             )}
                         </div>
                         <div className={styles.preview}>
-                            <div className={styles.previewLabel}>Email preview</div>
-                            <iframe title="Newsletter preview" srcDoc={previewDocument} sandbox="" />
+                            <div className={styles.previewHeader}>
+                                <div className={styles.previewLabel}>Email preview</div>
+                                <button type="button" className={styles.previewReset} onClick={resetPreviewScroll}>
+                                    Back to top
+                                </button>
+                            </div>
+                            <iframe
+                                ref={previewFrameRef}
+                                key={selectedId ?? 'new-campaign'}
+                                title="Newsletter preview"
+                                srcDoc={previewDocument}
+                                sandbox="allow-same-origin"
+                                onLoad={resetPreviewScroll}
+                            />
                         </div>
                     </div>
 
                     <div className={styles.actions}>
-                        <button type="button" className={styles.secondaryButton} onClick={() => void saveCampaign()} disabled={saving || actionBusy || !editable}>
-                            <Save size={17} /> {saving ? 'Saving…' : 'Save draft'}
-                        </button>
-                        <div className={styles.testGroup}>
-                            <input aria-label="Test email address" type="email" value={testEmail} onChange={(event) => setTestEmail(event.target.value)} placeholder="Test email" />
-                            <button type="button" className={styles.secondaryButton} onClick={() => void sendTest()} disabled={!editable || actionBusy}>
-                                <Send size={17} /> Send test
+                        <div className={styles.actionGroup}>
+                            <span className={styles.actionLabel}>Changes</span>
+                            <button type="button" className={styles.secondaryButton} onClick={() => void saveCampaign()} disabled={saving || actionBusy || !editable}>
+                                <Save size={17} /> {saving ? 'Saving…' : 'Save draft'}
                             </button>
                         </div>
-                        <div className={styles.scheduleGroup}>
-                            <input aria-label="Campaign delivery time" type="datetime-local" value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} disabled={!editable || actionBusy} />
-                            <button type="button" className={styles.primaryButton} onClick={() => void scheduleCampaign()} disabled={!editable || actionBusy}>
-                                <CalendarClock size={17} /> Schedule
-                            </button>
-                            {selectedCampaign?.status === 'scheduled' && (
-                                <button type="button" className={styles.dangerButton} onClick={() => void cancelCampaign()} disabled={actionBusy}>
-                                    <X size={17} /> Cancel
+                        <div className={styles.actionGroup}>
+                            <label className={styles.actionLabel} htmlFor="newsletter-test-email">Test delivery</label>
+                            <div className={styles.testGroup}>
+                                <input id="newsletter-test-email" type="email" value={testEmail} onChange={(event) => setTestEmail(event.target.value)} placeholder="you@example.com" />
+                                <button type="button" className={styles.secondaryButton} onClick={() => void sendTest()} disabled={!editable || actionBusy}>
+                                    <Send size={17} /> Send test
                                 </button>
-                            )}
+                            </div>
+                        </div>
+                        <div className={`${styles.actionGroup} ${styles.scheduleAction}`}>
+                            <label className={styles.actionLabel} htmlFor="newsletter-delivery-time">Delivery time</label>
+                            <div className={styles.scheduleGroup}>
+                                <input id="newsletter-delivery-time" type="datetime-local" value={scheduledAt} onChange={(event) => setScheduledAt(event.target.value)} disabled={!editable || actionBusy} />
+                                <button type="button" className={styles.primaryButton} onClick={() => void scheduleCampaign()} disabled={!editable || actionBusy}>
+                                    <CalendarClock size={17} /> Schedule
+                                </button>
+                                {selectedCampaign?.status === 'scheduled' && (
+                                    <button type="button" className={styles.dangerButton} onClick={() => void cancelCampaign()} disabled={actionBusy}>
+                                        <X size={17} /> Cancel
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </main>

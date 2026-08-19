@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './CTA.module.css';
 
 const TURNSTILE_SITE_KEY = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined)
@@ -149,7 +150,7 @@ const CTA = () => {
                     </form>
                     <p className={styles.consent}>
                         By subscribing, you agree to receive event announcements from Lectures After Dark.
-                        Unsubscribe at any time.
+                        Unsubscribe at any time. Read our <Link to="/privacy">Privacy Policy</Link>.
                     </p>
                     {statusMessage && (
                         <p

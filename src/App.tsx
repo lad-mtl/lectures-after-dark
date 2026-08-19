@@ -14,6 +14,7 @@ import TestCardPage from './pages/TestCardPage';
 import Sponsors from './pages/Sponsors';
 import NotFound from './pages/NotFound';
 import NewsletterStatus from './pages/NewsletterStatus';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 const NewsletterAdmin = lazy(() => import('./pages/NewsletterAdmin'));
 
@@ -71,6 +72,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/newsletter" element={<NewsletterStatus />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route
           path="/newsletter/admin"
           element={(

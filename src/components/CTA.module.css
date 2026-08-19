@@ -109,6 +109,16 @@
     line-height: 1.5;
 }
 
+.consent a {
+    color: var(--cream-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.consent a:hover {
+    color: var(--amber-light);
+}
+
 .status {
     margin: 1rem 0 0;
     font-size: 0.92rem;

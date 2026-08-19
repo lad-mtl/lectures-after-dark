@@ -11,8 +11,7 @@ interface Env extends NewsletterEnv {
   STRAPI_CONTENT_API_URL: string;
   STRAPI_CONTENT_API_TOKEN?: string;
   STRAPI_TIMEOUT_MS?: string;
-  RESEND_API_KEY?: string;
-  RESEND_FROM_EMAIL?: string;
+  CONTACT_FROM_EMAIL?: string;
   CONTACT_CORE_EMAIL?: string;
   CONTACT_MARKETING_EMAIL?: string;
 }

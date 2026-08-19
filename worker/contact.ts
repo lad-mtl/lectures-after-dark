@@ -1,6 +1,6 @@
 interface ContactEnv {
-  RESEND_API_KEY?: string;
-  RESEND_FROM_EMAIL?: string;
+  EMAIL?: SendEmail;
+  CONTACT_FROM_EMAIL?: string;
   CONTACT_CORE_EMAIL?: string;
   CONTACT_MARKETING_EMAIL?: string;
 }
@@ -14,8 +14,6 @@ interface ContactPayload {
   subject?: unknown;
   message?: unknown;
 }
-
-const RESEND_API_BASE_URL = "https://api.resend.com";
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -45,6 +43,18 @@ function isValidEmail(value: string) {
 
 function normalizeInquiryType(value: unknown): ContactInquiryType {
   return value === "partnerships" ? "partnerships" : "general";
+}
+
+function contactSender(env: ContactEnv): string | EmailAddress {
+  const configured =
+    env.CONTACT_FROM_EMAIL ?? "Lectures After Dark <contact-form@mail.lecturesafterdark.ca>";
+  const namedAddress = configured.match(/^(.+?)\s*<([^<>]+)>$/);
+  if (!namedAddress) return configured;
+
+  return {
+    name: namedAddress[1].trim(),
+    email: namedAddress[2].trim(),
+  };
 }
 
 function buildEmailText(payload: {
@@ -96,7 +106,7 @@ export async function handleContactRequest(request: Request, env: ContactEnv) {
     return jsonResponse({ error: "Method not allowed." }, 405);
   }
 
-  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
+  if (!env.EMAIL) {
     return jsonResponse({ error: "Contact form email service is not configured." }, 500);
   }
 
@@ -131,29 +141,17 @@ export async function handleContactRequest(request: Request, env: ContactEnv) {
       ? env.CONTACT_MARKETING_EMAIL ?? "marketing@lecturesafterdark.ca"
       : env.CONTACT_CORE_EMAIL ?? "core@lecturesafterdark.ca";
 
-  const resendResponse = await fetch(`${RESEND_API_BASE_URL}/emails`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${env.RESEND_API_KEY}`,
-      "content-type": "application/json; charset=utf-8",
-      "Idempotency-Key": crypto.randomUUID(),
-    },
-    body: JSON.stringify({
-      from: env.RESEND_FROM_EMAIL,
-      to: [to],
+  try {
+    await env.EMAIL.send({
+      from: contactSender(env),
+      to,
+      replyTo: email,
       subject: `[Lectures After Dark Contact] ${subject}`,
       html: buildEmailHtml({ name, email, inquiryType, subject, message }),
       text: buildEmailText({ name, email, inquiryType, subject, message }),
-      reply_to: email,
-    }),
-  });
-
-  if (!resendResponse.ok) {
-    const errorText = await resendResponse.text();
-    console.error("Resend send failure", {
-      status: resendResponse.status,
-      body: errorText,
     });
+  } catch (error) {
+    console.error("Cloudflare Email Sending contact failure", error);
     return jsonResponse({ error: "Unable to send your message right now." }, 502);
   }
 

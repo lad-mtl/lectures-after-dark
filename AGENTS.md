@@ -31,7 +31,7 @@
 - Worker content routes live in `worker/content.ts`; current routes include `speakers`, `venues`, `speaker-page`, `venue-page`, `faq`, `team-members`, `events`, and `instagram`.
 - Strapi-backed routes normalize Strapi REST responses and refresh KV snapshots on success; on upstream failure they return stale `CONTENT_CACHE` snapshots when available.
 - `events` and `instagram` are Strapi-backed collection routes. External cron jobs can sync Eventbrite/Instagram data into Strapi, but public reads should still go browser -> Worker -> Strapi.
-- Contact form secrets/settings are Worker env vars (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CONTACT_CORE_EMAIL`, `CONTACT_MARKETING_EMAIL`).
+- Contact form settings are Worker env vars (`CONTACT_FROM_EMAIL`, `CONTACT_CORE_EMAIL`, `CONTACT_MARKETING_EMAIL`) and delivery uses the Cloudflare `EMAIL` binding.
 
 ## Style/tooling notes
 

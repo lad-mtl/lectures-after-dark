@@ -92,8 +92,7 @@ const PrivacyPolicy = () => {
                     <h2>4. Service providers and disclosures</h2>
                     <p>We use service providers that process information on our behalf, including:</p>
                     <ul>
-                        <li><strong>Cloudflare</strong> for website delivery, security, Turnstile, database storage, file storage, queues, and newsletter email delivery.</li>
-                        <li><strong>Email delivery providers</strong> for delivering contact-form messages.</li>
+                        <li><strong>Cloudflare</strong> for website delivery, security, Turnstile, database storage, file storage, queues, and newsletter and contact-form email delivery.</li>
                         <li><strong>Google Analytics</strong> for website measurement when analytics is enabled.</li>
                         <li><strong>Eventbrite</strong> for event listings, registration, and ticketing.</li>
                         <li><strong>Our content-management hosting providers</strong> for operating the website.</li>

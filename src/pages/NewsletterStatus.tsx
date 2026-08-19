@@ -36,11 +36,17 @@ const NewsletterStatus = () => {
     return (
         <div className={styles.page}>
             <section className={styles.card}>
-                <Icon className={styles.icon} size={44} aria-hidden="true" />
-                <p className={styles.eyebrow}>Newsletter</p>
-                <h1 className={styles.title}>{content.title}</h1>
-                <p className={styles.message}>{content.message}</p>
-                <Link to="/" className={styles.link}>Return home</Link>
+                <header className={styles.cardHeader}>
+                    <p className={styles.brand}>Lectures After Dark</p>
+                    <p className={styles.tagline}>Intellectual nightlife for the modern mind</p>
+                </header>
+                <div className={styles.cardBody}>
+                    <Icon className={styles.icon} size={38} aria-hidden="true" />
+                    <p className={styles.eyebrow}>Newsletter</p>
+                    <h1 className={styles.title}>{content.title}</h1>
+                    <p className={styles.message}>{content.message}</p>
+                    <Link to="/" className={styles.link}>Return home</Link>
+                </div>
             </section>
         </div>
     );

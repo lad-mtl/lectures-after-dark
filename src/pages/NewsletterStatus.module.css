@@ -1,27 +1,61 @@
 .page {
-    min-height: 72vh;
+    min-height: calc(100svh - 7rem);
     display: grid;
     place-items: center;
-    padding: clamp(4rem, 10vw, 8rem) 1rem;
+    padding: clamp(7rem, 12vw, 9rem) 1rem clamp(4rem, 8vw, 6rem);
     background:
-        radial-gradient(circle at center, rgba(61, 43, 31, 0.45), transparent 62%),
+        radial-gradient(circle at center, rgba(61, 43, 31, 0.42), transparent 38rem),
         var(--midnight);
 }
 
 .card {
-    width: min(620px, 100%);
-    padding: clamp(2rem, 6vw, 4rem);
-    border: 1px solid var(--border-color);
-    background: rgba(42, 31, 26, 0.78);
+    width: min(640px, 100%);
+    border: 1px solid rgba(245, 240, 232, 0.14);
+    background: #241c17;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
     text-align: center;
 }
 
+.cardHeader {
+    padding: clamp(1.5rem, 5vw, 2rem) clamp(1.25rem, 5vw, 2rem);
+    border-bottom: 3px solid var(--amber);
+}
+
+.brand {
+    margin: 0;
+    color: var(--cream);
+    font-family: var(--font-headline);
+    font-size: clamp(1.35rem, 4vw, 1.7rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.tagline {
+    margin: 0.45rem 0 0;
+    color: var(--gold);
+    font-family: var(--font-serif);
+    font-size: clamp(0.78rem, 2vw, 0.9rem);
+    font-style: italic;
+    letter-spacing: 0.06em;
+}
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(2.5rem, 8vw, 4rem) clamp(1.5rem, 7vw, 3.5rem);
+}
+
 .icon {
+    margin-bottom: 1.15rem;
     color: var(--amber);
-    margin-bottom: 1.25rem;
+    stroke-width: 1.8;
 }
 
 .eyebrow {
+    margin: 0;
     color: var(--amber);
     font-family: var(--font-headline);
     font-size: 0.78rem;
@@ -31,31 +65,58 @@
 }
 
 .title {
-    margin: 0.5rem 0 1rem;
+    max-width: 520px;
+    margin: 0.7rem 0 1.1rem;
     color: var(--cream);
-    font-size: clamp(2rem, 6vw, 3.25rem);
+    font-family: var(--font-headline);
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
 }
 
 .message {
     max-width: 500px;
     margin: 0 auto 2rem;
     color: var(--text-secondary);
-    font-family: var(--font-serif);
-    font-size: 1.05rem;
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+    line-height: 1.7;
 }
 
 .link {
     display: inline-flex;
-    padding: 0.85rem 1.5rem;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.9rem 1.65rem;
     border: 1px solid var(--amber);
-    color: var(--amber);
+    background: var(--amber);
+    color: var(--midnight);
     font-family: var(--font-headline);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
 .link:hover {
-    background: var(--amber);
+    border-color: var(--amber-light);
+    background: var(--amber-light);
     color: var(--midnight);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 540px) {
+    .page {
+        min-height: calc(100svh - 5rem);
+        padding: 6.5rem 0.75rem 3rem;
+    }
+
+    .cardBody {
+        padding-block: 2.5rem;
+    }
+
+    .title {
+        font-size: clamp(2rem, 12vw, 2.65rem);
+    }
 }

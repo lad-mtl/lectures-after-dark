@@ -358,12 +358,17 @@
     text-transform: uppercase;
 }
 
+.changeControls,
 .testGroup,
 .scheduleGroup {
     min-width: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.changeControls {
+    flex-wrap: wrap;
 }
 
 .actions input {
@@ -493,6 +498,7 @@
     }
 
     .header,
+    .changeControls,
     .testGroup,
     .scheduleGroup {
         align-items: stretch;

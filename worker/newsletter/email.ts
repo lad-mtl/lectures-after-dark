@@ -85,14 +85,25 @@ export async function sendCampaignEmail(options: {
   env: NewsletterEnv;
   campaign: NewsletterCampaign;
   email: string;
-  unsubscribeToken: string;
+  unsubscribeToken?: string;
   deliveryId: string;
 }) {
   if (!options.env.EMAIL) {
     throw new Error("Cloudflare Email Sending binding is not configured.");
   }
 
-  const unsubscribeUrl = `${getSiteUrl(options.env)}/api/newsletter/unsubscribe?token=${encodeURIComponent(options.unsubscribeToken)}`;
+  const unsubscribeUrl = options.unsubscribeToken
+    ? `${getSiteUrl(options.env)}/api/newsletter/unsubscribe?token=${encodeURIComponent(options.unsubscribeToken)}`
+    : undefined;
+  const headers: Record<string, string> = {
+    "List-Id": "Lectures After Dark Newsletter <newsletter.lecturesafterdark.ca>",
+    "X-Campaign-ID": options.campaign.id,
+    "X-Delivery-ID": options.deliveryId,
+  };
+  if (unsubscribeUrl) {
+    headers["List-Unsubscribe"] = `<${unsubscribeUrl}>`;
+    headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
+  }
 
   return options.env.EMAIL.send({
     from: sender(options.env),
@@ -104,13 +115,9 @@ export async function sendCampaignEmail(options: {
       content: options.campaign.body_html,
       unsubscribeUrl,
     }),
-    text: `${options.campaign.body_text}\n\nUnsubscribe: ${unsubscribeUrl}`,
-    headers: {
-      "List-Unsubscribe": `<${unsubscribeUrl}>`,
-      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      "List-Id": "Lectures After Dark Newsletter <newsletter.lecturesafterdark.ca>",
-      "X-Campaign-ID": options.campaign.id,
-      "X-Delivery-ID": options.deliveryId,
-    },
+    text: unsubscribeUrl
+      ? `${options.campaign.body_text}\n\nUnsubscribe: ${unsubscribeUrl}`
+      : options.campaign.body_text,
+    headers,
   });
 }

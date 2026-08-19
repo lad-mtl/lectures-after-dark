@@ -179,9 +179,10 @@ async function handleUnsubscribe(request: Request, env: NewsletterEnv) {
   }
 
   const subscriberId = await verifyUnsubscribeToken(token, env);
+  let subscriberMatched = false;
   if (subscriberId) {
     const db = requireDatabase(env);
-    await db
+    const result = await db
       .prepare(
         `UPDATE newsletter_subscribers
          SET status = 'unsubscribed', updated_at = ?2
@@ -189,6 +190,7 @@ async function handleUnsubscribe(request: Request, env: NewsletterEnv) {
       )
       .bind(subscriberId, new Date().toISOString())
       .run();
+    subscriberMatched = result.meta.changes > 0;
   }
 
   if (request.method === "POST") {
@@ -196,7 +198,7 @@ async function handleUnsubscribe(request: Request, env: NewsletterEnv) {
   }
 
   const stateUrl = new URL("/newsletter", getSiteUrl(env));
-  stateUrl.searchParams.set("state", subscriberId ? "unsubscribed" : "invalid");
+  stateUrl.searchParams.set("state", subscriberMatched ? "unsubscribed" : "invalid");
   return Response.redirect(stateUrl.toString(), 303);
 }
 
@@ -301,6 +303,23 @@ async function updateCampaign(
   return jsonResponse({ success: true });
 }
 
+async function deleteCampaign(env: NewsletterEnv, campaignId: string) {
+  const db = requireDatabase(env);
+  const result = await db
+    .prepare(
+      `DELETE FROM newsletter_campaigns
+       WHERE id = ?1 AND status IN ('draft', 'cancelled')`,
+    )
+    .bind(campaignId)
+    .run();
+
+  if (!result.meta.changes) {
+    return jsonResponse({ error: "Only draft or cancelled campaigns can be deleted." }, 409);
+  }
+
+  return jsonResponse({ success: true });
+}
+
 async function scheduleCampaign(request: Request, env: NewsletterEnv, campaignId: string) {
   const payload = await readJson<CampaignPayload>(request);
   const suppliedDate = normalizeText(payload?.scheduledAt, 80);
@@ -368,7 +387,13 @@ async function sendTestCampaign(
     .first<NewsletterCampaign>();
   if (!campaign) return jsonResponse({ error: "Campaign not found." }, 404);
 
-  const unsubscribeToken = await createUnsubscribeToken("test-delivery", env);
+  const subscriber = await db
+    .prepare("SELECT id FROM newsletter_subscribers WHERE email = ?1 AND status = 'subscribed'")
+    .bind(email)
+    .first<{ id: string }>();
+  const unsubscribeToken = subscriber
+    ? await createUnsubscribeToken(subscriber.id, env)
+    : undefined;
   await sendCampaignEmail({
     env,
     campaign,
@@ -427,6 +452,9 @@ async function handleAdminRequest(request: Request, env: NewsletterEnv) {
   }
   if (campaignId && !action && request.method === "PUT") {
     return updateCampaign(request, env, campaignId);
+  }
+  if (campaignId && !action && request.method === "DELETE") {
+    return deleteCampaign(env, campaignId);
   }
   if (campaignId && action === "schedule" && request.method === "POST") {
     return scheduleCampaign(request, env, campaignId);

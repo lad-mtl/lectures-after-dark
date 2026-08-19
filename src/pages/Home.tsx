@@ -14,8 +14,8 @@ const Home = () => {
             <IdeaSection />
             <WhyWeDoIt />
             <Instagram />
-            <FAQ />
             <CTA />
+            <FAQ />
         </div>
     );
 };

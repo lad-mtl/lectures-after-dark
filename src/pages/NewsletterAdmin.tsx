@@ -18,6 +18,7 @@ import {
     Redo2,
     Save,
     Send,
+    Trash2,
     Undo2,
     X,
 } from 'lucide-react';
@@ -248,6 +249,27 @@ const NewsletterAdmin = () => {
         }
     };
 
+    const deleteCampaign = async () => {
+        if (!selectedCampaign || actionBusy) return;
+        if (!window.confirm(`Delete “${selectedCampaign.name}”? This cannot be undone.`)) return;
+
+        setActionBusy(true);
+        setStatusMessage('');
+        setErrorMessage('');
+        try {
+            await apiRequest(`/api/newsletter/admin/campaigns/${selectedCampaign.id}`, {
+                method: 'DELETE',
+            });
+            newCampaign();
+            await loadCampaigns();
+            setStatusMessage('Campaign deleted.');
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Unable to delete the campaign.');
+        } finally {
+            setActionBusy(false);
+        }
+    };
+
     const sendTest = async () => {
         if (actionBusy) return;
         setActionBusy(true);
@@ -428,9 +450,16 @@ const NewsletterAdmin = () => {
                     <div className={styles.actions}>
                         <div className={styles.actionGroup}>
                             <span className={styles.actionLabel}>Changes</span>
-                            <button type="button" className={styles.secondaryButton} onClick={() => void saveCampaign()} disabled={saving || actionBusy || !editable}>
-                                <Save size={17} /> {saving ? 'Saving…' : 'Save draft'}
-                            </button>
+                            <div className={styles.changeControls}>
+                                <button type="button" className={styles.secondaryButton} onClick={() => void saveCampaign()} disabled={saving || actionBusy || !editable}>
+                                    <Save size={17} /> {saving ? 'Saving…' : 'Save draft'}
+                                </button>
+                                {selectedCampaign && (selectedCampaign.status === 'draft' || selectedCampaign.status === 'cancelled') && (
+                                    <button type="button" className={styles.dangerButton} onClick={() => void deleteCampaign()} disabled={actionBusy}>
+                                        <Trash2 size={17} /> Delete
+                                    </button>
+                                )}
+                            </div>
                         </div>
                         <div className={styles.actionGroup}>
                             <label className={styles.actionLabel} htmlFor="newsletter-test-email">Test delivery</label>

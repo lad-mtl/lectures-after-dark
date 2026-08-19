@@ -11,9 +11,12 @@ interface Env extends NewsletterEnv {
   STRAPI_CONTENT_API_URL: string;
   STRAPI_CONTENT_API_TOKEN?: string;
   STRAPI_TIMEOUT_MS?: string;
+  CONTACT_RATE_LIMITER?: RateLimit;
   CONTACT_FROM_EMAIL?: string;
   CONTACT_CORE_EMAIL?: string;
   CONTACT_MARKETING_EMAIL?: string;
+  CONTACT_REQUIRE_RATE_LIMIT?: string;
+  CONTACT_REQUIRE_TURNSTILE?: string;
 }
 
 export default {

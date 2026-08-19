@@ -9,6 +9,8 @@ STRAPI_TIMEOUT_MS = "3000"
 CONTACT_FROM_EMAIL = "Lectures After Dark <contact-form@mail.lecturesafterdark.ca>"
 CONTACT_CORE_EMAIL = "core@lecturesafterdark.ca"
 CONTACT_MARKETING_EMAIL = "marketing@lecturesafterdark.ca"
+CONTACT_REQUIRE_RATE_LIMIT = "true"
+CONTACT_REQUIRE_TURNSTILE = "true"
 SITE_URL = "https://lecturesafterdark.ca"
 NEWSLETTER_FROM_EMAIL = "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>"
 NEWSLETTER_REPLY_TO = "marketing@lecturesafterdark.ca"
@@ -21,6 +23,14 @@ EVENTBRITE_SEND_DELAY_MINUTES = "10"
 [[kv_namespaces]]
 binding = "CONTENT_CACHE"
 id = "c1817edf009b4a94ab217e3bf4131d4c"
+
+[[ratelimits]]
+name = "CONTACT_RATE_LIMITER"
+namespace_id = "24873190"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
 
 [assets]
 directory = "dist"

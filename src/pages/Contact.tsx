@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import styles from './Contact.module.css';
+import React, { useEffect, useRef, useState } from 'react';
 import { Mail, MapPin, MessageSquare } from 'lucide-react';
+import { TURNSTILE_SITE_KEY } from '../constants';
+import styles from './Contact.module.css';
 
 type InquiryType = 'general' | 'partnerships';
 
@@ -14,6 +15,56 @@ const Contact: React.FC = () => {
     });
     const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const [statusMessage, setStatusMessage] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const turnstileContainerRef = useRef<HTMLDivElement>(null);
+    const turnstileWidgetIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        let retryTimer: number | undefined;
+        let retryCount = 0;
+
+        const renderWidget = () => {
+            if (cancelled || turnstileWidgetIdRef.current) return;
+            if (!window.turnstile || !turnstileContainerRef.current) {
+                retryCount += 1;
+                if (retryCount >= 100) {
+                    setSubmitState('error');
+                    setStatusMessage('The security check could not load. Please refresh and try again.');
+                    return;
+                }
+                retryTimer = window.setTimeout(renderWidget, 100);
+                return;
+            }
+
+            turnstileWidgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+                sitekey: TURNSTILE_SITE_KEY,
+                action: 'contact',
+                theme: 'dark',
+                callback: (token) => {
+                    setTurnstileToken(token);
+                    setSubmitState('idle');
+                    setStatusMessage('');
+                },
+                'expired-callback': () => setTurnstileToken(null),
+                'error-callback': () => {
+                    setTurnstileToken(null);
+                    setSubmitState('error');
+                    setStatusMessage('The security check could not load. Please try again.');
+                },
+            });
+        };
+
+        renderWidget();
+        return () => {
+            cancelled = true;
+            if (retryTimer) window.clearTimeout(retryTimer);
+            if (turnstileWidgetIdRef.current && window.turnstile) {
+                window.turnstile.remove(turnstileWidgetIdRef.current);
+                turnstileWidgetIdRef.current = null;
+            }
+        };
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -23,10 +74,17 @@ const Contact: React.FC = () => {
         }));
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!turnstileToken) {
+            setSubmitState('error');
+            setStatusMessage('Please complete the security check.');
+            return;
+        }
+
         setSubmitState('submitting');
         setStatusMessage('');
+        const submittedForm = new FormData(e.currentTarget);
 
         try {
             const response = await fetch('/api/contact', {
@@ -34,7 +92,11 @@ const Contact: React.FC = () => {
                 headers: {
                     'content-type': 'application/json'
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    website: submittedForm.get('website'),
+                    turnstileToken,
+                })
             });
 
             const result = await response.json() as { error?: string };
@@ -55,6 +117,11 @@ const Contact: React.FC = () => {
         } catch (error) {
             setSubmitState('error');
             setStatusMessage(error instanceof Error ? error.message : 'Unable to send your message right now.');
+        } finally {
+            if (turnstileWidgetIdRef.current && window.turnstile) {
+                window.turnstile.reset(turnstileWidgetIdRef.current);
+            }
+            setTurnstileToken(null);
         }
     };
 
@@ -134,6 +201,7 @@ const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     className={styles.input}
                                     disabled={submitState === 'submitting'}
+                                    maxLength={120}
                                     required
                                 />
                             </div>
@@ -148,6 +216,7 @@ const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     className={styles.input}
                                     disabled={submitState === 'submitting'}
+                                    maxLength={254}
                                     required
                                 />
                             </div>
@@ -162,6 +231,7 @@ const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     className={styles.input}
                                     disabled={submitState === 'submitting'}
+                                    maxLength={200}
                                     required
                                 />
                             </div>
@@ -175,8 +245,23 @@ const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     className={styles.textarea}
                                     disabled={submitState === 'submitting'}
+                                    maxLength={5000}
                                     required
                                 ></textarea>
+                            </div>
+
+                            <div className={styles.honeypot} aria-hidden="true">
+                                <label htmlFor="contact-website">Website</label>
+                                <input
+                                    id="contact-website"
+                                    name="website"
+                                    tabIndex={-1}
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            <div className={styles.turnstileRow}>
+                                <div ref={turnstileContainerRef} />
                             </div>
 
                             <button type="submit" className={styles.submitBtn} disabled={submitState === 'submitting'}>
@@ -186,7 +271,7 @@ const Contact: React.FC = () => {
                             {statusMessage && (
                                 <p
                                     className={`${styles.statusMessage} ${submitState === 'error' ? styles.statusError : styles.statusSuccess}`}
-                                    role="status"
+                                    role={submitState === 'error' ? 'alert' : 'status'}
                                     aria-live="polite"
                                 >
                                     {statusMessage}

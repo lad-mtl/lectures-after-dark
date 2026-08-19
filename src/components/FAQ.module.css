@@ -34,6 +34,11 @@
     text-align: left;
 }
 
+.question:focus-visible {
+    outline: 3px solid var(--amber-light);
+    outline-offset: 4px;
+}
+
 .questionText {
     font-family: var(--font-headline);
     font-size: clamp(1.1rem, 2.5vw, 1.35rem);
@@ -55,9 +60,7 @@
 }
 
 .answer {
-    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
 }
 
 .answerContent {
@@ -69,6 +72,25 @@
 }
 
 .item[data-open="true"] .answer {
-    max-height: 1000px;
-    /* Approximate max height */
+    animation: revealAnswer 0.25s ease-out;
+}
+
+@keyframes revealAnswer {
+    from {
+        opacity: 0;
+        transform: translateY(-0.4rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .item[data-open="true"] .answer,
+    .icon {
+        animation: none;
+        transition: none;
+    }
 }

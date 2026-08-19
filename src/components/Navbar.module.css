@@ -20,29 +20,22 @@
 
     /* Initial Invisible State */
     opacity: 0;
+    visibility: hidden;
     transform: translateY(-20px);
     pointer-events: none;
     /* Prevent clicks when invisible */
 
     /* Smooth Transition */
-    transition: opacity 0.18s ease-out, transform 0.18s ease-out;
-}
-
-.hoverTrigger {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 96px;
-    z-index: 999;
-    background: transparent;
+    transition: opacity 0.18s ease-out, transform 0.18s ease-out, visibility 0s linear 0.18s;
 }
 
 .navVisible {
     opacity: 1;
+    visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
     /* Enable clicks */
+    transition-delay: 0s;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -176,6 +169,17 @@
     box-shadow: 0 4px 12px rgba(217, 83, 46, 0.4);
 }
 
+.logo:focus-visible,
+.link:focus-visible,
+.contactBtn:focus-visible,
+.hamburger:focus-visible,
+.closeButton:focus-visible,
+.mobileLink:focus-visible,
+.mobileContactBtn:focus-visible {
+    outline: 3px solid var(--amber-light);
+    outline-offset: 3px;
+}
+
 /* Hamburger Menu Button */
 .hamburger {
     display: none;
@@ -245,6 +249,7 @@
     position: fixed;
     top: 0;
     right: -100%;
+    visibility: hidden;
     width: 85%;
     max-width: 400px;
     height: 100vh;
@@ -252,7 +257,7 @@
     backdrop-filter: blur(24px); /* Increased from 20px */
     -webkit-backdrop-filter: blur(24px);
     padding: 0;
-    transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.6s;
     z-index: 999;
     border-left: 1px solid var(--gold); /* Changed from 2px */
     box-shadow: -8px 0 32px rgba(0, 0, 0, 0.7);
@@ -261,6 +266,8 @@
 
 .mobileMenuOpen {
     right: 0;
+    visibility: visible;
+    transition-delay: 0s;
 }
 
 .mobileMenuHeader {
@@ -516,10 +523,6 @@
 
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
-    .hoverTrigger {
-        display: none;
-    }
-
     .links {
         display: none;
     }
@@ -585,6 +588,19 @@
 }
 
 /* Touch device optimizations */
+@media (prefers-reduced-motion: reduce) {
+    .nav,
+    .mobileMenu,
+    .mobileLink,
+    .mobileContactBtn,
+    .closeButton,
+    .hamburger,
+    .hamburger span {
+        animation: none;
+        transition-duration: 0.01ms;
+    }
+}
+
 @media (hover: none) and (pointer: coarse) {
     .link:hover,
     .contactBtn:hover {

@@ -1,3 +1,4 @@
+import { verifyTurnstile } from "../turnstile";
 import { sendCampaignEmail, sendConfirmationEmail } from "./email";
 import type {
   NewsletterCampaign,
@@ -19,7 +20,6 @@ import {
   requireDatabase,
   sanitizeEmailHtml,
   sha256,
-  verifyTurnstile,
   verifyUnsubscribeToken,
 } from "./utils";
 
@@ -61,7 +61,15 @@ async function handleSubscribe(
     return jsonResponse({ success: true, message: GENERIC_SUBSCRIBE_MESSAGE }, 202);
   }
 
-  if (!(await verifyTurnstile(request, payload.turnstileToken, env, "newsletter"))) {
+  if (
+    !(await verifyTurnstile(
+      request,
+      payload.turnstileToken,
+      env,
+      "newsletter",
+      env.NEWSLETTER_REQUIRE_TURNSTILE === "true",
+    ))
+  ) {
     return jsonResponse({ error: "Please complete the security check." }, 400);
   }
 

@@ -1,26 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { TURNSTILE_SITE_KEY } from '../constants';
 import styles from './CTA.module.css';
-
-const TURNSTILE_SITE_KEY = (import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined)
-    ?? '0x4AAAAAAEUrPMX10CXxRobg';
-
-declare global {
-    interface Window {
-        turnstile?: {
-            render: (container: HTMLElement, options: {
-                sitekey: string;
-                action: string;
-                theme: 'dark';
-                callback: (token: string) => void;
-                'expired-callback': () => void;
-                'error-callback': () => void;
-            }) => string;
-            reset: (widgetId: string) => void;
-            remove: (widgetId: string) => void;
-        };
-    }
-}
 
 type SubmitState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -35,10 +16,17 @@ const CTA = () => {
     useEffect(() => {
         let cancelled = false;
         let retryTimer: number | undefined;
+        let retryCount = 0;
 
         const renderWidget = () => {
             if (cancelled || turnstileWidgetIdRef.current) return;
             if (!window.turnstile || !turnstileContainerRef.current) {
+                retryCount += 1;
+                if (retryCount >= 100) {
+                    setSubmitState('error');
+                    setStatusMessage('The security check could not load. Please refresh and try again.');
+                    return;
+                }
                 retryTimer = window.setTimeout(renderWidget, 100);
                 return;
             }
@@ -47,7 +35,11 @@ const CTA = () => {
                 sitekey: TURNSTILE_SITE_KEY,
                 action: 'newsletter',
                 theme: 'dark',
-                callback: (token) => setTurnstileToken(token),
+                callback: (token) => {
+                    setTurnstileToken(token);
+                    setSubmitState('idle');
+                    setStatusMessage('');
+                },
                 'expired-callback': () => setTurnstileToken(null),
                 'error-callback': () => {
                     setTurnstileToken(null);

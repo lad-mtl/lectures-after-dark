@@ -52,6 +52,10 @@ cp .dev.vars.example .dev.vars
 Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
 Events and Instagram posts are read from Strapi through the Worker. If you sync Eventbrite or Instagram data with a cron job, write those records into Strapi instead of exposing third-party API tokens to the Worker or browser.
 
+## Contact Form Protection
+
+The contact form uses the same Turnstile widget and secret as the newsletter, with the distinct `contact` action. Production verifies the token action and hostname in the Worker, then applies the `CONTACT_RATE_LIMITER` binding at five verified submissions per minute for both the source IP and normalized email address. Set `CONTACT_REQUIRE_TURNSTILE=true` and `CONTACT_REQUIRE_RATE_LIMIT=true` in production; local defaults remain optional in `.dev.vars.example`.
+
 ## Newsletter
 
 The newsletter uses Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron Triggers, and Access. It includes double opt-in, a WYSIWYG/HTML campaign studio at `/newsletter/admin`, scheduled delivery, one-click unsubscribe, delivery event processing, and Eventbrite `event.published` automation.

@@ -4,6 +4,8 @@ STRAPI_TIMEOUT_MS=3000
 CONTACT_FROM_EMAIL=Lectures After Dark <contact-form@mail.lecturesafterdark.ca>
 CONTACT_CORE_EMAIL=core@lecturesafterdark.ca
 CONTACT_MARKETING_EMAIL=marketing@lecturesafterdark.ca
+CONTACT_REQUIRE_RATE_LIMIT=false
+CONTACT_REQUIRE_TURNSTILE=false
 
 # Newsletter configuration. Cloudflare bindings are configured in wrangler.toml.
 SITE_URL=http://127.0.0.1:8787

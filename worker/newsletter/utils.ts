@@ -157,15 +157,7 @@ export function getAdminEmail(request: Request, env: NewsletterEnv) {
     return "local-admin@lecturesafterdark.ca";
   }
 
-  const email = request.headers.get("cf-access-authenticated-user-email")?.trim().toLowerCase();
-  if (!email) return null;
-
-  const allowed = (env.NEWSLETTER_ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((entry) => entry.trim().toLowerCase())
-    .filter(Boolean);
-
-  return allowed.includes(email) ? email : null;
+  return request.headers.get("cf-access-authenticated-user-email")?.trim().toLowerCase() || null;
 }
 
 export async function verifyTurnstile(

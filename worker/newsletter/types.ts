@@ -28,7 +28,6 @@ export interface NewsletterEnv {
   NEWSLETTER_FROM_EMAIL?: string;
   NEWSLETTER_REPLY_TO?: string;
   NEWSLETTER_TOKEN_SECRET?: string;
-  NEWSLETTER_ADMIN_EMAILS?: string;
   NEWSLETTER_ALLOW_LOCAL_ADMIN?: string;
   NEWSLETTER_ASSET_BASE_URL?: string;
   TURNSTILE_SECRET_KEY?: string;

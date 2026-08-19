@@ -109,7 +109,7 @@ Create a Cloudflare Access self-hosted application protecting both paths:
 - `lecturesafterdark.ca/newsletter/admin*`
 - `lecturesafterdark.ca/api/newsletter/admin/*`
 
-Allow only the addresses listed in `NEWSLETTER_ADMIN_EMAILS`. The Worker also verifies Cloudflare's `Cf-Access-Authenticated-User-Email` header against this allowlist. Do not expose the admin API without the Access policy.
+Configure the Access policy with the users or identity groups that should manage newsletters. The Worker accepts any identity authenticated by that policy and records Cloudflare's `Cf-Access-Authenticated-User-Email` value for campaign attribution. Do not expose the admin API without the Access policy.
 
 For local Wrangler development only, `NEWSLETTER_ALLOW_LOCAL_ADMIN=true` permits requests from `localhost` or `127.0.0.1`.
 

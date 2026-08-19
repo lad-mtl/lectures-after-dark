@@ -9,7 +9,6 @@ CONTACT_MARKETING_EMAIL=marketing@lecturesafterdark.ca
 SITE_URL=http://127.0.0.1:8787
 NEWSLETTER_FROM_EMAIL=Lectures After Dark <newsletter@mail.lecturesafterdark.ca>
 NEWSLETTER_REPLY_TO=marketing@lecturesafterdark.ca
-NEWSLETTER_ADMIN_EMAILS=core@lecturesafterdark.ca,marketing@lecturesafterdark.ca
 NEWSLETTER_ALLOW_LOCAL_ADMIN=true
 NEWSLETTER_TOKEN_SECRET=
 NEWSLETTER_ASSET_BASE_URL=

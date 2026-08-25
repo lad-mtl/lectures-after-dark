@@ -17,6 +17,15 @@ export type NewsletterQueueMessage =
   | {
       kind: "send-campaign-email";
       deliveryId: string;
+    }
+  | {
+      kind: "dispatch-event-feedback";
+      campaignId: string;
+      cursor?: string;
+    }
+  | {
+      kind: "send-event-feedback-email";
+      deliveryId: string;
     };
 
 export interface NewsletterEnv {
@@ -38,6 +47,10 @@ export interface NewsletterEnv {
   EVENTBRITE_ORGANIZER_ID?: string;
   EVENTBRITE_WEBHOOK_SECRET?: string;
   EVENTBRITE_SEND_DELAY_MINUTES?: string;
+  EVENT_FEEDBACK_ENABLED?: string;
+  EVENT_FEEDBACK_FORM_URL?: string;
+  EVENT_FEEDBACK_SEND_HOUR?: string;
+  EVENT_FEEDBACK_FROM_EMAIL?: string;
 }
 
 export interface NewsletterCampaign {
@@ -68,6 +81,31 @@ export interface NewsletterDelivery {
   id: string;
   campaign_id: string;
   subscriber_id: string;
+  status: "queued" | "sending" | "sent" | "delivered" | "deferred" | "bounced" | "complained" | "failed";
+  message_id: string | null;
+}
+
+export interface EventFeedbackCampaign {
+  id: string;
+  eventbrite_event_id: string;
+  event_name: string;
+  event_timezone: string;
+  subject: string;
+  preview_text: string;
+  body_html: string;
+  body_text: string;
+  status: "scheduled" | "sending" | "sent" | "cancelled";
+  scheduled_at: string;
+  created_at: string;
+  updated_at: string;
+  sent_at: string | null;
+}
+
+export interface EventFeedbackDelivery {
+  id: string;
+  campaign_id: string;
+  eventbrite_attendee_id: string;
+  recipient_email: string;
   status: "queued" | "sending" | "sent" | "delivered" | "deferred" | "bounced" | "complained" | "failed";
   message_id: string | null;
 }

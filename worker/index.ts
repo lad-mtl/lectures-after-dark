@@ -2,6 +2,7 @@ import { handleContentRequest } from "./content";
 import { handleContactRequest } from "./contact";
 import { handleNewsletterRequest } from "./newsletter/api";
 import { handleEventbriteWebhook } from "./newsletter/eventbrite";
+import { dispatchDueEventFeedback } from "./newsletter/feedback";
 import { dispatchDueCampaigns, handleNewsletterQueue } from "./newsletter/queue";
 import type { NewsletterEnv } from "./newsletter/types";
 
@@ -86,5 +87,6 @@ export default {
 
   async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
     await dispatchDueCampaigns(env);
+    await dispatchDueEventFeedback(env);
   },
 };

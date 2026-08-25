@@ -67,7 +67,8 @@ const PrivacyPolicy = () => {
                     <p>
                         Ticket purchases and event registrations are handled by Eventbrite. Payment and attendee
                         information entered on Eventbrite is collected under Eventbrite&apos;s privacy policy. We may
-                        receive event-management information that Eventbrite makes available to organizers.
+                        receive event-management information that Eventbrite makes available to organizers, including
+                        check-in status and attendee email addresses used to request feedback after an event.
                     </p>
                 </section>
 
@@ -77,6 +78,7 @@ const PrivacyPolicy = () => {
                         <li>Send event announcements and newsletter content you requested.</li>
                         <li>Confirm subscriptions and process unsubscribe requests.</li>
                         <li>Respond to questions, speaker proposals, and partnership inquiries.</li>
+                        <li>Ask checked-in attendees for feedback about the event they attended.</li>
                         <li>Operate, secure, troubleshoot, and improve our website and services.</li>
                         <li>Understand website performance and audience engagement.</li>
                         <li>Manage events and comply with legal, regulatory, and anti-spam obligations.</li>
@@ -92,7 +94,7 @@ const PrivacyPolicy = () => {
                     <h2>4. Service providers and disclosures</h2>
                     <p>We use service providers that process information on our behalf, including:</p>
                     <ul>
-                        <li><strong>Cloudflare</strong> for website delivery, security, Turnstile, database storage, file storage, queues, and newsletter and contact-form email delivery.</li>
+                        <li><strong>Cloudflare</strong> for website delivery, security, Turnstile, database storage, file storage, queues, and newsletter, event-feedback, and contact-form email delivery.</li>
                         <li><strong>Google Analytics</strong> for website measurement when analytics is enabled.</li>
                         <li><strong>Eventbrite</strong> for event listings, registration, and ticketing.</li>
                         <li><strong>Our content-management hosting providers</strong> for operating the website.</li>
@@ -120,8 +122,10 @@ const PrivacyPolicy = () => {
                         We retain personal information only as long as reasonably necessary for the purposes described
                         above and for legal, security, and record-keeping obligations. Newsletter records are generally
                         retained while your subscription is active. After an unsubscribe, bounce, or complaint, we may
-                        retain limited suppression information to ensure we do not send further messages. Contact
-                        correspondence is retained as needed to address the inquiry and maintain appropriate records.
+                        retain limited suppression information to ensure we do not send further messages. Event-feedback
+                        delivery records are retained only as needed to deliver the request, diagnose delivery issues,
+                        and maintain opt-out, bounce, or complaint suppressions. Contact correspondence is retained as
+                        needed to address the inquiry and maintain appropriate records.
                     </p>
                 </section>
 
@@ -144,8 +148,8 @@ const PrivacyPolicy = () => {
                         <li>Ask questions or make a complaint about our privacy practices.</li>
                     </ul>
                     <p>
-                        You can unsubscribe from newsletter emails at any time using the link in each message. For
-                        other requests, email <a href="mailto:core@lecturesafterdark.ca">core@lecturesafterdark.ca</a>.
+                        You can unsubscribe from newsletter or post-event feedback emails at any time using the link
+                        in each message. For other requests, email <a href="mailto:core@lecturesafterdark.ca">core@lecturesafterdark.ca</a>.
                         We may need to verify your identity before completing a request.
                     </p>
                 </section>

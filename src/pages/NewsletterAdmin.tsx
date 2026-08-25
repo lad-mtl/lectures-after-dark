@@ -39,10 +39,22 @@ interface Campaign {
     sent_at: string | null;
 }
 
+interface FeedbackCampaign {
+    id: string;
+    eventbrite_event_id: string;
+    event_name: string;
+    status: 'scheduled' | 'sending' | 'sent' | 'cancelled';
+    scheduled_at: string;
+    sent_at: string | null;
+    recipient_count: number;
+    sent_count: number;
+}
+
 interface CampaignListResponse {
     adminEmail: string;
     subscriberCount: number;
     campaigns: Campaign[];
+    feedbackCampaigns: FeedbackCampaign[];
     error?: string;
 }
 
@@ -87,6 +99,8 @@ async function apiRequest<T>(url: string, init?: RequestInit) {
 
 const NewsletterAdmin = () => {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [feedbackCampaigns, setFeedbackCampaigns] = useState<FeedbackCampaign[]>([]);
+    const [eventbriteEventId, setEventbriteEventId] = useState('');
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [name, setName] = useState('');
     const [subject, setSubject] = useState('');
@@ -136,6 +150,7 @@ const NewsletterAdmin = () => {
     const loadCampaigns = async (preferredId?: string) => {
         const result = await apiRequest<CampaignListResponse>('/api/newsletter/admin/campaigns');
         setCampaigns(result.campaigns);
+        setFeedbackCampaigns(result.feedbackCampaigns);
         setSubscriberCount(result.subscriberCount);
         setAdminEmail(result.adminEmail);
         if (preferredId) setSelectedId(preferredId);
@@ -147,6 +162,7 @@ const NewsletterAdmin = () => {
             .then((result) => {
                 if (!active) return;
                 setCampaigns(result.campaigns);
+                setFeedbackCampaigns(result.feedbackCampaigns);
                 setSubscriberCount(result.subscriberCount);
                 setAdminEmail(result.adminEmail);
                 setTestEmail(result.adminEmail);
@@ -292,6 +308,41 @@ const NewsletterAdmin = () => {
         }
     };
 
+    const addFeedbackCampaign = async () => {
+        if (!eventbriteEventId.trim() || actionBusy) return;
+        setActionBusy(true);
+        setErrorMessage('');
+        try {
+            await apiRequest('/api/newsletter/admin/feedback', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ eventId: eventbriteEventId.trim() }),
+            });
+            await loadCampaigns();
+            setEventbriteEventId('');
+            setStatusMessage('Event feedback email scheduled for 10:00 a.m. after the event.');
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Unable to schedule event feedback.');
+        } finally {
+            setActionBusy(false);
+        }
+    };
+
+    const cancelFeedbackCampaign = async (campaign: FeedbackCampaign) => {
+        if (actionBusy) return;
+        setActionBusy(true);
+        setErrorMessage('');
+        try {
+            await apiRequest(`/api/newsletter/admin/feedback/${campaign.id}/cancel`, { method: 'POST' });
+            await loadCampaigns();
+            setStatusMessage(`Feedback email for ${campaign.event_name} cancelled.`);
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Unable to cancel event feedback.');
+        } finally {
+            setActionBusy(false);
+        }
+    };
+
     const addLink = () => {
         const href = window.prompt('Link URL');
         if (href) editor?.chain().focus().extendMarkRange('link').setLink({ href }).run();
@@ -370,6 +421,38 @@ const NewsletterAdmin = () => {
                             <span>{campaign.name}</span>
                             <small>{campaign.status}{campaign.eventbrite_event_id ? ' · Eventbrite' : ''}</small>
                         </button>
+                    ))}
+
+                    <div className={styles.feedbackHeader}>
+                        <h2>Event feedback</h2>
+                        <p>Checked-in attendees · next morning at 10</p>
+                    </div>
+                    <div className={styles.feedbackCreate}>
+                        <input
+                            value={eventbriteEventId}
+                            onChange={(event) => setEventbriteEventId(event.target.value)}
+                            inputMode="numeric"
+                            placeholder="Eventbrite event ID"
+                            aria-label="Eventbrite event ID"
+                        />
+                        <button type="button" onClick={() => void addFeedbackCampaign()} disabled={actionBusy || !eventbriteEventId.trim()}>
+                            Add
+                        </button>
+                    </div>
+                    {feedbackCampaigns.length === 0 && <p className={styles.empty}>No feedback emails yet.</p>}
+                    {feedbackCampaigns.map((campaign) => (
+                        <div className={styles.feedbackItem} key={campaign.id}>
+                            <span>{campaign.event_name}</span>
+                            <small>
+                                {campaign.status} · {campaign.sent_count}/{campaign.recipient_count} sent<br />
+                                {new Date(campaign.scheduled_at).toLocaleString()}
+                            </small>
+                            {campaign.status === 'scheduled' && (
+                                <button type="button" onClick={() => void cancelFeedbackCampaign(campaign)} disabled={actionBusy}>
+                                    Cancel
+                                </button>
+                            )}
+                        </div>
                     ))}
                 </aside>
 

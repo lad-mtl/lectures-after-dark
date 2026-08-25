@@ -13,6 +13,11 @@ const statusContent = {
         title: 'You’ve been unsubscribed',
         message: 'You will no longer receive Lectures After Dark newsletter emails.',
     },
+    'feedback-unsubscribed': {
+        icon: CheckCircle2,
+        title: 'You’ve been unsubscribed',
+        message: 'You will no longer receive post-event feedback emails from Lectures After Dark.',
+    },
     invalid: {
         icon: XCircle,
         title: 'This link is no longer valid',
@@ -28,7 +33,7 @@ const statusContent = {
 const NewsletterStatus = () => {
     const [searchParams] = useSearchParams();
     const state = searchParams.get('state');
-    const content = state === 'confirmed' || state === 'unsubscribed' || state === 'invalid'
+    const content = state === 'confirmed' || state === 'unsubscribed' || state === 'feedback-unsubscribed' || state === 'invalid'
         ? statusContent[state]
         : statusContent.default;
     const Icon = content.icon;
@@ -42,7 +47,7 @@ const NewsletterStatus = () => {
                 </header>
                 <div className={styles.cardBody}>
                     <Icon className={styles.icon} size={38} aria-hidden="true" />
-                    <p className={styles.eyebrow}>Newsletter</p>
+                    <p className={styles.eyebrow}>{state === 'feedback-unsubscribed' ? 'Event feedback' : 'Newsletter'}</p>
                     <h1 className={styles.title}>{content.title}</h1>
                     <p className={styles.message}>{content.message}</p>
                     <Link to="/" className={styles.link}>Return home</Link>

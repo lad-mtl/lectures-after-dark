@@ -1,5 +1,6 @@
 import { verifyTurnstile } from "../turnstile";
 import { sendCampaignEmail, sendConfirmationEmail } from "./email";
+import { createFeedbackCampaignForEventId } from "./eventbrite";
 import type {
   NewsletterCampaign,
   NewsletterEnv,
@@ -20,6 +21,7 @@ import {
   requireDatabase,
   sanitizeEmailHtml,
   sha256,
+  verifyFeedbackUnsubscribeToken,
   verifyUnsubscribeToken,
 } from "./utils";
 
@@ -177,6 +179,37 @@ async function handleConfirmation(request: Request, env: NewsletterEnv) {
   return Response.redirect(stateUrl.toString(), 303);
 }
 
+async function handleFeedbackUnsubscribe(request: Request, env: NewsletterEnv) {
+  const url = new URL(request.url);
+  let token = url.searchParams.get("token") ?? "";
+
+  if (request.method === "POST" && request.headers.get("content-type")?.includes("application/x-www-form-urlencoded")) {
+    const form = await request.formData();
+    token = typeof form.get("token") === "string" ? String(form.get("token")) : token;
+  }
+
+  const email = await verifyFeedbackUnsubscribeToken(token, env);
+  let matched = false;
+  if (email) {
+    const now = new Date().toISOString();
+    const result = await requireDatabase(env)
+      .prepare(
+        `INSERT INTO event_feedback_suppressions (email, reason, created_at, updated_at)
+         VALUES (?1, 'unsubscribed', ?2, ?2)
+         ON CONFLICT(email) DO UPDATE SET reason = 'unsubscribed', updated_at = excluded.updated_at`,
+      )
+      .bind(email, now)
+      .run();
+    matched = result.meta.changes > 0;
+  }
+
+  if (request.method === "POST") return jsonResponse({ success: true });
+
+  const stateUrl = new URL("/newsletter", getSiteUrl(env));
+  stateUrl.searchParams.set("state", matched ? "feedback-unsubscribed" : "invalid");
+  return Response.redirect(stateUrl.toString(), 303);
+}
+
 async function handleUnsubscribe(request: Request, env: NewsletterEnv) {
   const url = new URL(request.url);
   let token = url.searchParams.get("token") ?? "";
@@ -235,15 +268,54 @@ async function listCampaigns(env: NewsletterEnv, adminEmail: string) {
        FROM newsletter_campaigns ORDER BY created_at DESC LIMIT 100`,
     )
     .all<NewsletterCampaign>();
-  const subscriberCount = await db
-    .prepare("SELECT COUNT(*) AS count FROM newsletter_subscribers WHERE status = 'subscribed'")
-    .first<{ count: number }>();
+  const [subscriberCount, feedbackCampaigns] = await Promise.all([
+    db
+      .prepare("SELECT COUNT(*) AS count FROM newsletter_subscribers WHERE status = 'subscribed'")
+      .first<{ count: number }>(),
+    db
+      .prepare(
+        `SELECT campaign.id, campaign.eventbrite_event_id, campaign.event_name, campaign.status,
+                campaign.scheduled_at, campaign.sent_at,
+                COUNT(delivery.id) AS recipient_count,
+                COALESCE(SUM(CASE WHEN delivery.status IN ('sent', 'delivered') THEN 1 ELSE 0 END), 0) AS sent_count
+         FROM event_feedback_campaigns AS campaign
+         LEFT JOIN event_feedback_deliveries AS delivery ON delivery.campaign_id = campaign.id
+         GROUP BY campaign.id
+         ORDER BY campaign.scheduled_at DESC LIMIT 100`,
+      )
+      .all(),
+  ]);
 
   return jsonResponse({
     adminEmail,
     subscriberCount: subscriberCount?.count ?? 0,
     campaigns: campaigns.results,
+    feedbackCampaigns: feedbackCampaigns.results,
   });
+}
+
+async function createFeedbackCampaign(request: Request, env: NewsletterEnv) {
+  const payload = await readJson<{ eventId?: unknown }>(request);
+  const eventId = normalizeText(payload?.eventId, 40);
+  if (!/^\d+$/.test(eventId)) return jsonResponse({ error: "Enter a valid Eventbrite event ID." }, 400);
+
+  await createFeedbackCampaignForEventId(env, eventId);
+  return jsonResponse({ success: true }, 201);
+}
+
+async function cancelFeedbackCampaign(env: NewsletterEnv, campaignId: string) {
+  const result = await requireDatabase(env)
+    .prepare(
+      `UPDATE event_feedback_campaigns SET status = 'cancelled', updated_at = ?2
+       WHERE id = ?1 AND status = 'scheduled'`,
+    )
+    .bind(campaignId, new Date().toISOString())
+    .run();
+  if (!result.meta.changes) {
+    return jsonResponse({ error: "Only scheduled feedback emails can be cancelled." }, 409);
+  }
+
+  return jsonResponse({ success: true });
 }
 
 async function createCampaign(request: Request, env: NewsletterEnv, adminEmail: string) {
@@ -448,6 +520,9 @@ async function handleAdminRequest(request: Request, env: NewsletterEnv) {
   const campaignIndex = segments.indexOf("campaigns");
   const campaignId = campaignIndex >= 0 ? segments[campaignIndex + 1] : undefined;
   const action = campaignIndex >= 0 ? segments[campaignIndex + 2] : undefined;
+  const feedbackIndex = segments.indexOf("feedback");
+  const feedbackCampaignId = feedbackIndex >= 0 ? segments[feedbackIndex + 1] : undefined;
+  const feedbackAction = feedbackIndex >= 0 ? segments[feedbackIndex + 2] : undefined;
 
   if (url.pathname === "/api/newsletter/admin/campaigns" && request.method === "GET") {
     return listCampaigns(env, adminEmail);
@@ -457,6 +532,12 @@ async function handleAdminRequest(request: Request, env: NewsletterEnv) {
   }
   if (url.pathname === "/api/newsletter/admin/assets" && request.method === "POST") {
     return uploadAsset(request, env);
+  }
+  if (url.pathname === "/api/newsletter/admin/feedback" && request.method === "POST") {
+    return createFeedbackCampaign(request, env);
+  }
+  if (feedbackCampaignId && feedbackAction === "cancel" && request.method === "POST") {
+    return cancelFeedbackCampaign(env, feedbackCampaignId);
   }
   if (campaignId && !action && request.method === "PUT") {
     return updateCampaign(request, env, campaignId);
@@ -496,6 +577,12 @@ export async function handleNewsletterRequest(
       (request.method === "GET" || request.method === "POST")
     ) {
       return await handleUnsubscribe(request, env);
+    }
+    if (
+      url.pathname === "/api/newsletter/feedback/unsubscribe" &&
+      (request.method === "GET" || request.method === "POST")
+    ) {
+      return await handleFeedbackUnsubscribe(request, env);
     }
     if (url.pathname.startsWith("/api/newsletter/admin/")) {
       return await handleAdminRequest(request, env);

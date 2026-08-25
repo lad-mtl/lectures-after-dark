@@ -1,3 +1,4 @@
+import { createEventFeedbackCampaign } from "./feedback";
 import type { NewsletterEnv, NewsletterQueueMessage } from "./types";
 import {
   escapeHtml,
@@ -15,13 +16,14 @@ interface EventbriteWebhookPayload {
   };
 }
 
-interface EventbriteEvent {
+export interface EventbriteEvent {
   id?: string;
   organizer_id?: string;
   status?: string;
   name?: { text?: string };
   description?: { text?: string };
   start?: { local?: string; utc?: string; timezone?: string };
+  end?: { local?: string; utc?: string; timezone?: string };
   url?: string;
   logo?: { original?: { url?: string }; url?: string } | null;
   venue?: {
@@ -72,7 +74,12 @@ export async function handleEventbriteWebhook(request: Request, env: NewsletterE
     return jsonResponse({ error: "Eventbrite webhook is not configured." }, 503);
   }
 
-  const suppliedSecret = decodeURIComponent(url.pathname.slice("/api/webhooks/eventbrite/".length));
+  let suppliedSecret: string;
+  try {
+    suppliedSecret = decodeURIComponent(url.pathname.slice("/api/webhooks/eventbrite/".length));
+  } catch {
+    return jsonResponse({ error: "Not found." }, 404);
+  }
   if (!secretMatches(suppliedSecret, env.EVENTBRITE_WEBHOOK_SECRET)) {
     return jsonResponse({ error: "Not found." }, 404);
   }
@@ -161,12 +168,7 @@ function eventAnnouncementHtml(event: EventbriteEvent) {
     <p style="margin:30px 0;text-align:center;"><a href="${escapeHtml(eventUrl)}" style="display:inline-block;background:#ff6f00;color:#1a1612;padding:15px 26px;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">View event &amp; get tickets</a></p>`;
 }
 
-export async function createCampaignFromEventbrite(options: {
-  env: NewsletterEnv;
-  eventId: string;
-  webhookEventId: string;
-}) {
-  const { env, eventId, webhookEventId } = options;
+export async function fetchEventbriteEvent(env: NewsletterEnv, eventId: string) {
   const eventbriteToken = env.EVENTBRITE_API_TOKEN ?? env.EVENTBRITE_PRIVATE_TOKEN;
   if (!eventbriteToken) throw new Error("Eventbrite API token is not configured.");
 
@@ -178,7 +180,38 @@ export async function createCampaignFromEventbrite(options: {
     throw new Error(`Eventbrite event fetch failed with status ${response.status}.`);
   }
 
-  const event = (await response.json()) as EventbriteEvent;
+  return (await response.json()) as EventbriteEvent;
+}
+
+function feedbackDetails(event: EventbriteEvent, eventId: string) {
+  const endUtc = event.end?.utc;
+  if (!endUtc) throw new Error("Eventbrite event end time is missing.");
+
+  return {
+    id: eventId,
+    name: event.name?.text?.trim() || "Lectures After Dark",
+    endUtc,
+    timezone: event.end?.timezone ?? event.start?.timezone ?? "America/Toronto",
+  };
+}
+
+export async function createFeedbackCampaignForEventId(env: NewsletterEnv, eventId: string) {
+  const event = await fetchEventbriteEvent(env, eventId);
+  if (event.id !== eventId) throw new Error("Eventbrite returned a different event.");
+  if (env.EVENTBRITE_ORGANIZER_ID && event.organizer_id !== env.EVENTBRITE_ORGANIZER_ID) {
+    throw new Error("Eventbrite event does not belong to the configured organizer.");
+  }
+
+  await createEventFeedbackCampaign(env, feedbackDetails(event, eventId));
+}
+
+export async function createCampaignFromEventbrite(options: {
+  env: NewsletterEnv;
+  eventId: string;
+  webhookEventId: string;
+}) {
+  const { env, eventId, webhookEventId } = options;
+  const event = await fetchEventbriteEvent(env, eventId);
   if (event.id !== eventId || event.status !== "live") {
     throw new Error("Eventbrite event is not a live matching event.");
   }
@@ -213,6 +246,8 @@ export async function createCampaignFromEventbrite(options: {
       now.toISOString(),
     )
     .run();
+
+  await createEventFeedbackCampaign(env, feedbackDetails(event, eventId));
 
   await db
     .prepare(

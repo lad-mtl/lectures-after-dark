@@ -1,5 +1,10 @@
 import { sendCampaignEmail, sendConfirmationEmail } from "./email";
 import {
+  dispatchEventFeedback,
+  recordEventFeedbackEmailEvent,
+  sendEventFeedbackDelivery,
+} from "./feedback";
+import {
   createCampaignFromEventbrite,
   recordEventbriteWebhookError,
 } from "./eventbrite";
@@ -20,6 +25,8 @@ function isNewsletterQueueMessage(value: unknown): value is NewsletterQueueMessa
     "eventbrite-published",
     "dispatch-campaign",
     "send-campaign-email",
+    "dispatch-event-feedback",
+    "send-event-feedback-email",
   ].includes(String(value.kind));
 }
 
@@ -223,6 +230,8 @@ async function processEmailSendingEvent(env: NewsletterEnv, event: EmailSendingE
   ) return;
   const deliveryStatus = eventStatus === "rejected" ? "failed" : eventStatus;
 
+  if (await recordEventFeedbackEmailEvent(env, event, deliveryStatus)) return;
+
   await db
     .prepare(
       `UPDATE newsletter_deliveries SET status = ?2, updated_at = ?3
@@ -268,6 +277,10 @@ async function processNewsletterMessage(env: NewsletterEnv, message: NewsletterQ
       return dispatchCampaign(env, message);
     case "send-campaign-email":
       return sendDelivery(env, message);
+    case "dispatch-event-feedback":
+      return dispatchEventFeedback(env, message.campaignId, message.cursor);
+    case "send-event-feedback-email":
+      return sendEventFeedbackDelivery(env, message.deliveryId);
   }
 }
 

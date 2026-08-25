@@ -1,8 +1,8 @@
-import type { NewsletterCampaign, NewsletterEnv } from "./types";
+import type { EventFeedbackCampaign, NewsletterCampaign, NewsletterEnv } from "./types";
 import { escapeHtml, getSiteUrl } from "./utils";
 
-function sender(env: NewsletterEnv): string | EmailAddress {
-  const configured = env.NEWSLETTER_FROM_EMAIL ?? "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>";
+function sender(env: NewsletterEnv, override?: string): string | EmailAddress {
+  const configured = override ?? env.NEWSLETTER_FROM_EMAIL ?? "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>";
   const namedAddress = configured.match(/^(.+?)\s*<([^<>]+)>$/);
   if (!namedAddress) return configured;
 
@@ -16,9 +16,10 @@ function emailShell(options: {
   previewText: string;
   content: string;
   unsubscribeUrl?: string;
+  unsubscribeReason?: string;
 }) {
   const unsubscribe = options.unsubscribeUrl
-    ? `<p style="margin:24px 0 0;color:#9c8e82;font-size:12px;line-height:1.6;text-align:center;">You are receiving this because you joined the Lectures After Dark newsletter.<br><a href="${escapeHtml(options.unsubscribeUrl)}" style="color:#ff8833;text-decoration:underline;">Unsubscribe</a></p>`
+    ? `<p style="margin:24px 0 0;color:#9c8e82;font-size:12px;line-height:1.6;text-align:center;">${escapeHtml(options.unsubscribeReason ?? "You are receiving this because you joined the Lectures After Dark newsletter.")}<br><a href="${escapeHtml(options.unsubscribeUrl)}" style="color:#ff8833;text-decoration:underline;">Unsubscribe</a></p>`
     : "";
 
   return `<!doctype html>
@@ -118,6 +119,42 @@ export async function sendCampaignEmail(options: {
     text: unsubscribeUrl
       ? `${options.campaign.body_text}\n\nUnsubscribe: ${unsubscribeUrl}`
       : options.campaign.body_text,
+    headers,
+  });
+}
+
+export async function sendEventFeedbackEmail(options: {
+  env: NewsletterEnv;
+  campaign: EventFeedbackCampaign;
+  email: string;
+  unsubscribeToken: string;
+  deliveryId: string;
+}) {
+  if (!options.env.EMAIL) {
+    throw new Error("Cloudflare Email Sending binding is not configured.");
+  }
+
+  const unsubscribeUrl = `${getSiteUrl(options.env)}/api/newsletter/feedback/unsubscribe?token=${encodeURIComponent(options.unsubscribeToken)}`;
+  const headers: Record<string, string> = {
+    "List-Id": "Lectures After Dark Event Feedback <feedback.lecturesafterdark.ca>",
+    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    "X-Feedback-Campaign-ID": options.campaign.id,
+    "X-Delivery-ID": options.deliveryId,
+  };
+
+  return options.env.EMAIL.send({
+    from: sender(options.env, options.env.EVENT_FEEDBACK_FROM_EMAIL),
+    to: options.email,
+    replyTo: options.env.NEWSLETTER_REPLY_TO,
+    subject: options.campaign.subject,
+    html: emailShell({
+      previewText: options.campaign.preview_text,
+      content: options.campaign.body_html,
+      unsubscribeUrl,
+      unsubscribeReason: `You are receiving this because you checked in at ${options.campaign.event_name}.`,
+    }),
+    text: `${options.campaign.body_text}\n\nYou are receiving this because you checked in at ${options.campaign.event_name}.\nUnsubscribe from event feedback emails: ${unsubscribeUrl}`,
     headers,
   });
 }

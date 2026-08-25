@@ -111,6 +111,10 @@ export async function createUnsubscribeToken(subscriberId: string, env: Newslett
   return `${payload}.${await hmac(payload, env.NEWSLETTER_TOKEN_SECRET)}`;
 }
 
+export async function createFeedbackUnsubscribeToken(email: string, env: NewsletterEnv) {
+  return createUnsubscribeToken(`event-feedback:${normalizeEmail(email)}`, env);
+}
+
 export async function verifyUnsubscribeToken(token: string, env: NewsletterEnv) {
   if (!env.NEWSLETTER_TOKEN_SECRET) return null;
   const [payload, suppliedSignature, extra] = token.split(".");
@@ -132,6 +136,14 @@ export async function verifyUnsubscribeToken(token: string, env: NewsletterEnv) 
   } catch {
     return null;
   }
+}
+
+export async function verifyFeedbackUnsubscribeToken(token: string, env: NewsletterEnv) {
+  const value = await verifyUnsubscribeToken(token, env);
+  if (!value?.startsWith("event-feedback:")) return null;
+
+  const email = normalizeEmail(value.slice("event-feedback:".length));
+  return isValidEmail(email) ? email : null;
 }
 
 export function getSiteUrl(env: NewsletterEnv) {

@@ -122,6 +122,80 @@
     text-transform: uppercase;
 }
 
+.feedbackHeader {
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(245, 240, 232, 0.12);
+}
+
+.feedbackHeader h2 {
+    margin-bottom: 0.25rem;
+}
+
+.feedbackHeader p {
+    margin-bottom: 0.75rem;
+    color: #83766c;
+    font-size: 0.72rem;
+}
+
+.feedbackCreate {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.feedbackCreate input {
+    min-width: 0;
+    width: 100%;
+    padding: 0.55rem;
+    border: 1px solid rgba(245, 240, 232, 0.18);
+    background: #15110f;
+    color: var(--cream);
+}
+
+.feedbackCreate button,
+.feedbackItem button {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgba(255, 111, 0, 0.45);
+    background: transparent;
+    color: var(--amber);
+    cursor: pointer;
+}
+
+.feedbackCreate button:disabled,
+.feedbackItem button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.feedbackItem {
+    margin-bottom: 0.6rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(245, 240, 232, 0.1);
+    color: var(--cream);
+}
+
+.feedbackItem span,
+.feedbackItem small {
+    display: block;
+}
+
+.feedbackItem span {
+    overflow: hidden;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.feedbackItem small {
+    margin: 0.3rem 0 0.55rem;
+    color: #94867a;
+    font-size: 0.68rem;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
 .editorPanel {
     min-width: 0;
     padding: clamp(1rem, 3vw, 2rem);

@@ -23,7 +23,10 @@ migrations_dir = "worker/migrations"
 
 [[send_email]]
 name = "EMAIL"
-allowed_sender_addresses = ["newsletter@mail.lecturesafterdark.ca"]
+allowed_sender_addresses = [
+  "newsletter@mail.lecturesafterdark.ca",
+  "feedback@mail.lecturesafterdark.ca",
+]
 
 [[queues.producers]]
 binding = "NEWSLETTER_QUEUE"
@@ -63,7 +66,7 @@ In **Cloudflare Dashboard → Compute → Email Service → Email Sending**:
 
 1. Onboard `mail.lecturesafterdark.ca` as the sending domain.
 2. Confirm its SPF, DKIM, DMARC, and bounce records.
-3. Keep `newsletter@mail.lecturesafterdark.ca` in the Worker's sender allowlist.
+3. Keep `newsletter@mail.lecturesafterdark.ca` and `feedback@mail.lecturesafterdark.ca` in the Worker's sender allowlist.
 4. Create an Email Sending event subscription targeting `lectures-after-dark-email-events` for:
    - `message.delivered`
    - `message.deferred`
@@ -121,9 +124,20 @@ Create an Eventbrite webhook for the `event.published` action using:
 https://lecturesafterdark.ca/api/webhooks/eventbrite/<EVENTBRITE_WEBHOOK_SECRET>
 ```
 
-The Worker treats the webhook as a notification only. It extracts the numeric event ID, fetches the event from Eventbrite using `EVENTBRITE_API_TOKEN`, verifies its organizer ID, and then creates a scheduled campaign. It never fetches an arbitrary URL supplied by the webhook.
+The Worker treats the webhook as a notification only. It extracts the numeric event ID, fetches the event from Eventbrite using `EVENTBRITE_API_TOKEN`, verifies its organizer ID, and then creates both the scheduled announcement campaign and a post-event feedback job. It never fetches an arbitrary URL supplied by the webhook.
 
-The default cancellation window is ten minutes (`EVENTBRITE_SEND_DELAY_MINUTES`). Duplicate publication callbacks for the same event are ignored.
+The announcement cancellation window defaults to ten minutes (`EVENTBRITE_SEND_DELAY_MINUTES`). The feedback job runs at 10:00 a.m. in the event's timezone on the morning after the event ends, fetches the event's paginated attendee list, and sends only to active attendees whose Eventbrite record has `checked_in = true`. Duplicate publication callbacks and duplicate attendee email addresses are ignored. Feedback recipients remain separate from newsletter subscribers and have a dedicated opt-out suppression list.
+
+Configure the behavior with:
+
+```dotenv
+EVENT_FEEDBACK_ENABLED=true
+EVENT_FEEDBACK_SEND_HOUR=10
+EVENT_FEEDBACK_FORM_URL=https://round-tub-61e.notion.site/98f0b85f82298298b2080186e375c0ab
+EVENT_FEEDBACK_FROM_EMAIL=Lectures After Dark <feedback@mail.lecturesafterdark.ca>
+```
+
+The Eventbrite private token must be authorized to read attendee details, including `profile.email`. Existing events that were published before this automation was deployed can be added from the **Event feedback** section of `/newsletter/admin` using their numeric Eventbrite event ID. Scheduled feedback jobs can also be cancelled there.
 
 ## 7. Local development
 

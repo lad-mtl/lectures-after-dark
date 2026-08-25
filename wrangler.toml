@@ -19,6 +19,10 @@ NEWSLETTER_REQUIRE_TURNSTILE = "true"
 TURNSTILE_HOSTNAMES = "lecturesafterdark.ca"
 EVENTBRITE_ORGANIZER_ID = "121002246833"
 EVENTBRITE_SEND_DELAY_MINUTES = "10"
+EVENT_FEEDBACK_ENABLED = "true"
+EVENT_FEEDBACK_SEND_HOUR = "10"
+EVENT_FEEDBACK_FORM_URL = "https://round-tub-61e.notion.site/98f0b85f82298298b2080186e375c0ab"
+EVENT_FEEDBACK_FROM_EMAIL = "Lectures After Dark <feedback@mail.lecturesafterdark.ca>"
 
 [[kv_namespaces]]
 binding = "CONTENT_CACHE"
@@ -79,6 +83,7 @@ binding = "NEWSLETTER_ASSETS"
 name = "EMAIL"
 allowed_sender_addresses = [
   "newsletter@mail.lecturesafterdark.ca",
+  "feedback@mail.lecturesafterdark.ca",
   "contact-form@mail.lecturesafterdark.ca",
 ]
 

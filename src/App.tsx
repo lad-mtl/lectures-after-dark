@@ -46,6 +46,7 @@ function loadGa(id: string) {
 function App() {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isAdminPage = location.pathname.startsWith('/newsletter/admin');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,8 +63,8 @@ function App() {
   }, [location.pathname, location.search]);
 
   return (
-    <main className={`appShell ${isHomePage ? 'appShellHome' : 'appShellWithNavbarOffset'}`}>
-      <Navbar />
+    <main className={`appShell ${isHomePage ? 'appShellHome' : isAdminPage ? '' : 'appShellWithNavbarOffset'}`}>
+      {!isAdminPage && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/speakers" element={<Speakers />} />
@@ -85,7 +86,7 @@ function App() {
         <Route path="/test-event-card" element={<TestEventCardPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <Footer />
+      {!isAdminPage && <Footer />}
     </main>
   );
 }

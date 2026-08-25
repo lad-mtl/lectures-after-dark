@@ -1,3 +1,4 @@
+import { getEmailSettings } from "../settings";
 import { sendEventFeedbackEmail } from "./email";
 import type {
   EmailSendingEvent,
@@ -13,9 +14,6 @@ import {
   normalizeEmail,
   requireDatabase,
 } from "./utils";
-
-const DEFAULT_FEEDBACK_FORM_URL =
-  "https://round-tub-61e.notion.site/98f0b85f82298298b2080186e375c0ab";
 
 export interface FeedbackEventDetails {
   id: string;
@@ -117,33 +115,33 @@ export function feedbackDeliveryTime(endUtc: string, timeZone: string, sendHour 
   });
 }
 
-function feedbackContent(eventName: string, formUrl: string) {
-  const safeEventName = escapeHtml(eventName);
-  const safeFormUrl = escapeHtml(formUrl);
-  return `
-    <h1 style="margin:0 0 18px;font-size:34px;">How was ${safeEventName}?</h1>
-    <p>Hey!</p>
-    <p>Glad you joined us at Lectures After Dark. We read every bit of feedback and use it to shape what comes next—the speakers, the format, the venue, all of it.</p>
-    <p>If you’ve got two minutes, fill out the form here:</p>
-    <p style="margin:30px 0;text-align:center;"><a href="${safeFormUrl}" style="display:inline-block;background:#ff6f00;color:#1a1612;padding:15px 26px;text-decoration:none;font-weight:700;">Share your feedback</a></p>
-    <p>Didn’t love something? Even better. Tell us.</p>
-    <p>Thanks,<br><br>Augusto<br>Lectures After Dark</p>`;
+function renderTextTemplate(template: string, eventName: string) {
+  return template.replaceAll("{{event_name}}", eventName).replace(/[\r\n]+/g, " ").trim();
+}
+
+function feedbackContent(template: string, eventName: string, formUrl: string) {
+  return template
+    .replaceAll("{{event_name}}", escapeHtml(eventName))
+    .replaceAll("{{form_url}}", escapeHtml(formUrl));
 }
 
 export async function createEventFeedbackCampaign(
   env: NewsletterEnv,
   event: FeedbackEventDetails,
 ) {
-  if (env.EVENT_FEEDBACK_ENABLED === "false") return;
+  const settings = await getEmailSettings(env);
+  if (!settings.EVENT_FEEDBACK_ENABLED) return;
 
-  const sendHour = Number(env.EVENT_FEEDBACK_SEND_HOUR ?? "10");
   const scheduledAt = feedbackDeliveryTime(
     event.endUtc,
     event.timezone,
-    Number.isFinite(sendHour) ? sendHour : 10,
+    settings.EVENT_FEEDBACK_SEND_HOUR,
   );
-  const formUrl = env.EVENT_FEEDBACK_FORM_URL ?? DEFAULT_FEEDBACK_FORM_URL;
-  const bodyHtml = feedbackContent(event.name, formUrl);
+  const formUrl = settings.EVENT_FEEDBACK_FORM_URL.replaceAll(
+    "{{event_name}}",
+    encodeURIComponent(event.name),
+  );
+  const bodyHtml = feedbackContent(settings.EVENT_FEEDBACK_BODY_HTML, event.name, formUrl);
   const now = new Date().toISOString();
   const db = requireDatabase(env);
 
@@ -159,8 +157,8 @@ export async function createEventFeedbackCampaign(
       event.id,
       event.name,
       event.timezone,
-      `How was ${event.name}?`,
-      "Tell us what worked—and what could be better.",
+      renderTextTemplate(settings.EVENT_FEEDBACK_SUBJECT_TEMPLATE, event.name),
+      renderTextTemplate(settings.EVENT_FEEDBACK_PREVIEW_TEXT, event.name),
       bodyHtml,
       htmlToText(bodyHtml),
       scheduledAt.toISOString(),
@@ -206,11 +204,11 @@ async function refreshFeedbackSchedule(env: NewsletterEnv, campaign: EventFeedba
 
   if (!event.end?.utc) throw new Error("Eventbrite event end time is missing.");
   const timeZone = event.end.timezone ?? event.start?.timezone ?? campaign.event_timezone;
-  const configuredHour = Number(env.EVENT_FEEDBACK_SEND_HOUR ?? "10");
+  const settings = await getEmailSettings(env);
   const scheduledAt = feedbackDeliveryTime(
     event.end.utc,
     timeZone,
-    Number.isFinite(configuredHour) ? configuredHour : 10,
+    settings.EVENT_FEEDBACK_SEND_HOUR,
   );
   if (scheduledAt.getTime() > Date.now() + 30_000) {
     await db
@@ -506,7 +504,9 @@ export async function recordEventFeedbackEmailEvent(
 }
 
 export async function dispatchDueEventFeedback(env: NewsletterEnv) {
-  if (!env.NEWSLETTER_QUEUE || !env.NEWSLETTER_DB || env.EVENT_FEEDBACK_ENABLED === "false") return;
+  if (!env.NEWSLETTER_QUEUE || !env.NEWSLETTER_DB) return;
+  const settings = await getEmailSettings(env);
+  if (!settings.EVENT_FEEDBACK_ENABLED) return;
 
   const now = new Date().toISOString();
   const recoveryCutoff = new Date(Date.now() - 60_000).toISOString();

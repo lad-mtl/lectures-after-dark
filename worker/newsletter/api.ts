@@ -1,3 +1,8 @@
+import {
+  getEmailSettings,
+  getEmailSettingsSnapshot,
+  updateEmailSettings,
+} from "../settings";
 import { verifyTurnstile } from "../turnstile";
 import { sendCampaignEmail, sendConfirmationEmail } from "./email";
 import { createFeedbackCampaignForEventId } from "./eventbrite";
@@ -294,6 +299,141 @@ async function listCampaigns(env: NewsletterEnv, adminEmail: string) {
   });
 }
 
+interface DashboardContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  inquiry_type: string;
+  subject: string;
+  message: string;
+  delivery_status: string;
+  error: string | null;
+  created_at: string;
+  archived_at: string | null;
+}
+
+async function getDashboard(env: NewsletterEnv, adminEmail: string) {
+  const db = requireDatabase(env);
+  const [campaigns, feedbackCampaigns, contacts, metricRow, settings] = await Promise.all([
+    db
+      .prepare(
+        `SELECT id, eventbrite_event_id, name, subject, preview_text, body_html, body_text,
+                status, scheduled_at, created_by, created_at, updated_at, sent_at
+         FROM newsletter_campaigns ORDER BY created_at DESC LIMIT 100`,
+      )
+      .all<NewsletterCampaign>(),
+    db
+      .prepare(
+        `SELECT campaign.id, campaign.eventbrite_event_id, campaign.event_name, campaign.status,
+                campaign.scheduled_at, campaign.sent_at,
+                COUNT(delivery.id) AS recipient_count,
+                COALESCE(SUM(CASE WHEN delivery.status IN ('sent', 'delivered') THEN 1 ELSE 0 END), 0) AS sent_count
+         FROM event_feedback_campaigns AS campaign
+         LEFT JOIN event_feedback_deliveries AS delivery ON delivery.campaign_id = campaign.id
+         GROUP BY campaign.id
+         ORDER BY campaign.scheduled_at DESC LIMIT 100`,
+      )
+      .all(),
+    db
+      .prepare(
+        `SELECT id, name, email, inquiry_type, subject, message, delivery_status,
+                error, created_at, archived_at
+         FROM contact_submissions ORDER BY created_at DESC LIMIT 100`,
+      )
+      .all<DashboardContactSubmission>(),
+    db
+      .prepare(
+        `SELECT
+           (SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'subscribed') AS subscribers,
+           (SELECT COUNT(*) FROM newsletter_campaigns) AS total_campaigns,
+           (SELECT COUNT(*) FROM newsletter_campaigns WHERE status = 'scheduled') AS scheduled_campaigns,
+           (SELECT COUNT(*) FROM newsletter_campaigns WHERE status = 'sent') AS sent_campaigns,
+           (SELECT COUNT(*) FROM newsletter_deliveries WHERE status IN ('sent', 'delivered')) AS newsletter_delivered,
+           (SELECT COUNT(*) FROM event_feedback_campaigns WHERE status = 'scheduled') AS feedback_scheduled,
+           (SELECT COUNT(*) FROM event_feedback_deliveries) AS feedback_recipients,
+           (SELECT COUNT(*) FROM event_feedback_deliveries WHERE status IN ('sent', 'delivered')) AS feedback_sent,
+           (SELECT COUNT(*) FROM contact_submissions WHERE archived_at IS NULL) AS active_contacts`,
+      )
+      .first<{
+        subscribers: number;
+        total_campaigns: number;
+        scheduled_campaigns: number;
+        sent_campaigns: number;
+        newsletter_delivered: number;
+        feedback_scheduled: number;
+        feedback_recipients: number;
+        feedback_sent: number;
+        active_contacts: number;
+      }>(),
+    getEmailSettingsSnapshot(env),
+  ]);
+
+  return jsonResponse({
+    adminEmail,
+    metrics: {
+      subscribers: metricRow?.subscribers ?? 0,
+      totalCampaigns: metricRow?.total_campaigns ?? 0,
+      scheduledCampaigns: metricRow?.scheduled_campaigns ?? 0,
+      sentCampaigns: metricRow?.sent_campaigns ?? 0,
+      newsletterDelivered: metricRow?.newsletter_delivered ?? 0,
+      feedbackScheduled: metricRow?.feedback_scheduled ?? 0,
+      feedbackRecipients: metricRow?.feedback_recipients ?? 0,
+      feedbackSent: metricRow?.feedback_sent ?? 0,
+      activeContacts: metricRow?.active_contacts ?? 0,
+    },
+    campaigns: campaigns.results,
+    feedbackCampaigns: feedbackCampaigns.results,
+    contacts: contacts.results,
+    settings,
+    integrations: {
+      email: Boolean(env.EMAIL),
+      queue: Boolean(env.NEWSLETTER_QUEUE),
+      r2: Boolean(env.NEWSLETTER_ASSETS && env.NEWSLETTER_ASSET_BASE_URL),
+      d1: Boolean(env.NEWSLETTER_DB),
+      eventbrite: Boolean(
+        (env.EVENTBRITE_API_TOKEN || env.EVENTBRITE_PRIVATE_TOKEN) &&
+        env.EVENTBRITE_ORGANIZER_ID &&
+        env.EVENTBRITE_WEBHOOK_SECRET
+      ),
+      turnstile: Boolean(env.TURNSTILE_SECRET_KEY && env.TURNSTILE_HOSTNAMES),
+      site: Boolean(env.SITE_URL),
+    },
+  });
+}
+
+async function saveDashboardSettings(
+  request: Request,
+  env: NewsletterEnv,
+  adminEmail: string,
+) {
+  const payload = await readJson<{ settings?: unknown }>(request);
+  if (!payload?.settings || typeof payload.settings !== "object" || Array.isArray(payload.settings)) {
+    return jsonResponse({ error: "Settings must be a JSON object." }, 400);
+  }
+
+  const result = await updateEmailSettings(
+    env,
+    payload.settings as Record<string, unknown>,
+    adminEmail,
+  );
+  if (!result.success) {
+    return jsonResponse({ error: "One or more settings are invalid.", fields: result.errors }, 400);
+  }
+  return jsonResponse({ success: true });
+}
+
+async function archiveContactSubmission(env: NewsletterEnv, submissionId: string) {
+  const result = await requireDatabase(env)
+    .prepare(
+      `UPDATE contact_submissions SET archived_at = ?2, updated_at = ?2
+       WHERE id = ?1 AND archived_at IS NULL`,
+    )
+    .bind(submissionId, new Date().toISOString())
+    .run();
+  if (!result.meta.changes) return jsonResponse({ error: "Contact submission not found." }, 404);
+  return jsonResponse({ success: true });
+}
+
 async function createFeedbackCampaign(request: Request, env: NewsletterEnv) {
   const payload = await readJson<{ eventId?: unknown }>(request);
   const eventId = normalizeText(payload?.eventId, 40);
@@ -403,7 +543,8 @@ async function deleteCampaign(env: NewsletterEnv, campaignId: string) {
 async function scheduleCampaign(request: Request, env: NewsletterEnv, campaignId: string) {
   const payload = await readJson<CampaignPayload>(request);
   const suppliedDate = normalizeText(payload?.scheduledAt, 80);
-  const delayMinutes = Math.max(1, Number(env.EVENTBRITE_SEND_DELAY_MINUTES ?? "10") || 10);
+  const settings = await getEmailSettings(env);
+  const delayMinutes = settings.EVENTBRITE_SEND_DELAY_MINUTES;
   const scheduledAt = suppliedDate
     ? new Date(suppliedDate)
     : new Date(Date.now() + delayMinutes * 60 * 1000);
@@ -523,7 +664,19 @@ async function handleAdminRequest(request: Request, env: NewsletterEnv) {
   const feedbackIndex = segments.indexOf("feedback");
   const feedbackCampaignId = feedbackIndex >= 0 ? segments[feedbackIndex + 1] : undefined;
   const feedbackAction = feedbackIndex >= 0 ? segments[feedbackIndex + 2] : undefined;
+  const contactIndex = segments.indexOf("contacts");
+  const contactId = contactIndex >= 0 ? segments[contactIndex + 1] : undefined;
+  const contactAction = contactIndex >= 0 ? segments[contactIndex + 2] : undefined;
 
+  if (url.pathname === "/api/newsletter/admin/dashboard" && request.method === "GET") {
+    return getDashboard(env, adminEmail);
+  }
+  if (url.pathname === "/api/newsletter/admin/settings" && request.method === "PUT") {
+    return saveDashboardSettings(request, env, adminEmail);
+  }
+  if (contactId && contactAction === "archive" && request.method === "POST") {
+    return archiveContactSubmission(env, contactId);
+  }
   if (url.pathname === "/api/newsletter/admin/campaigns" && request.method === "GET") {
     return listCampaigns(env, adminEmail);
   }

@@ -157,9 +157,22 @@ export function isSameOriginRequest(request: Request, env: NewsletterEnv) {
   const suppliedOrigin = request.headers.get("origin");
   if (!suppliedOrigin) return true;
 
-  const requestOrigin = new URL(request.url).origin;
+  const requestUrl = new URL(request.url);
+  const requestOrigin = requestUrl.origin;
   const siteOrigin = new URL(getSiteUrl(env)).origin;
-  return suppliedOrigin === requestOrigin || suppliedOrigin === siteOrigin;
+  if (suppliedOrigin === requestOrigin || suppliedOrigin === siteOrigin) return true;
+
+  if (env.NEWSLETTER_ALLOW_LOCAL_ADMIN === "true") {
+    try {
+      const suppliedUrl = new URL(suppliedOrigin);
+      const localHosts = new Set(["localhost", "127.0.0.1"]);
+      return localHosts.has(requestUrl.hostname) && localHosts.has(suppliedUrl.hostname);
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
 }
 
 export function getAdminEmail(request: Request, env: NewsletterEnv) {

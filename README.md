@@ -58,7 +58,7 @@ The contact form uses the same Turnstile widget and secret as the newsletter, wi
 
 ## Newsletter
 
-The newsletter uses Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron Triggers, and Access. It includes double opt-in, a WYSIWYG/HTML campaign studio at `/newsletter/admin`, scheduled delivery, one-click unsubscribe, delivery event processing, and Eventbrite `event.published` automation.
+Email operations use Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron Triggers, and Access. The dashboard at `/newsletter/admin` includes delivery metrics, a WYSIWYG/HTML newsletter campaign studio, scheduled delivery, Eventbrite post-event feedback automation, a contact-form inbox, and D1-backed runtime settings. Double opt-in, one-click unsubscribe, delivery event processing, and Eventbrite `event.published` automation remain handled by the Worker.
 
 Cloudflare resource provisioning and configuration are documented in [`docs/newsletter-setup.md`](docs/newsletter-setup.md).
 

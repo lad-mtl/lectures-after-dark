@@ -1,3 +1,4 @@
+import { getEmailSettings } from "../settings";
 import { createEventFeedbackCampaign } from "./feedback";
 import type { NewsletterEnv, NewsletterQueueMessage } from "./types";
 import {
@@ -221,7 +222,8 @@ export async function createCampaignFromEventbrite(options: {
 
   const bodyHtml = eventAnnouncementHtml(event);
   const title = event.name?.text?.trim() || "New event";
-  const delayMinutes = Math.max(1, Number(env.EVENTBRITE_SEND_DELAY_MINUTES ?? "10") || 10);
+  const settings = await getEmailSettings(env);
+  const delayMinutes = settings.EVENTBRITE_SEND_DELAY_MINUTES;
   const now = new Date();
   const scheduledAt = new Date(now.getTime() + delayMinutes * 60 * 1000).toISOString();
   const campaignId = crypto.randomUUID();

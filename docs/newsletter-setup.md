@@ -112,7 +112,9 @@ Create a Cloudflare Access self-hosted application protecting both paths:
 - `lecturesafterdark.ca/newsletter/admin*`
 - `lecturesafterdark.ca/api/newsletter/admin/*`
 
-Configure the Access policy with the users or identity groups that should manage newsletters. The Worker accepts any identity authenticated by that policy and records Cloudflare's `Cf-Access-Authenticated-User-Email` value for campaign attribution. Do not expose the admin API without the Access policy.
+Configure the Access policy with the users or identity groups that should manage email operations. The Worker accepts any identity authenticated by that policy and records Cloudflare's `Cf-Access-Authenticated-User-Email` value for campaign attribution and settings changes. Do not expose the admin API without the Access policy.
+
+The dashboard at `/newsletter/admin` includes delivery metrics, newsletter campaign composition and scheduling, Eventbrite feedback automation, a contact-form inbox, and runtime settings for sender identities, routing, templates, and timing. Dashboard settings are stored in D1 and override matching Worker environment defaults. Secrets and infrastructure bindings remain read-only and must be managed through Cloudflare. Sender addresses must also remain in the Worker's `allowed_sender_addresses` list.
 
 For local Wrangler development only, `NEWSLETTER_ALLOW_LOCAL_ADMIN=true` permits requests from `localhost` or `127.0.0.1`.
 
@@ -128,7 +130,7 @@ The Worker treats the webhook as a notification only. It extracts the numeric ev
 
 The announcement cancellation window defaults to ten minutes (`EVENTBRITE_SEND_DELAY_MINUTES`). The feedback job runs at 10:00 a.m. in the event's timezone on the morning after the event ends, fetches the event's paginated attendee list, and sends only to active attendees whose Eventbrite record has `checked_in = true`. Duplicate publication callbacks and duplicate attendee email addresses are ignored. Feedback recipients remain separate from newsletter subscribers and have a dedicated opt-out suppression list.
 
-Configure the behavior with:
+These defaults can be changed in the dashboard or supplied as environment fallbacks:
 
 ```dotenv
 EVENT_FEEDBACK_ENABLED=true

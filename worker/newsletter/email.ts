@@ -1,8 +1,8 @@
+import { getEmailSettings } from "../settings";
 import type { EventFeedbackCampaign, NewsletterCampaign, NewsletterEnv } from "./types";
-import { escapeHtml, getSiteUrl } from "./utils";
+import { escapeHtml, getSiteUrl, htmlToText } from "./utils";
 
-function sender(env: NewsletterEnv, override?: string): string | EmailAddress {
-  const configured = override ?? env.NEWSLETTER_FROM_EMAIL ?? "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>";
+function sender(configured: string): string | EmailAddress {
   const namedAddress = configured.match(/^(.+?)\s*<([^<>]+)>$/);
   if (!namedAddress) return configured;
 
@@ -65,20 +65,20 @@ export async function sendConfirmationEmail(
 ) {
   if (!env.EMAIL) throw new Error("Cloudflare Email Sending binding is not configured.");
 
+  const settings = await getEmailSettings(env);
   const confirmationUrl = `${getSiteUrl(env)}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
-  const content = `
-    <h1 style="margin:0 0 18px;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-size:30px;">Confirm your subscription</h1>
-    <p>One final step: confirm that you want event announcements and updates from Lectures After Dark.</p>
-    <p style="margin:28px 0;text-align:center;"><a href="${escapeHtml(confirmationUrl)}" style="display:inline-block;background:#ff6f00;color:#1a1612;padding:14px 24px;text-decoration:none;font-family:'Oswald','Arial Narrow',Arial,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Confirm subscription</a></p>
-    <p style="font-size:13px;">This link expires in 24 hours. If you did not request this email, you can ignore it.</p>`;
+  const content = settings.NEWSLETTER_CONFIRMATION_BODY_HTML.replaceAll(
+    "{{confirmation_url}}",
+    escapeHtml(confirmationUrl),
+  );
 
   return env.EMAIL.send({
-    from: sender(env),
+    from: sender(settings.NEWSLETTER_FROM_EMAIL),
     to: email,
-    replyTo: env.NEWSLETTER_REPLY_TO,
-    subject: "Confirm your Lectures After Dark subscription",
-    html: emailShell({ previewText: "Confirm your newsletter subscription", content }),
-    text: `Confirm your Lectures After Dark subscription:\n\n${confirmationUrl}\n\nThis link expires in 24 hours.`,
+    replyTo: settings.NEWSLETTER_REPLY_TO || undefined,
+    subject: settings.NEWSLETTER_CONFIRMATION_SUBJECT,
+    html: emailShell({ previewText: settings.NEWSLETTER_CONFIRMATION_PREVIEW, content }),
+    text: `${htmlToText(content)}\n\n${confirmationUrl}`,
   });
 }
 
@@ -93,6 +93,7 @@ export async function sendCampaignEmail(options: {
     throw new Error("Cloudflare Email Sending binding is not configured.");
   }
 
+  const settings = await getEmailSettings(options.env);
   const unsubscribeUrl = options.unsubscribeToken
     ? `${getSiteUrl(options.env)}/api/newsletter/unsubscribe?token=${encodeURIComponent(options.unsubscribeToken)}`
     : undefined;
@@ -107,9 +108,9 @@ export async function sendCampaignEmail(options: {
   }
 
   return options.env.EMAIL.send({
-    from: sender(options.env),
+    from: sender(settings.NEWSLETTER_FROM_EMAIL),
     to: options.email,
-    replyTo: options.env.NEWSLETTER_REPLY_TO,
+    replyTo: settings.NEWSLETTER_REPLY_TO || undefined,
     subject: options.campaign.subject,
     html: emailShell({
       previewText: options.campaign.preview_text,
@@ -134,6 +135,7 @@ export async function sendEventFeedbackEmail(options: {
     throw new Error("Cloudflare Email Sending binding is not configured.");
   }
 
+  const settings = await getEmailSettings(options.env);
   const unsubscribeUrl = `${getSiteUrl(options.env)}/api/newsletter/feedback/unsubscribe?token=${encodeURIComponent(options.unsubscribeToken)}`;
   const headers: Record<string, string> = {
     "List-Id": "Lectures After Dark Event Feedback <feedback.lecturesafterdark.ca>",
@@ -144,9 +146,9 @@ export async function sendEventFeedbackEmail(options: {
   };
 
   return options.env.EMAIL.send({
-    from: sender(options.env, options.env.EVENT_FEEDBACK_FROM_EMAIL),
+    from: sender(settings.EVENT_FEEDBACK_FROM_EMAIL),
     to: options.email,
-    replyTo: options.env.NEWSLETTER_REPLY_TO,
+    replyTo: settings.NEWSLETTER_REPLY_TO || undefined,
     subject: options.campaign.subject,
     html: emailShell({
       previewText: options.campaign.preview_text,

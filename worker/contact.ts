@@ -1,3 +1,4 @@
+import { getEmailSettings } from "./settings";
 import { verifyTurnstile } from "./turnstile";
 
 interface ContactEnv {
@@ -8,6 +9,7 @@ interface ContactEnv {
   CONTACT_MARKETING_EMAIL?: string;
   CONTACT_REQUIRE_RATE_LIMIT?: string;
   CONTACT_REQUIRE_TURNSTILE?: string;
+  NEWSLETTER_DB?: D1Database;
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_HOSTNAMES?: string;
 }
@@ -81,9 +83,7 @@ async function isWithinContactRateLimit(request: Request, email: string, env: Co
   return ipOutcome.success && emailOutcome.success;
 }
 
-function contactSender(env: ContactEnv): string | EmailAddress {
-  const configured =
-    env.CONTACT_FROM_EMAIL ?? "Lectures After Dark <contact-form@mail.lecturesafterdark.ca>";
+function contactSender(configured: string): string | EmailAddress {
   const namedAddress = configured.match(/^(.+?)\s*<([^<>]+)>$/);
   if (!namedAddress) return configured;
 
@@ -91,6 +91,60 @@ function contactSender(env: ContactEnv): string | EmailAddress {
     name: namedAddress[1].trim(),
     email: namedAddress[2].trim(),
   };
+}
+
+async function createContactSubmission(
+  env: ContactEnv,
+  payload: {
+    name: string;
+    email: string;
+    inquiryType: ContactInquiryType;
+    subject: string;
+    message: string;
+  },
+) {
+  if (!env.NEWSLETTER_DB) return null;
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  try {
+    await env.NEWSLETTER_DB
+      .prepare(
+        `INSERT INTO contact_submissions (
+           id, name, email, inquiry_type, subject, message, delivery_status, created_at, updated_at
+         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'pending', ?7, ?7)`,
+      )
+      .bind(id, payload.name, payload.email, payload.inquiryType, payload.subject, payload.message, now)
+      .run();
+    return id;
+  } catch (error) {
+    console.error("Unable to record contact form submission", error);
+    return null;
+  }
+}
+
+async function updateContactDelivery(
+  env: ContactEnv,
+  id: string | null,
+  status: "sent" | "failed",
+  error?: unknown,
+) {
+  if (!id || !env.NEWSLETTER_DB) return;
+  try {
+    await env.NEWSLETTER_DB
+      .prepare(
+        `UPDATE contact_submissions
+         SET delivery_status = ?2, error = ?3, updated_at = ?4 WHERE id = ?1`,
+      )
+      .bind(
+        id,
+        status,
+        error instanceof Error ? error.message.slice(0, 1000) : error ? "Unknown email sending error" : null,
+        new Date().toISOString(),
+      )
+      .run();
+  } catch (updateError) {
+    console.error("Unable to update contact submission delivery", updateError);
+  }
 }
 
 function buildEmailText(payload: {
@@ -200,21 +254,30 @@ export async function handleContactRequest(request: Request, env: ContactEnv) {
     );
   }
 
-  const to =
-    inquiryType === "partnerships"
-      ? env.CONTACT_MARKETING_EMAIL ?? "marketing@lecturesafterdark.ca"
-      : env.CONTACT_CORE_EMAIL ?? "core@lecturesafterdark.ca";
+  const settings = await getEmailSettings(env);
+  const to = inquiryType === "partnerships"
+    ? settings.CONTACT_MARKETING_EMAIL
+    : settings.CONTACT_CORE_EMAIL;
+  const submissionId = await createContactSubmission(env, {
+    name,
+    email,
+    inquiryType,
+    subject,
+    message,
+  });
 
   try {
     await env.EMAIL.send({
-      from: contactSender(env),
+      from: contactSender(settings.CONTACT_FROM_EMAIL),
       to,
       replyTo: email,
-      subject: `[Lectures After Dark Contact] ${subject}`,
+      subject: `[${settings.CONTACT_SUBJECT_PREFIX}] ${subject}`,
       html: buildEmailHtml({ name, email, inquiryType, subject, message }),
       text: buildEmailText({ name, email, inquiryType, subject, message }),
     });
+    await updateContactDelivery(env, submissionId, "sent");
   } catch (error) {
+    await updateContactDelivery(env, submissionId, "failed", error);
     console.error("Cloudflare Email Sending contact failure", error);
     return jsonResponse({ error: "Unable to send your message right now." }, 502);
   }

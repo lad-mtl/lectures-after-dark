@@ -2,7 +2,7 @@
 
 Payload 3 runs here as a separate Next.js application deployed to Cloudflare Workers through OpenNext. It uses a dedicated Cloudflare D1 database for records and a dedicated R2 bucket for media.
 
-This app is intentionally isolated from the existing marketing-site Worker. During the initial rollout, production content continues to flow through Strapi and `worker/content.ts`.
+This app is intentionally isolated from the marketing-site Worker. Production content flows through `worker/content.ts`, which invokes this Worker privately through the `PAYLOAD_CMS` Cloudflare service binding.
 
 ## Requirements
 
@@ -89,7 +89,7 @@ Payload collections are defined in `src/collections/`, and singleton page conten
 | Speaker Page   | `speaker-page` global        |
 | Venue Page     | `venue-page` global          |
 
-These models preserve the existing field names and do not enable drafts because their Strapi counterparts had `draftAndPublish` disabled. Reads are permitted by Payload so an Access-authorized machine client can consume content; writes require an authenticated LAD editor.
+These models preserve the existing field names and do not enable drafts because their Strapi counterparts had `draftAndPublish` disabled. Reads are permitted by Payload so the private site-Worker service binding can consume content; writes require an authenticated LAD editor.
 
 After changing the schema, create and commit a migration:
 

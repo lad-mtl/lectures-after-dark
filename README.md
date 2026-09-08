@@ -6,8 +6,7 @@ Marketing site for Lectures After Dark.
 
 - Frontend: React 19 + Vite
 - Edge layer: Cloudflare Workers
-- Current CMS: self-hosted Strapi 5
-- Next CMS: Payload 3 on Cloudflare Workers, D1, and R2
+- CMS: Payload 3 on Cloudflare Workers, D1, and R2
 - Content fallback cache: Cloudflare KV
 
 ## Local Development
@@ -16,33 +15,32 @@ Install dependencies once:
 
 ```bash
 pnpm install
-pnpm --dir strapi install
 pnpm --dir payload install
 ```
 
-Run the frontend, Worker, and Strapi in separate terminals:
+Run Payload, the site Worker, and the frontend in separate terminals:
 
 ```bash
-pnpm strapi:dev
+pnpm payload:dev
 pnpm workers:dev
 pnpm dev
 ```
 
-The public frontend reads content from `/api/content/*`, which Vite proxies to the local Worker. The Worker fetches Strapi content server-to-server from the configured Strapi REST API and can fall back to cached snapshots from KV.
+The public frontend reads content from `/api/content/*`, which Vite proxies to the local Worker. The Worker fetches Payload content server-to-server and can fall back to cached snapshots from KV.
 
 ## Worker Setup
 
-The Worker expects these secrets/bindings:
+The Worker expects these variables and bindings:
 
-- `STRAPI_CONTENT_API_URL`: Strapi REST API base URL used for public read queries
-- `STRAPI_CONTENT_API_TOKEN`: optional bearer token if your Strapi host protects reads
-- `STRAPI_TIMEOUT_MS`: optional upstream timeout override
+- `PAYLOAD_CONTENT_API_URL`: Payload REST API base URL
+- `PAYLOAD_TIMEOUT_MS`: optional upstream timeout override
+- `PAYLOAD_CMS`: production service binding to the separate `lectures-after-dark-cms` Worker
 - `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
 
-For a local Strapi instance, use:
+The production service binding invokes Payload privately without crossing Cloudflare Access. For a local Payload instance, use:
 
 ```env
-STRAPI_CONTENT_API_URL=http://127.0.0.1:1337/api
+PAYLOAD_CONTENT_API_URL=http://127.0.0.1:3000/api
 ```
 
 For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinheiro/projects/lectures-after-dark/.dev.vars) automatically. The repo includes a local default and a copyable example:
@@ -51,8 +49,7 @@ For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinhei
 cp .dev.vars.example .dev.vars
 ```
 
-Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser.
-Events and Instagram posts are read from Strapi through the Worker. If you sync Eventbrite or Instagram data with a cron job, write those records into Strapi instead of exposing third-party API tokens to the Worker or browser.
+Public requests should flow through the Worker proxy instead of hitting Payload directly from the browser. Eventbrite or Instagram synchronization jobs should write records into Payload instead of exposing third-party API tokens to the Worker or browser.
 
 ## Contact Form Protection
 
@@ -76,9 +73,9 @@ pnpm payload:dev
 
 The Payload admin is available locally at `http://localhost:3000/admin` and in production at `https://cms.lecturesafterdark.ca/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
 
-Payload is protected by Cloudflare Access for `@lecturesafterdark.ca` identities and uses Access-backed passwordless editor records instead of Payload credentials. Its collections and globals now mirror every Strapi content type, with repository-backed seed support for speakers, team members, venues, FAQ, and page CTAs. It remains staged alongside Strapi until the site Worker is switched to Payload-compatible responses and authenticated machine access.
+Payload is protected by Cloudflare Access for `@lecturesafterdark.ca` identities and uses Access-backed passwordless editor records instead of Payload credentials. Its collections and globals back the site Worker through a private Cloudflare service binding, with repository-backed seed support for speakers, team members, venues, FAQ, and page CTAs.
 
-## Strapi Setup
+## Legacy Strapi Setup
 
 Seed data still lives in:
 
@@ -87,7 +84,7 @@ Seed data still lives in:
 - `content/venues/*.json`
 - `content/faq/faq.json`
 
-Events and Instagram posts are Strapi-backed collection types intended to be populated through the Strapi admin or an external sync job.
+The Strapi app remains temporarily in the repository for migration reference only. New content should be managed in Payload.
 
 The Strapi app lives in:
 

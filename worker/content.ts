@@ -79,9 +79,9 @@ export interface InstagramPostData {
 
 export interface ContentEnv {
   CONTENT_CACHE?: KVNamespace;
-  STRAPI_CONTENT_API_URL: string;
-  STRAPI_CONTENT_API_TOKEN?: string;
-  STRAPI_TIMEOUT_MS?: string;
+  PAYLOAD_CMS?: Fetcher;
+  PAYLOAD_CONTENT_API_URL: string;
+  PAYLOAD_TIMEOUT_MS?: string;
 }
 
 type ResourceDefinition<T> = CacheableResource & {
@@ -89,13 +89,16 @@ type ResourceDefinition<T> = CacheableResource & {
   normalize: (payload: unknown) => T;
 };
 
-type StrapiEntity<T> = {
+type PayloadDocument<T> = {
   id?: number | string;
-  documentId?: string;
-  attributes?: T;
 } & T;
 
-type StrapiEventData = {
+type PayloadCollectionResponse<T> = {
+  docs?: Array<PayloadDocument<T>> | null;
+  errors?: Array<{ message?: string }>;
+};
+
+type PayloadEventData = {
   title?: string | null;
   startsAt?: string | null;
   locationLabel?: string | null;
@@ -105,7 +108,7 @@ type StrapiEventData = {
   order?: number | null;
 };
 
-type StrapiInstagramPostData = {
+type PayloadInstagramPostData = {
   instagramId?: string | null;
   caption?: string | null;
   imageUrl?: string | null;
@@ -117,25 +120,27 @@ type StrapiInstagramPostData = {
 
 const DEFAULT_TIMEOUT_MS = 3000;
 
-function normalizeStrapiEntity<T extends Record<string, unknown>>(entity: StrapiEntity<T>) {
-  const source = (entity.attributes ?? entity) as T & {
+function normalizePayloadDocument<T extends Record<string, unknown>>(
+  document: PayloadDocument<T>,
+) {
+  const source = document as T & {
     id?: unknown;
-    documentId?: unknown;
-    attributes?: unknown;
+    createdAt?: unknown;
+    updatedAt?: unknown;
   };
   const rest = { ...source };
 
   delete rest.id;
-  delete rest.documentId;
-  delete rest.attributes;
+  delete rest.createdAt;
+  delete rest.updatedAt;
 
   return {
     ...rest,
-    id: String(entity.documentId ?? entity.id ?? ""),
+    id: String(document.id ?? ""),
   };
 }
 
-function buildStrapiUrl(baseUrl: string, pathname: string) {
+function buildPayloadUrl(baseUrl: string, pathname: string) {
   return `${baseUrl.replace(/\/+$/, "")}${pathname}`;
 }
 
@@ -183,8 +188,8 @@ function readString(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function normalizeStrapiEvent(
-  event: StrapiEventData & { id: string },
+function normalizePayloadEvent(
+  event: PayloadEventData & { id: string },
   now: number,
 ): EventData | null {
   const title = readString(event.title);
@@ -213,8 +218,8 @@ function normalizeStrapiEvent(
   };
 }
 
-function normalizeStrapiInstagramPost(
-  post: StrapiInstagramPostData & { id: string },
+function normalizePayloadInstagramPost(
+  post: PayloadInstagramPostData & { id: string },
 ): InstagramPostData | null {
   const imageUrl = readString(post.imageUrl);
   const permalink = readString(post.permalink);
@@ -236,41 +241,32 @@ function normalizeStrapiInstagramPost(
 const resources = {
   "/api/content/speakers": {
     cacheKey: "content:speakers",
-    pathname:
-      "/speakers?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=topic&fields[2]=bio&fields[3]=image&fields[4]=twitter&fields[5]=linkedin&fields[6]=website&fields[7]=order",
+    pathname: "/speakers?sort=order&limit=100&depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: Array<StrapiEntity<Omit<SpeakerData, "id">>> | null };
+      const data = payload as PayloadCollectionResponse<Omit<SpeakerData, "id">>;
 
-      return (data.data ?? [])
-        .map((node) => normalizeStrapiEntity(node))
+      return (data.docs ?? [])
+        .map((document) => normalizePayloadDocument(document))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
   "/api/content/venues": {
     cacheKey: "content:venues",
-    pathname:
-      "/venues?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=neighborhood&fields[2]=description&fields[3]=imageUrl&fields[4]=mapsLink&fields[5]=order",
+    pathname: "/venues?sort=order&limit=100&depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: Array<StrapiEntity<Omit<VenueData, "id">>> | null };
+      const data = payload as PayloadCollectionResponse<Omit<VenueData, "id">>;
 
-      return (data.data ?? [])
-        .map((node) => normalizeStrapiEntity(node))
+      return (data.docs ?? [])
+        .map((document) => normalizePayloadDocument(document))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
   "/api/content/speaker-page": {
     cacheKey: "content:speaker-page",
-    pathname:
-      "/speaker-page?fields[0]=ctaTitle&fields[1]=ctaDescription&fields[2]=ctaButtonText&fields[3]=ctaButtonLink",
+    pathname: "/globals/speaker-page?depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: StrapiEntity<PageCtaContent> | null };
-      const entity = data.data;
+      const page = payload as PageCtaContent;
 
-      if (!entity) {
-        return {};
-      }
-
-      const page = entity.attributes ?? entity;
       return {
         ctaTitle: page.ctaTitle ?? null,
         ctaDescription: page.ctaDescription ?? null,
@@ -281,17 +277,10 @@ const resources = {
   },
   "/api/content/venue-page": {
     cacheKey: "content:venue-page",
-    pathname:
-      "/venue-page?fields[0]=ctaTitle&fields[1]=ctaDescription&fields[2]=ctaButtonText&fields[3]=ctaButtonLink",
+    pathname: "/globals/venue-page?depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: StrapiEntity<PageCtaContent> | null };
-      const entity = data.data;
+      const page = payload as PageCtaContent;
 
-      if (!entity) {
-        return {};
-      }
-
-      const page = entity.attributes ?? entity;
       return {
         ctaTitle: page.ctaTitle ?? null,
         ctaDescription: page.ctaDescription ?? null,
@@ -302,56 +291,56 @@ const resources = {
   },
   "/api/content/faq": {
     cacheKey: "content:faq",
-    pathname: "/faq?populate[items][fields][0]=question&populate[items][fields][1]=answer",
+    pathname: "/globals/faq?depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: StrapiEntity<FaqData> | null };
-      const entity = data.data;
+      const faq = payload as FaqData;
 
-      if (!entity) {
-        return { items: [] };
-      }
-
-      const faq = entity.attributes ?? entity;
-      return { items: faq.items ?? [] };
+      return {
+        items: (faq.items ?? []).map((item) =>
+          item
+            ? {
+                question: item.question,
+                answer: item.answer ?? null,
+              }
+            : null,
+        ),
+      };
     },
   },
   "/api/content/team-members": {
     cacheKey: "content:team-members",
-    pathname:
-      "/team-members?sort[0]=order:asc&pagination[pageSize]=100&fields[0]=name&fields[1]=title&fields[2]=description&fields[3]=image&fields[4]=linkUrl&fields[5]=linkText&fields[6]=order",
+    pathname: "/team-members?sort=order&limit=100&depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: Array<StrapiEntity<Omit<TeamMemberData, "id">>> | null };
+      const data = payload as PayloadCollectionResponse<Omit<TeamMemberData, "id">>;
 
-      return (data.data ?? [])
-        .map((node) => normalizeStrapiEntity(node))
+      return (data.docs ?? [])
+        .map((document) => normalizePayloadDocument(document))
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     },
   },
   "/api/content/events": {
     cacheKey: "content:events",
-    pathname:
-      "/events?sort[0]=startsAt:asc&pagination[pageSize]=20&fields[0]=title&fields[1]=startsAt&fields[2]=locationLabel&fields[3]=priceLabel&fields[4]=imageUrl&fields[5]=eventbriteUrl&fields[6]=order",
+    pathname: "/events?sort=startsAt&limit=20&depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: Array<StrapiEntity<StrapiEventData>> | null };
+      const data = payload as PayloadCollectionResponse<PayloadEventData>;
       const now = Date.now();
 
-      return (data.data ?? [])
-        .map((node) => normalizeStrapiEntity(node))
-        .map((event) => normalizeStrapiEvent(event, now))
+      return (data.docs ?? [])
+        .map((document) => normalizePayloadDocument(document))
+        .map((event) => normalizePayloadEvent(event, now))
         .filter((event): event is EventData => Boolean(event))
         .sort((left, right) => (parseDate(left.startsAt) ?? 0) - (parseDate(right.startsAt) ?? 0));
     },
   },
   "/api/content/instagram": {
     cacheKey: "content:instagram",
-    pathname:
-      "/instagram-posts?sort[0]=timestamp:desc&pagination[pageSize]=6&fields[0]=instagramId&fields[1]=caption&fields[2]=imageUrl&fields[3]=mediaType&fields[4]=permalink&fields[5]=timestamp&fields[6]=order",
+    pathname: "/instagram-posts?sort=-timestamp&limit=6&depth=0",
     normalize: (payload: unknown) => {
-      const data = payload as { data?: Array<StrapiEntity<StrapiInstagramPostData>> | null };
+      const data = payload as PayloadCollectionResponse<PayloadInstagramPostData>;
 
-      return (data.data ?? [])
-        .map((node) => normalizeStrapiEntity(node))
-        .map((post) => normalizeStrapiInstagramPost(post))
+      return (data.docs ?? [])
+        .map((document) => normalizePayloadDocument(document))
+        .map((post) => normalizePayloadInstagramPost(post))
         .filter((post): post is InstagramPostData => Boolean(post));
     },
   },
@@ -399,32 +388,44 @@ async function fetchFreshContent(
   resource: ResourceDefinition<unknown>,
 ) {
   const controller = new AbortController();
-  const timeoutMs = Number(env.STRAPI_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const configuredTimeout = Number(env.PAYLOAD_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const timeoutMs =
+    Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : DEFAULT_TIMEOUT_MS;
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    const headers = new Headers({
-      accept: "application/json",
-    });
-
-    if (env.STRAPI_CONTENT_API_TOKEN) {
-      headers.set("authorization", `Bearer ${env.STRAPI_CONTENT_API_TOKEN}`);
-    }
-
-    const response = await fetch(buildStrapiUrl(env.STRAPI_CONTENT_API_URL, resource.pathname), {
+    const upstreamUrl = buildPayloadUrl(env.PAYLOAD_CONTENT_API_URL, resource.pathname);
+    const upstreamRequest = new Request(upstreamUrl, {
       method: "GET",
-      headers,
+      headers: {
+        accept: "application/json",
+      },
+      redirect: "manual",
       signal: controller.signal,
     });
+    const useServiceBinding =
+      Boolean(env.PAYLOAD_CMS) &&
+      new URL(env.PAYLOAD_CONTENT_API_URL).hostname === "cms.lecturesafterdark.ca";
+    const response = useServiceBinding
+      ? await env.PAYLOAD_CMS!.fetch(upstreamRequest)
+      : await fetch(upstreamRequest);
 
     if (!response.ok) {
-      throw new Error(`Strapi upstream returned ${response.status}`);
+      throw new Error(`Payload upstream returned ${response.status}`);
     }
 
-    const body = (await response.json()) as { data?: unknown; error?: { message?: string } };
+    const contentType = response.headers.get("content-type") ?? "";
 
-    if (body.error) {
-      throw new Error(body.error.message ?? "Unknown Strapi error");
+    if (!contentType.toLowerCase().includes("application/json")) {
+      throw new Error("Payload upstream returned a non-JSON response");
+    }
+
+    const body = (await response.json()) as PayloadCollectionResponse<unknown>;
+
+    if (body.errors?.length) {
+      throw new Error(body.errors[0]?.message ?? "Unknown Payload error");
     }
 
     const normalized = resource.normalize(body);
@@ -463,13 +464,13 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
           "x-content-source": "stale-cache",
           "x-content-fetched-at": snapshot.fetchedAt,
           "x-content-fallback-reason":
-            error instanceof Error ? error.message : "strapi-unreachable",
+            error instanceof Error ? error.message : "payload-unreachable",
         },
       });
     }
 
     return jsonResponse(
-      { error: "Strapi content is unavailable and no cached fallback exists." },
+      { error: "Payload content is unavailable and no cached fallback exists." },
       { status: 503 },
     );
   }

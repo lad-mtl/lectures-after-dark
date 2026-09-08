@@ -1,0 +1,127 @@
+# Lectures After Dark Payload CMS
+
+Payload 3 runs here as a separate Next.js application deployed to Cloudflare Workers through OpenNext. It uses a dedicated Cloudflare D1 database for records and a dedicated R2 bucket for media.
+
+This app is intentionally isolated from the existing marketing-site Worker. During the initial rollout, production content continues to flow through Strapi and `worker/content.ts`.
+
+## Requirements
+
+- Node.js `^18.20.2` or `>=20.9.0`
+- pnpm 9, 10, or 11
+- Wrangler authenticated to the Cloudflare account that hosts Lectures After Dark
+- A Cloudflare Workers Paid plan (the Payload bundle exceeds the free-plan Worker size limit)
+
+## Local development
+
+Install this app independently from the repository root:
+
+```bash
+pnpm --dir payload install
+```
+
+Create the local environment file and generate a secret:
+
+```bash
+cp payload/.env.example payload/.env
+openssl rand -hex 32
+```
+
+Put the generated value in `payload/.env` as `PAYLOAD_SECRET`, then start Payload:
+
+```bash
+pnpm payload:dev
+```
+
+The app runs at `http://localhost:3000`; the admin is at `http://localhost:3000/admin`.
+Wrangler supplies local D1 and R2 bindings through `wrangler.local.jsonc`. Keeping local bindings separate prevents builds and development from writing to the production database. Local Cloudflare state is ignored under `payload/.wrangler/`.
+
+## Cloudflare resources
+
+The bindings in `wrangler.jsonc` are separate from the newsletter resources configured by the root Worker:
+
+| Binding  | Resource name                   | Purpose                              |
+| -------- | ------------------------------- | ------------------------------------ |
+| `D1`     | `lectures-after-dark-cms`       | Payload records and migrations       |
+| `R2`     | `lectures-after-dark-cms-media` | Uploaded media                       |
+| `ASSETS` | OpenNext-generated assets       | Payload admin and application assets |
+
+These resources are provisioned in the LAD Cloudflare account and configured in `wrangler.jsonc`. To recreate the stack in another account, run:
+
+```bash
+cd payload
+pnpm exec wrangler login
+pnpm exec wrangler d1 create lectures-after-dark-cms
+pnpm exec wrangler r2 bucket create lectures-after-dark-cms-media
+```
+
+Then copy the returned D1 database ID into both `wrangler.jsonc` and `wrangler.local.jsonc`.
+
+Set the production secret without committing it:
+
+```bash
+pnpm exec wrangler secret put PAYLOAD_SECRET
+```
+
+A secure value can be generated with `openssl rand -hex 32`.
+
+## Schema and migrations
+
+Payload collections are defined in `src/collections/`. The initial schema contains only authenticated users and R2-backed media.
+
+After changing the schema, create and commit a migration:
+
+```bash
+pnpm payload:migrate:create
+```
+
+Migrations live in `src/migrations/`. Production deployment runs checked-in migrations against remote D1 before deploying application code. If migration fails, deployment stops.
+
+## Validation
+
+From the repository root:
+
+```bash
+pnpm payload:types
+pnpm payload:check
+```
+
+The generated template also includes integration and Playwright tests:
+
+```bash
+pnpm --dir payload test:int
+pnpm --dir payload test:e2e
+```
+
+The browser-based suite requires Playwright's browser dependencies.
+
+## Preview and deployment
+
+Build and preview through OpenNext:
+
+```bash
+pnpm payload:preview
+```
+
+After provisioning D1 and R2, setting `PAYLOAD_SECRET`, and committing migrations, deploy with:
+
+```bash
+pnpm payload:deploy
+```
+
+The deploy command applies remote D1 migrations, optimizes D1, builds the OpenNext Worker, and deploys it. The initial deployment is available at:
+
+- `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev`
+- Admin: `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev/admin`
+
+Do not route `cms.lecturesafterdark.ca` to Payload until content schemas, data migration, and Worker response compatibility have been completed in a later phase.
+
+## Cloudflare limitations
+
+- Payload's D1 and native R2 adapters are currently beta; keep Payload packages pinned together and review migrations during upgrades.
+- Cloudflare Workers do not support Sharp. The media collection disables crop and focal-point processing; Payload image sizes are unavailable.
+- Full GraphQL support is not guaranteed on Workers because of an upstream `workerd` limitation. Use the REST API for the initial content integration.
+- The production logger uses Worker-safe structured console output. Enable Workers Logs in Cloudflare when needed and account for its quota usage.
+
+## Upstream reference
+
+This app is based on Payload's maintained [`with-cloudflare-d1`](https://github.com/payloadcms/payload/tree/main/templates/with-cloudflare-d1) template.

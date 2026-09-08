@@ -6,7 +6,8 @@ Marketing site for Lectures After Dark.
 
 - Frontend: React 19 + Vite
 - Edge layer: Cloudflare Workers
-- CMS: self-hosted Strapi 5
+- Current CMS: self-hosted Strapi 5
+- Next CMS: Payload 3 on Cloudflare Workers, D1, and R2
 - Content fallback cache: Cloudflare KV
 
 ## Local Development
@@ -16,6 +17,7 @@ Install dependencies once:
 ```bash
 pnpm install
 pnpm --dir strapi install
+pnpm --dir payload install
 ```
 
 Run the frontend, Worker, and Strapi in separate terminals:
@@ -62,6 +64,20 @@ Email operations use Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron T
 
 Cloudflare resource provisioning and configuration are documented in [`docs/newsletter-setup.md`](docs/newsletter-setup.md).
 
+## Payload CMS
+
+The new Payload app lives in [`payload/`](payload/) and is deployed as a separate Cloudflare Worker through OpenNext. It has dedicated D1 and R2 bindings, so it does not share the newsletter database or asset bucket.
+
+Start it locally with:
+
+```bash
+pnpm payload:dev
+```
+
+The Payload admin is available locally at `http://localhost:3000/admin` and the initial Cloudflare deployment is at `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
+
+Payload is currently staged alongside Strapi. The public site continues to read Strapi through the existing Worker until Payload content schemas, data migration, and response compatibility are complete.
+
 ## Strapi Setup
 
 Seed data still lives in:
@@ -96,6 +112,13 @@ pnpm build
 pnpm type-check
 pnpm workers:dev
 pnpm workers:deploy
+pnpm payload:dev
+pnpm payload:build
+pnpm payload:check
+pnpm payload:types
+pnpm payload:migrate:create
+pnpm payload:preview
+pnpm payload:deploy
 pnpm strapi:dev
 pnpm strapi:build
 pnpm strapi:start

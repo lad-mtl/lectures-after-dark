@@ -8,7 +8,7 @@ import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
 
-import { Users } from './collections/Users'
+import { createUsers } from './collections/Users'
 import { Media } from './collections/Media'
 
 const filename = fileURLToPath(import.meta.url)
@@ -60,6 +60,16 @@ const cloudflare =
           remoteBindings: false,
         })
       : await getCloudflareContext({ async: true })
+
+const Users = createUsers({
+  cloudflareAccess: {
+    audience: cloudflare.env.CF_ACCESS_AUD,
+    emailDomain: cloudflare.env.CF_ACCESS_EMAIL_DOMAIN,
+    teamDomain: cloudflare.env.CF_ACCESS_TEAM_DOMAIN,
+  },
+  cloudflareAccessEnabled: cloudflare.env.CF_ACCESS_ENABLED === 'true',
+  localDevelopmentEnabled: !isProduction || isBuild || isNextCLI,
+})
 
 export default buildConfig({
   admin: {

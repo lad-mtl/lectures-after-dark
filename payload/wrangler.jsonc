@@ -9,6 +9,12 @@
     },
   ],
   "compatibility_date": "2025-08-15",
+  "vars": {
+    "CF_ACCESS_ENABLED": "true",
+    "CF_ACCESS_TEAM_DOMAIN": "lecturesafterdark.cloudflareaccess.com",
+    "CF_ACCESS_AUD": "1b7db2b82bc9449b64fef9fa3cc0f9156a402b6ef5086f59a60b5fc143389786",
+    "CF_ACCESS_EMAIL_DOMAIN": "lecturesafterdark.ca",
+  },
   "compatibility_flags": [
     // Enable Node.js API
     // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#nodejs-compatibility-flag

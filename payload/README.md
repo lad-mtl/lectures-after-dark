@@ -45,6 +45,16 @@ The bindings in `wrangler.jsonc` are separate from the newsletter resources conf
 | `R2`     | `lectures-after-dark-cms-media` | Uploaded media                       |
 | `ASSETS` | OpenNext-generated assets       | Payload admin and application assets |
 
+## Authentication
+
+Production is protected by a Cloudflare Access self-hosted application covering `cms.lecturesafterdark.ca/*`. Its reusable **All LAD** policy admits only `@lecturesafterdark.ca` identities.
+
+Payload does not accept email/password login. A custom authentication strategy verifies the `Cf-Access-Jwt-Assertion` signature, issuer, audience, expiry, stable subject, and email domain. The first authenticated request automatically creates a lightweight Payload user record for Admin permissions, preferences, and auditing; subsequent requests resolve the same record by Access subject or email. Identity fields are not editable in Admin.
+
+The non-secret Access settings are declared under `vars` in `wrangler.jsonc`. Workers.dev and preview URLs remain disabled, preventing users from bypassing Access through another hostname.
+
+Local development also remains passwordless: requests on `localhost` or `127.0.0.1` automatically use `developer@lecturesafterdark.ca`. This local-only strategy is selected by `CF_ACCESS_ENABLED=false` in `wrangler.local.jsonc` and is never included in the deployed Worker.
+
 These resources are provisioned in the LAD Cloudflare account and configured in `wrangler.jsonc`. To recreate the stack in another account, run:
 
 ```bash

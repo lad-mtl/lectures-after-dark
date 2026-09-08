@@ -11,6 +11,18 @@ describe('API', () => {
     payload = await getPayload({ config: payloadConfig })
   })
 
+  it('provisions a passwordless local development user', async () => {
+    const { user } = await payload.auth({
+      headers: new Headers({ host: 'localhost:3000' }),
+    })
+
+    expect(user).toMatchObject({
+      cloudflareAccessSubject: 'local-development',
+      collection: 'users',
+      email: 'developer@lecturesafterdark.ca',
+    })
+  })
+
   it('fetches users', async () => {
     const users = await payload.find({
       collection: 'users',

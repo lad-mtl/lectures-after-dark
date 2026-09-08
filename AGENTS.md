@@ -27,6 +27,7 @@
 - Strapi local API base should be `STRAPI_CONTENT_API_URL=http://127.0.0.1:1337/api`.
 - Strapi requires Node `>=20 <=24`; SQLite users may need `better-sqlite3` rebuilt under that runtime.
 - Payload requires Node `^18.20.2 || >=20.9.0`, a Workers Paid plan due to bundle size, and independently provisioned `D1`/`R2` bindings configured in `payload/wrangler.jsonc`.
+- Production Payload auth is Cloudflare Access-only for `@lecturesafterdark.ca`: validate `Cf-Access-Jwt-Assertion` and auto-provision passwordless Payload user records. Local development uses the separate localhost-only custom strategy.
 - `wrangler.toml` sets the site Worker `main = "worker/index.ts"`, assets from `dist`, and KV binding `CONTENT_CACHE`; do not put Payload bindings there.
 
 ## Content/API flow

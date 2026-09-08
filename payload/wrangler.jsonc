@@ -2,6 +2,12 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "lectures-after-dark-cms",
+  "routes": [
+    {
+      "pattern": "cms.lecturesafterdark.ca",
+      "custom_domain": true,
+    },
+  ],
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [
     // Enable Node.js API

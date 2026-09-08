@@ -74,7 +74,7 @@ Start it locally with:
 pnpm payload:dev
 ```
 
-The Payload admin is available locally at `http://localhost:3000/admin` and the initial Cloudflare deployment is at `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
+The Payload admin is available locally at `http://localhost:3000/admin` and in production at `https://cms.lecturesafterdark.ca/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
 
 Payload is currently staged alongside Strapi. The public site continues to read Strapi through the existing Worker until Payload content schemas, data migration, and response compatibility are complete.
 

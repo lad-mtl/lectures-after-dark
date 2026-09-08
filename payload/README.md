@@ -108,12 +108,10 @@ After provisioning D1 and R2, setting `PAYLOAD_SECRET`, and committing migration
 pnpm payload:deploy
 ```
 
-The deploy command applies remote D1 migrations, optimizes D1, builds the OpenNext Worker, and deploys it. The initial deployment is available at:
+The deploy command applies remote D1 migrations, optimizes D1, builds the OpenNext Worker, and deploys it. Payload is available at:
 
-- `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev`
-- Admin: `https://lectures-after-dark-cms.augusto-mpinheiro.workers.dev/admin`
-
-Do not route `cms.lecturesafterdark.ca` to Payload until content schemas, data migration, and Worker response compatibility have been completed in a later phase.
+- `https://cms.lecturesafterdark.ca`
+- Admin: `https://cms.lecturesafterdark.ca/admin`
 
 ## Cloudflare limitations
 

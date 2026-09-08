@@ -11,7 +11,7 @@ import {
   type Where,
 } from 'payload'
 
-import config from '../payload.config'
+import config, { disposePayloadPlatformProxy } from '../payload.config'
 import type { Faq, SpeakerPage, VenuePage } from '../payload-types'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -152,9 +152,8 @@ async function main() {
   })
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error: unknown) => {
-    console.error(error)
-    process.exit(1)
-  })
+try {
+  await main()
+} finally {
+  await disposePayloadPlatformProxy()
+}

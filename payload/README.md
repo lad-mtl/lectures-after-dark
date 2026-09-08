@@ -107,7 +107,7 @@ The Payload seed command imports the repository-backed content from `content/`:
 pnpm payload:seed
 ```
 
-It upserts collection records by name only when that collection's source directory contains JSON files. It never deletes records, and empty `speakers/` and `team-members/` directories leave editor-created content untouched. It always updates the FAQ, Speaker Page, and Venue Page globals. Events and Instagram posts are externally synchronized data and are intentionally not changed by this seed.
+It upserts collection records by name only when that collection's source directory contains JSON files. It never deletes records, and any empty collection source directory leaves editor-created content untouched. It always updates the FAQ, Speaker Page, and Venue Page globals. Events and Instagram posts are externally synchronized data and are intentionally not changed by this seed.
 
 After applying production migrations, seed the remote D1 database with:
 

@@ -76,7 +76,7 @@ pnpm payload:dev
 
 The Payload admin is available locally at `http://localhost:3000/admin` and in production at `https://cms.lecturesafterdark.ca/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
 
-Payload is protected by Cloudflare Access for `@lecturesafterdark.ca` identities and uses Access-backed passwordless editor records instead of Payload credentials. Its collections and globals now mirror every Strapi content type, with repository-backed seed support for venues, FAQ, and page CTAs. It remains staged alongside Strapi until the site Worker is switched to Payload-compatible responses and authenticated machine access.
+Payload is protected by Cloudflare Access for `@lecturesafterdark.ca` identities and uses Access-backed passwordless editor records instead of Payload credentials. Its collections and globals now mirror every Strapi content type, with repository-backed seed support for speakers, team members, venues, FAQ, and page CTAs. It remains staged alongside Strapi until the site Worker is switched to Payload-compatible responses and authenticated machine access.
 
 ## Strapi Setup
 

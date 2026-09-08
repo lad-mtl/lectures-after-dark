@@ -22,6 +22,13 @@ import { VenuePage } from './globals/VenuePage'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const localWranglerConfig = path.resolve(dirname, '../wrangler.local.jsonc')
+let disposeWranglerProxy: (() => Promise<void>) | undefined
+
+export async function disposePayloadPlatformProxy() {
+  await disposeWranglerProxy?.()
+  disposeWranglerProxy = undefined
+}
+
 const realpath = (value: string) => {
   try {
     return fs.existsSync(value) ? fs.realpathSync(value) : undefined
@@ -112,10 +119,14 @@ function getCloudflareContextFromWrangler(
   options: Pick<GetPlatformProxyOptions, 'configPath' | 'persist' | 'remoteBindings'>,
 ): Promise<CloudflareContext> {
   return import(/* webpackIgnore: true */ `${'__wrangler'.replaceAll('_', '')}`).then(
-    ({ getPlatformProxy }) =>
-      getPlatformProxy({
+    async ({ getPlatformProxy }) => {
+      const proxy = await getPlatformProxy({
         environment: process.env.CLOUDFLARE_ENV,
         ...options,
-      } satisfies GetPlatformProxyOptions),
+      } satisfies GetPlatformProxyOptions)
+
+      disposeWranglerProxy = () => proxy.dispose()
+      return proxy
+    },
   )
 }

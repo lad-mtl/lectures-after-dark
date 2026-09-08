@@ -22,6 +22,8 @@
     "payload:types": "pnpm --dir payload run generate:types",
     "payload:migrate:create": "pnpm --dir payload run migrate:create",
     "payload:preview": "pnpm --dir payload run preview",
+    "payload:seed": "pnpm --dir payload run seed",
+    "payload:seed:production": "pnpm --dir payload run seed:production",
     "payload:deploy": "pnpm --dir payload run deploy",
     "workers:dev": "wrangler dev",
     "workers:deploy": "wrangler deploy"

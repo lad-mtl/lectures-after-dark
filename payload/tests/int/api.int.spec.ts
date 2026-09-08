@@ -23,6 +23,42 @@ describe('API', () => {
     })
   })
 
+  it('registers every migrated Strapi content model', () => {
+    expect(payload.config.collections.map(({ slug }) => slug)).toEqual(
+      expect.arrayContaining(['speakers', 'venues', 'team-members', 'events', 'instagram-posts']),
+    )
+    expect(payload.config.globals.map(({ slug }) => slug)).toEqual(
+      expect.arrayContaining(['faq', 'speaker-page', 'venue-page']),
+    )
+  })
+
+  it('allows public reads of migrated content', async () => {
+    const venues = await payload.find({
+      collection: 'venues',
+      overrideAccess: false,
+    })
+    const faq = await payload.findGlobal({
+      slug: 'faq',
+      overrideAccess: false,
+    })
+
+    expect(venues).toBeDefined()
+    expect(faq).toBeDefined()
+  })
+
+  it('rejects unauthenticated content writes', async () => {
+    await expect(
+      payload.create({
+        collection: 'venues',
+        data: {
+          name: 'Unauthorized Venue',
+          neighborhood: 'Test',
+        },
+        overrideAccess: false,
+      }),
+    ).rejects.toThrow()
+  })
+
   it('fetches users', async () => {
     const users = await payload.find({
       collection: 'users',

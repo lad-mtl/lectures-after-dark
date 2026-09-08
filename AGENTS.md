@@ -28,6 +28,7 @@
 - Strapi requires Node `>=20 <=24`; SQLite users may need `better-sqlite3` rebuilt under that runtime.
 - Payload requires Node `^18.20.2 || >=20.9.0`, a Workers Paid plan due to bundle size, and independently provisioned `D1`/`R2` bindings configured in `payload/wrangler.jsonc`.
 - Production Payload auth is Cloudflare Access-only for `@lecturesafterdark.ca`: validate `Cf-Access-Jwt-Assertion` and auto-provision passwordless Payload user records. Local development uses the separate localhost-only custom strategy.
+- `pnpm payload:seed` imports file-backed content locally; `pnpm payload:seed:production` targets remote D1. Empty collection source directories are skipped, and Eventbrite/Instagram records are not seeded.
 - `wrangler.toml` sets the site Worker `main = "worker/index.ts"`, assets from `dist`, and KV binding `CONTENT_CACHE`; do not put Payload bindings there.
 
 ## Content/API flow
@@ -35,7 +36,7 @@
 - Frontend hooks in `src/hooks/useContent.ts` call `/api/content/<resource>` only.
 - Worker content routes live in `worker/content.ts`; current routes include `speakers`, `venues`, `speaker-page`, `venue-page`, `faq`, `team-members`, `events`, and `instagram`.
 - Strapi-backed routes normalize Strapi REST responses and refresh KV snapshots on success; on upstream failure they return stale `CONTENT_CACHE` snapshots when available.
-- `events` and `instagram` are Strapi-backed collection routes. External cron jobs can sync Eventbrite/Instagram data into Strapi, but public reads should still go browser -> Worker -> Strapi.
+- `events` and `instagram` remain Strapi-backed public routes until the Worker cutover. Payload now mirrors all Strapi models as the `speakers`, `venues`, `team-members`, `events`, and `instagram-posts` collections plus the `faq`, `speaker-page`, and `venue-page` globals.
 - Contact form settings are Worker env vars (`CONTACT_FROM_EMAIL`, `CONTACT_CORE_EMAIL`, `CONTACT_MARKETING_EMAIL`) and delivery uses the Cloudflare `EMAIL` binding.
 
 ## Style/tooling notes

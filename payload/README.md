@@ -76,7 +76,20 @@ A secure value can be generated with `openssl rand -hex 32`.
 
 ## Schema and migrations
 
-Payload collections are defined in `src/collections/`. The initial schema contains only authenticated users and R2-backed media.
+Payload collections are defined in `src/collections/`, and singleton page content is defined in `src/globals/`. The Strapi model mapping is:
+
+| Strapi type    | Payload model                |
+| -------------- | ---------------------------- |
+| Speaker        | `speakers` collection        |
+| Venue          | `venues` collection          |
+| Team Member    | `team-members` collection    |
+| Event          | `events` collection          |
+| Instagram Post | `instagram-posts` collection |
+| FAQ            | `faq` global                 |
+| Speaker Page   | `speaker-page` global        |
+| Venue Page     | `venue-page` global          |
+
+These models preserve the existing field names and do not enable drafts because their Strapi counterparts had `draftAndPublish` disabled. Reads are permitted by Payload so an Access-authorized machine client can consume content; writes require an authenticated LAD editor.
 
 After changing the schema, create and commit a migration:
 
@@ -85,6 +98,22 @@ pnpm payload:migrate:create
 ```
 
 Migrations live in `src/migrations/`. Production deployment runs checked-in migrations against remote D1 before deploying application code. If migration fails, deployment stops.
+
+## Seed content
+
+The Payload seed command imports the repository-backed content from `content/`:
+
+```bash
+pnpm payload:seed
+```
+
+It upserts collection records by name only when that collection's source directory contains JSON files. It never deletes records, and empty `speakers/` and `team-members/` directories leave editor-created content untouched. It always updates the FAQ, Speaker Page, and Venue Page globals. Events and Instagram posts are externally synchronized data and are intentionally not changed by this seed.
+
+After applying production migrations, seed the remote D1 database with:
+
+```bash
+pnpm payload:seed:production
+```
 
 ## Validation
 

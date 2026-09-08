@@ -8,8 +8,16 @@ import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
 
-import { createUsers } from './collections/Users'
+import { Events } from './collections/Events'
+import { InstagramPosts } from './collections/InstagramPosts'
 import { Media } from './collections/Media'
+import { Speakers } from './collections/Speakers'
+import { TeamMembers } from './collections/TeamMembers'
+import { createUsers } from './collections/Users'
+import { Venues } from './collections/Venues'
+import { FAQ } from './globals/FAQ'
+import { SpeakerPage } from './globals/SpeakerPage'
+import { VenuePage } from './globals/VenuePage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,6 +32,7 @@ const realpath = (value: string) => {
 
 const resolvedArgv = process.argv.map(realpath).filter((value): value is string => Boolean(value))
 const isPayloadCLI = resolvedArgv.some((value) => value.endsWith(path.join('payload', 'bin.js')))
+const isPayloadScript = process.env.PAYLOAD_SCRIPT === 'true'
 const isNextCLI = resolvedArgv.some((value) =>
   value.endsWith(path.join('next', 'dist', 'bin', 'next')),
 )
@@ -51,9 +60,9 @@ const cloudflareLogger = {
 } as unknown as PayloadLogger
 
 const cloudflare =
-  isPayloadCLI && isProduction
+  (isPayloadCLI || isPayloadScript) && isProduction
     ? await getCloudflareContextFromWrangler({ remoteBindings: true })
-    : isBuild || isPayloadCLI || isNextCLI || !isProduction
+    : isBuild || isPayloadCLI || isPayloadScript || isNextCLI || !isProduction
       ? await getCloudflareContextFromWrangler({
           configPath: localWranglerConfig,
           persist: isBuild || isNextCLI ? false : true,
@@ -78,7 +87,8 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Speakers, Venues, TeamMembers, Events, InstagramPosts],
+  globals: [FAQ, SpeakerPage, VenuePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -86,6 +96,7 @@ export default buildConfig({
   },
   db: sqliteD1Adapter({
     binding: cloudflare.env.D1,
+    push: !isProduction && !isPayloadScript,
   }),
   logger: isProduction ? cloudflareLogger : undefined,
   plugins: [

@@ -18,6 +18,7 @@ import { Venues } from './collections/Venues'
 import { FAQ } from './globals/FAQ'
 import { SpeakerPage } from './globals/SpeakerPage'
 import { VenuePage } from './globals/VenuePage'
+import { buildMediaFileURL } from './media/public-url'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -109,7 +110,16 @@ export default buildConfig({
   plugins: [
     r2Storage({
       bucket: cloudflare.env.R2,
-      collections: { media: true },
+      collections: {
+        media: {
+          generateFileURL: ({ filename, prefix }) =>
+            buildMediaFileURL({
+              baseURL: cloudflare.env.MEDIA_BASE_URL,
+              filename,
+              prefix,
+            }),
+        },
+      },
     }),
   ],
 })

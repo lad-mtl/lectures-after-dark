@@ -14,6 +14,7 @@
     "CF_ACCESS_TEAM_DOMAIN": "lecturesafterdark.cloudflareaccess.com",
     "CF_ACCESS_AUD": "1b7db2b82bc9449b64fef9fa3cc0f9156a402b6ef5086f59a60b5fc143389786",
     "CF_ACCESS_EMAIL_DOMAIN": "lecturesafterdark.ca",
+    "MEDIA_BASE_URL": "https://media.lecturesafterdark.ca",
   },
   "compatibility_flags": [
     // Enable Node.js API

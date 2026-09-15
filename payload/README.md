@@ -91,6 +91,15 @@ Payload collections are defined in `src/collections/`, and singleton page conten
 
 These models preserve the existing field names and do not enable drafts because their Strapi counterparts had `draftAndPublish` disabled. Reads are permitted by Payload so the private site-Worker service binding can consume content; writes require an authenticated LAD editor.
 
+## Public media
+
+The CMS hostname remains fully protected by Cloudflare Access. Browser-facing media is served directly from the R2 bucket through the separate public hostname configured by `MEDIA_BASE_URL`:
+
+- Production: `https://media.lecturesafterdark.ca`
+- Local development: `http://localhost:3000/api/media/file`
+
+Before deploying media, connect `media.lecturesafterdark.ca` as a custom domain for the `lectures-after-dark-cms-media` R2 bucket in Cloudflare. Payload's R2 adapter generates that public URL for new media records. Existing speaker, team-member, and venue URL fields remain plain text and must be updated separately after their files are copied into R2.
+
 After changing the schema, create and commit a migration:
 
 ```bash

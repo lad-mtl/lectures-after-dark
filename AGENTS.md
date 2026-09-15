@@ -27,6 +27,7 @@
 - Payload local API base should be `PAYLOAD_CONTENT_API_URL=http://127.0.0.1:3000/api`.
 - Payload requires Node `^18.20.2 || >=20.9.0`, a Workers Paid plan due to bundle size, and independently provisioned `D1`/`R2` bindings configured in `payload/wrangler.jsonc`.
 - Production Payload auth is Cloudflare Access-only for `@lecturesafterdark.ca`: validate `Cf-Access-Jwt-Assertion` and auto-provision passwordless Payload user records. Local development uses the separate localhost-only custom strategy.
+- Payload media URLs use `MEDIA_BASE_URL`: production points at the public `media.lecturesafterdark.ca` R2 custom domain, while local development uses Payload's `/api/media/file` route.
 - `pnpm payload:seed` imports file-backed content locally; `pnpm payload:seed:production` targets remote D1. Empty collection source directories are skipped, and Eventbrite/Instagram records are not seeded.
 - `wrangler.toml` sets the site Worker `main = "worker/index.ts"`, assets from `dist`, KV binding `CONTENT_CACHE`, and the cross-Worker `PAYLOAD_CMS` service binding. Payload D1/R2 bindings remain only in `payload/wrangler.jsonc`.
 

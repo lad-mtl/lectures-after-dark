@@ -68,7 +68,7 @@ export const UpcomingEvents = ({
                     <>
                         {!hasUpcomingEvents && (
                             <p className={styles.statusText}>
-                                No upcoming events right now — here are some past lectures.
+                                No upcoming events right now. Here are some past lectures.
                             </p>
                         )}
                         {renderEvents(displayedEvents)}

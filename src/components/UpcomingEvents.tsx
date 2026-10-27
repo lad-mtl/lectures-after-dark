@@ -10,7 +10,7 @@ interface UpcomingEventsProps {
 export const UpcomingEvents = ({
     title = "EVENTS",
 }: UpcomingEventsProps) => {
-    const { events, loading } = useEvents();
+    const { events, loading, stale, error } = useEvents();
     const upcomingEvents = events
         .filter((event) => !event.isPast)
         .sort(
@@ -55,6 +55,17 @@ export const UpcomingEvents = ({
                     </div>
                 </div>
 
+                {!loading && (stale || error) && (
+                    <p className={styles.statusText} role="status">
+                        {error
+                            ? 'Events are temporarily unavailable. '
+                            : 'We could not refresh events. These cached listings may be out of date. '}
+                        <a href={EVENTBRITE_PROFILE_URL} target="_blank" rel="noopener noreferrer">
+                            Check Eventbrite for the latest events.
+                        </a>
+                    </p>
+                )}
+
                 {loading ? (
                     <div className={styles.grid}>
                         {Array.from({ length: 3 }).map((_, index) => (
@@ -64,18 +75,22 @@ export const UpcomingEvents = ({
                             />
                         ))}
                     </div>
-                ) : displayedEvents.length > 0 ? (
+                ) : error ? null : displayedEvents.length > 0 ? (
                     <>
                         {!hasUpcomingEvents && (
                             <p className={styles.statusText}>
-                                No upcoming events right now. Here are some past lectures.
+                                {stale
+                                    ? 'No upcoming events in these cached listings. Here are some past lectures.'
+                                    : 'No upcoming events right now. Here are some past lectures.'}
                             </p>
                         )}
                         {renderEvents(displayedEvents)}
                     </>
                 ) : (
                     <div className={styles.emptyState}>
-                        <p className={styles.emptyTitle}>No events listed right now.</p>
+                        <p className={styles.emptyTitle}>
+                            {stale ? 'No events in the cached listings.' : 'No events listed right now.'}
+                        </p>
                         <p className={styles.emptyText}>
                             Check Eventbrite or come back soon for the next lecture night.
                         </p>

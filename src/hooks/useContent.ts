@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { refreshEventDates } from "../lib/eventDates.ts";
 
 const CONTENT_API_BASE = "/api/content";
 
@@ -164,20 +165,39 @@ export function useFaq() {
   return { faq, loading };
 }
 
+export async function fetchEvents() {
+  const response = await fetch(`${CONTENT_API_BASE}/events`);
+  if (!response.ok) throw new Error("Events are temporarily unavailable.");
+  const data = await response.json() as EventData[];
+  return {
+    events: refreshEventDates(data),
+    stale: response.headers.get("x-content-source") === "stale-cache",
+    fetchedAt: response.headers.get("x-content-fetched-at"),
+  };
+}
+
 export function useEvents() {
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stale, setStale] = useState(false);
+  const [fetchedAt, setFetchedAt] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetchContent<EventData[]>("events")
+    let active = true;
+    fetchEvents()
       .then((data) => {
-        setEvents(data);
+        if (!active) return;
+        setEvents(data.events);
+        setStale(data.stale);
+        setFetchedAt(data.fetchedAt);
       })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      .catch(() => { if (active) setError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
   }, []);
 
-  return { events, loading };
+  return { events, loading, stale, fetchedAt, error };
 }
 
 export function useTeamMembers() {

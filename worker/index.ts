@@ -15,6 +15,7 @@ interface Env extends NewsletterEnv {
   EVENTBRITE_API_BASE_URL?: string;
   EVENTBRITE_PRIVATE_TOKEN?: string;
   EVENTBRITE_ORGANIZER_ID?: string;
+  EVENTBRITE_ORGANIZATION_ID?: string;
   EVENTBRITE_ORGANIZATION_NAME?: string;
   EVENTBRITE_TIMEOUT_MS?: string;
   INSTAGRAM_API_BASE_URL?: string;

@@ -1,3 +1,5 @@
+import { refreshEventDates } from "../src/lib/eventDates.ts";
+
 interface CachedSnapshot<T> {
   data: T;
   fetchedAt: string;
@@ -84,7 +86,7 @@ export interface ContentEnv {
   STRAPI_TIMEOUT_MS?: string;
   EVENTBRITE_API_BASE_URL?: string;
   EVENTBRITE_PRIVATE_TOKEN?: string;
-  EVENTBRITE_ORGANIZER_ID?: string;
+  EVENTBRITE_ORGANIZATION_ID?: string;
   EVENTBRITE_ORGANIZATION_NAME?: string;
   EVENTBRITE_TIMEOUT_MS?: string;
   INSTAGRAM_API_BASE_URL?: string;
@@ -225,8 +227,8 @@ function buildStrapiUrl(baseUrl: string, pathname: string) {
   return `${baseUrl.replace(/\/+$/, "")}${pathname}`;
 }
 
-function buildEventbriteUrl(baseUrl: string, organizerId: string) {
-  return `${baseUrl.replace(/\/+$/, "")}/organizations/${encodeURIComponent(organizerId)}/events/`;
+function buildEventbriteUrl(baseUrl: string, organizationId: string) {
+  return `${baseUrl.replace(/\/+$/, "")}/organizations/${encodeURIComponent(organizationId)}/events/`;
 }
 
 function parseDate(value?: string | null) {
@@ -697,6 +699,8 @@ async function fetchFreshContent(
   }
 }
 
+class EventbriteContentError extends Error {}
+
 async function fetchEventbriteJson<T>(url: URL, token: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -712,7 +716,7 @@ async function fetchEventbriteJson<T>(url: URL, token: string, timeoutMs: number
     });
 
     if (!response.ok) {
-      throw new Error(`Eventbrite upstream returned ${response.status}`);
+      throw new EventbriteContentError(`eventbrite-http-${response.status}`);
     }
 
     return response.json() as Promise<T>;
@@ -721,7 +725,7 @@ async function fetchEventbriteJson<T>(url: URL, token: string, timeoutMs: number
   }
 }
 
-async function discoverEventbriteOrganizerId(
+async function discoverEventbriteOrganizationId(
   env: ContentEnv,
   baseUrl: string,
   token: string,
@@ -742,29 +746,23 @@ async function discoverEventbriteOrganizerId(
     return String(matchingOrganization.id);
   }
 
-  if (organizations.length === 1) {
-    return String(organizations[0].id);
-  }
-
-  throw new Error(
-    `Eventbrite organization could not be identified. Set EVENTBRITE_ORGANIZER_ID or EVENTBRITE_ORGANIZATION_NAME to "${preferredName}".`,
-  );
+  throw new EventbriteContentError("eventbrite-organization-not-found");
 }
 
 async function fetchFreshEvents(env: ContentEnv) {
   const token = env.EVENTBRITE_PRIVATE_TOKEN?.trim();
 
   if (!token) {
-    throw new Error("Eventbrite private token is missing.");
+    throw new EventbriteContentError("eventbrite-token-missing");
   }
 
   const timeoutMs = Number(env.EVENTBRITE_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
 
   const baseUrl = env.EVENTBRITE_API_BASE_URL?.trim() || DEFAULT_EVENTBRITE_API_BASE_URL;
-  const organizerId =
-    env.EVENTBRITE_ORGANIZER_ID?.trim() ||
-    (await discoverEventbriteOrganizerId(env, baseUrl, token, timeoutMs));
-  const url = new URL(buildEventbriteUrl(baseUrl, organizerId));
+  const organizationId =
+    env.EVENTBRITE_ORGANIZATION_ID?.trim() ||
+    (await discoverEventbriteOrganizationId(env, baseUrl, token, timeoutMs));
+  const url = new URL(buildEventbriteUrl(baseUrl, organizationId));
 
   url.searchParams.set("time_filter", "all");
   url.searchParams.set("expand", "ticket_availability,venue");
@@ -790,7 +788,7 @@ async function fetchFreshEvents(env: ContentEnv) {
     }
 
     if (!nextContinuation || seenContinuations.has(nextContinuation)) {
-      throw new Error("Eventbrite returned an invalid pagination continuation.");
+      throw new EventbriteContentError("eventbrite-invalid-pagination");
     }
 
     seenContinuations.add(nextContinuation);
@@ -884,14 +882,22 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
       return await fetchFreshEvents(env);
     } catch (error) {
       const snapshot = await readSnapshot(env, EVENTS_CACHE_RESOURCE);
+      const reason = error instanceof EventbriteContentError
+        ? error.message
+        : error instanceof Error && error.name === "AbortError"
+          ? "eventbrite-timeout"
+          : "eventbrite-unreachable";
+      console.warn("Eventbrite content refresh failed", {
+        reason,
+        source: snapshot && Array.isArray(snapshot.data) ? "stale-cache" : "unavailable",
+      });
 
-      if (snapshot) {
-        return jsonResponse(snapshot.data, {
+      if (snapshot && Array.isArray(snapshot.data)) {
+        return jsonResponse(refreshEventDates(snapshot.data as EventData[]), {
           headers: {
             "x-content-source": "stale-cache",
             "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason":
-              error instanceof Error ? error.message : "eventbrite-unreachable",
+            "x-content-fallback-reason": reason,
           },
         });
       }

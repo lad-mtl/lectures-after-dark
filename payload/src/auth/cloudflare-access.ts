@@ -4,6 +4,7 @@ import type { AuthStrategy, Payload } from 'payload'
 import type { User } from '../payload-types'
 
 const ACCESS_JWT_HEADER = 'cf-access-jwt-assertion'
+const ACCESS_JWT_COOKIE = 'CF_Authorization'
 const jwksByTeamDomain = new Map<string, ReturnType<typeof createRemoteJWKSet>>()
 
 export interface CloudflareAccessConfig {
@@ -55,12 +56,58 @@ export async function verifyCloudflareAccessToken(
   return payload
 }
 
+function readCookie(headers: Headers, name: string) {
+  for (const part of (headers.get('cookie') ?? '').split(';')) {
+    const separator = part.indexOf('=')
+
+    if (separator !== -1 && part.slice(0, separator).trim() === name) {
+      return part.slice(separator + 1).trim() || null
+    }
+  }
+
+  return null
+}
+
+// Browsers attach cookies to cross-site form posts, so the cookie only counts for requests
+// that come from the CMS's own pages.
+function isSameOriginRequest(headers: Headers) {
+  const fetchSite = headers.get('sec-fetch-site')
+
+  if (fetchSite && fetchSite !== 'same-origin' && fetchSite !== 'none') {
+    return false
+  }
+
+  const origin = headers.get('origin')
+
+  if (!origin) {
+    return true
+  }
+
+  try {
+    return new URL(origin).host === headers.get('host')
+  } catch {
+    return false
+  }
+}
+
+// Access adds the assertion header only on paths it protects. On bypassed paths such as
+// /api/*, the browser still sends the CF_Authorization cookie, which holds the same signed JWT.
+function readAccessToken(headers: Headers) {
+  const assertion = headers.get(ACCESS_JWT_HEADER)
+
+  if (assertion) {
+    return assertion
+  }
+
+  return isSameOriginRequest(headers) ? readCookie(headers, ACCESS_JWT_COOKIE) : null
+}
+
 export async function getCloudflareAccessIdentity(
   headers: Headers,
   config: CloudflareAccessConfig,
   verifyToken: VerifyAccessToken = verifyCloudflareAccessToken,
 ): Promise<CloudflareAccessIdentity | null> {
-  const token = headers.get(ACCESS_JWT_HEADER)
+  const token = readAccessToken(headers)
 
   if (!token) {
     return null

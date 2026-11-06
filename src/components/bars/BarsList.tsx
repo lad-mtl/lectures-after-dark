@@ -33,7 +33,7 @@ export const BarsList = ({
                         ))}
                     </div>
                 ) : (
-                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No venues yet. Add venues in the Strapi admin.</p>
+                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No venues yet. Add venues in the CMS admin.</p>
                 )}
             </div>
         </section>

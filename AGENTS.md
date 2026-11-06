@@ -5,7 +5,6 @@
 - `src/` is the React 19 + Vite marketing site; routes are wired in `src/App.tsx`.
 - `worker/` is the Cloudflare Worker entry (`worker/index.ts`) that serves `dist` assets, handles SPA fallback, proxies content, and handles `/api/contact`.
 - `payload/` is the current CMS, isolated as a separate Next.js/OpenNext Cloudflare Worker with dedicated D1 and R2 bindings. Production public reads go browser -> site Worker -> private `PAYLOAD_CMS` service binding.
-- `strapi/` is the legacy Strapi 5 app retained temporarily for migration reference.
 - Seed/source content is file-backed under `content/` (`speakers`, `team-members`, `venues`, `faq`).
 
 ## Commands that matter
@@ -15,7 +14,6 @@
 - Payload verification: `pnpm payload:check`; generate binding/Payload types with `pnpm payload:types`.
 - Non-mutating checks: `pnpm run lint`, `pnpm run type-check`, `pnpm run build`.
 - Local dev needs separate terminals: `pnpm payload:dev`, `pnpm workers:dev`, then `pnpm dev`.
-- Strapi commands are proxied from root: `pnpm strapi:build`, `pnpm strapi:seed`, `pnpm strapi:start`.
 - Payload commands are proxied from root: `pnpm payload:dev`, `pnpm payload:build`, `pnpm payload:check`, `pnpm payload:types`, `pnpm payload:migrate:create`, `pnpm payload:preview`, `pnpm payload:deploy`.
 - Worker commands: `pnpm workers:dev`, `pnpm workers:deploy`.
 - There is no root test script configured. Payload has `test:int` and `test:e2e`; do not claim either ran unless invoked explicitly.

@@ -146,7 +146,7 @@ The Eventbrite private token must be authorized to read attendee details, includ
 Run three terminals:
 
 ```bash
-pnpm strapi:dev
+pnpm payload:dev
 pnpm workers:dev
 pnpm dev
 ```

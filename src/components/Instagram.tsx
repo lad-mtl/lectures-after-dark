@@ -65,7 +65,7 @@ export const Instagram = ({
 
                     {!loading && !hasPosts && (
                         <div className={styles.emptyState}>
-                            <p>Latest posts will appear here once they are added in Strapi.</p>
+                            <p>Latest posts will appear here once they are posted on Instagram.</p>
                             <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                                 Visit Instagram
                             </a>

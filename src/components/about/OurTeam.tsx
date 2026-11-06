@@ -40,7 +40,7 @@ export const OurTeam = ({
                             />
                         ))
                     ) : (
-                        <p className={styles.stateMessage}>No team members yet. Add them in the Strapi admin.</p>
+                        <p className={styles.stateMessage}>No team members yet. Add them in the CMS admin.</p>
                     )}
                 </div>
             </div>

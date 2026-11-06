@@ -35,7 +35,7 @@ export const SpeakersList = ({
                         ))}
                     </div>
                 ) : (
-                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No speakers yet. Add speakers in the Strapi admin.</p>
+                    <p style={{ textAlign: 'center', opacity: 0.6 }}>No speakers yet. Add speakers in the CMS admin.</p>
                 )}
             </div>
         </section>

@@ -1,0 +1,10 @@
+# Makes payload/ its own pnpm project. Without this file, pnpm walks up to the
+# repo-root workspace and installs the site's dependencies instead of Payload's.
+packages:
+  - "."
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - unrs-resolver
+  - workerd

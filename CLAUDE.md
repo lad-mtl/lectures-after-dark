@@ -1,25 +1,30 @@
 # CLAUDE.md
 
-This repository has two runtime pieces:
+This repository has three runtime pieces:
 
 - `src/`: React + Vite marketing site
-- `worker/`: Cloudflare Worker that serves the SPA and proxies public Strapi reads
+- `worker/`: Cloudflare Worker that serves the SPA and proxies public content reads
+- `payload/`: Payload CMS, deployed as the separate `lectures-after-dark-cms` Worker (Next.js through OpenNext, with its own D1 and R2)
 
-Strapi remains the content system, but it is expected to run as a separate service in production.
+`AGENTS.md` has the longer reference for commands, gotchas and the content flow.
 
 ## Common Commands
 
 ```bash
 pnpm install
+pnpm --dir payload install
 pnpm dev
 pnpm build
 pnpm type-check
+pnpm test
 pnpm workers:dev
 pnpm workers:deploy
-pnpm strapi:dev
-pnpm strapi:build
-pnpm strapi:start
-pnpm strapi:seed
+pnpm payload:dev
+pnpm payload:check
+pnpm payload:types
+pnpm payload:migrate:create
+pnpm payload:seed
+pnpm payload:deploy
 ```
 
 ## Architecture
@@ -33,48 +38,45 @@ pnpm strapi:seed
 ### Worker
 
 - Entry: `worker/index.ts`
-- Strapi proxy + stale fallback logic: `worker/content.ts`
-- Public routes:
-  - `/api/content/speakers`
-  - `/api/content/venues`
-  - `/api/content/faq`
-  - `/api/content/events`
-  - `/api/content/instagram`
-- On Strapi success, the Worker refreshes KV snapshots
-- On Strapi timeout/failure, the Worker serves the last cached snapshot if available
+- Content proxy and stale fallback logic: `worker/content.ts`
+- Public routes under `/api/content/`: `speakers`, `venues`, `team-members`, `faq`, `speaker-page`, `venue-page`, `events`, `instagram`
+- Payload-backed routes call the CMS through the `PAYLOAD_CMS` service binding in production
+- `events` reads Eventbrite and `instagram` reads the Instagram Graph API directly
+- On upstream success, the Worker refreshes KV snapshots. On timeout or failure, it serves the last cached snapshot if one exists
 
-### Strapi
+### Payload
 
-- Strapi app lives in `strapi/`
-- Content remains file-backed under `content/`
-- Local Strapi authoring uses `pnpm strapi:dev`
-- Production public reads should come through the Worker proxy, not from the browser directly to Strapi
+- Collections in `payload/src/collections/`, globals in `payload/src/globals/`
+- Seed content is file-backed under `content/` and imported with `pnpm payload:seed`
+- Schema changes need a migration: `pnpm payload:migrate:create <name>`, then commit the generated files in `payload/src/migrations/`
+- Cloudflare Access protects `cms.lecturesafterdark.ca`. `/api/*` has an Access bypass, so the Payload strategy also accepts the `CF_Authorization` cookie on same-origin requests (`payload/src/auth/cloudflare-access.ts`)
+- Users can enable a Payload API key on their own user record. Clients send `Authorization: users API-Key <key>`
+
+## Deployment
+
+Both Workers deploy through Cloudflare Workers Builds on push to `main`.
+
+- Site Worker (`lectures-after-dark`): builds from the repo root and ignores changes under `payload/`
+- CMS Worker (`lectures-after-dark-cms`): root `payload`, deploy command `pnpm run deploy`, which runs D1 migrations before the OpenNext build and deploy. Non-production branches only run the build, because previews would share the production D1 and R2
 
 ## Required Environment
 
 ### Worker
 
-- `STRAPI_CONTENT_API_URL`
-- `STRAPI_CONTENT_API_TOKEN` (optional)
-- `STRAPI_TIMEOUT_MS` (optional)
+- `PAYLOAD_CONTENT_API_URL`
+- `PAYLOAD_TIMEOUT_MS` (optional)
+- `PAYLOAD_CMS` service binding
+- `EVENTBRITE_PRIVATE_TOKEN`, `INSTAGRAM_ACCESS_TOKEN`, and the optional `EVENTBRITE_*` and `INSTAGRAM_*` settings in `.dev.vars.example`
 - `CONTENT_CACHE` KV binding
 
-### Strapi
+### Payload
 
-- `HOST`
-- `PORT`
-- `APP_KEYS`
-- `API_TOKEN_SALT`
-- `ADMIN_JWT_SECRET`
-- `TRANSFER_TOKEN_SALT`
-- `JWT_SECRET`
-- `ENCRYPTION_KEY`
-- `DATABASE_CLIENT`
-- `DATABASE_FILENAME`
+- `PAYLOAD_SECRET`
+- `CF_ACCESS_ENABLED`, `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `CF_ACCESS_EMAIL_DOMAIN` (set in `payload/wrangler.jsonc`)
+- `D1` and `R2` bindings in `payload/wrangler.jsonc`
 
 ## Local Dev Notes
 
-- Run `pnpm workers:dev` and `pnpm dev` in separate terminals
-- Run `pnpm strapi:dev` separately when you need the local Strapi admin/backend
+- Run `pnpm payload:dev`, `pnpm workers:dev` and `pnpm dev` in separate terminals
 - Vite proxies `/api/content/*` to the local Worker on `127.0.0.1:8787`
-- The local Worker reads Strapi settings from `.dev.vars`
+- The local Worker reads its settings from `.dev.vars`; set `PAYLOAD_CONTENT_API_URL=http://127.0.0.1:3000/api`

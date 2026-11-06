@@ -146,6 +146,9 @@ export interface User {
   cloudflareAccessSubject: string;
   updatedAt: string;
   createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
   collection: 'users';
 }
 /**
@@ -349,6 +352,9 @@ export interface UsersSelect<T extends boolean = true> {
   cloudflareAccessSubject?: T;
   updatedAt?: T;
   createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

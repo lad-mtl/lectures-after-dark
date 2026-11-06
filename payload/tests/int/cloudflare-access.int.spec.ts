@@ -20,6 +20,19 @@ describe('Cloudflare Access identity', () => {
     ).toThrow('Cloudflare Access must be enabled outside local development')
   })
 
+  it('enables API keys and limits user updates to the signed-in user', () => {
+    const users = createUsers({
+      cloudflareAccess: config,
+      cloudflareAccessEnabled: true,
+      localDevelopmentEnabled: false,
+    })
+    const update = users.access?.update as (args: unknown) => unknown
+
+    expect(users.auth).toMatchObject({ disableLocalStrategy: true, useAPIKey: true })
+    expect(update({ req: { user: { id: 7 } } })).toEqual({ id: { equals: 7 } })
+    expect(update({ req: { user: null } })).toBe(false)
+  })
+
   it('returns null when the Access assertion is missing', async () => {
     const verifyToken = vi.fn()
 

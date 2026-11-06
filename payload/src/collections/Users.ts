@@ -15,6 +15,11 @@ interface CreateUsersOptions {
 const isAuthenticated: NonNullable<CollectionConfig['access']>['admin'] = ({ req }) =>
   Boolean(req.user)
 
+// Users can update only their own record. The identity fields below are locked, so in
+// practice this only lets a user enable and rotate their own API key.
+const isSelf: NonNullable<CollectionConfig['access']>['update'] = ({ req }) =>
+  req.user ? { id: { equals: req.user.id } } : false
+
 export function createUsers({
   cloudflareAccess,
   cloudflareAccessEnabled,
@@ -31,13 +36,14 @@ export function createUsers({
       create: () => false,
       delete: () => false,
       read: isAuthenticated,
-      update: () => false,
+      update: isSelf,
     },
     admin: {
       useAsTitle: 'email',
     },
     auth: {
       disableLocalStrategy: true,
+      useAPIKey: true,
       strategies: [
         cloudflareAccessEnabled
           ? createCloudflareAccessStrategy(cloudflareAccess)

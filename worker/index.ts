@@ -9,9 +9,9 @@ import type { NewsletterEnv } from "./newsletter/types";
 interface Env extends NewsletterEnv {
   ASSETS?: Fetcher;
   CONTENT_CACHE?: KVNamespace;
-  STRAPI_CONTENT_API_URL: string;
-  STRAPI_CONTENT_API_TOKEN?: string;
-  STRAPI_TIMEOUT_MS?: string;
+  PAYLOAD_CMS?: Fetcher;
+  PAYLOAD_CONTENT_API_URL: string;
+  PAYLOAD_TIMEOUT_MS?: string;
   EVENTBRITE_API_BASE_URL?: string;
   EVENTBRITE_PRIVATE_TOKEN?: string;
   EVENTBRITE_ORGANIZER_ID?: string;

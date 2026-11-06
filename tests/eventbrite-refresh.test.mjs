@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { handleContentRequest } from '../worker/content.ts';
 
 const request = () => new Request('https://site.test/api/content/events');
-const env = { STRAPI_CONTENT_API_URL: 'https://cms.test', EVENTBRITE_PRIVATE_TOKEN: 'test-only-token', EVENTBRITE_ORGANIZER_ID: 'organizer-only' };
+const env = { PAYLOAD_CONTENT_API_URL: 'https://cms.test', EVENTBRITE_PRIVATE_TOKEN: 'test-only-token', EVENTBRITE_ORGANIZER_ID: 'organizer-only' };
 
 test('explicit organization ID bypasses discovery, paginates, writes fresh array and classifies dates', async (t) => {
   const now = Date.parse('2026-10-26T12:00:00Z');

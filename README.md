@@ -6,7 +6,7 @@ Marketing site for Lectures After Dark.
 
 - Frontend: React 19 + Vite
 - Edge layer: Cloudflare Workers
-- CMS: self-hosted Strapi 5
+- CMS: Payload 3 on Cloudflare Workers, D1, and R2
 - Content fallback cache: Cloudflare KV
 
 ## Local Development
@@ -15,26 +15,26 @@ Install dependencies once:
 
 ```bash
 pnpm install
-pnpm --dir strapi install
+pnpm --dir payload install
 ```
 
-Run the frontend, Worker, and Strapi in separate terminals:
+Run Payload, the site Worker, and the frontend in separate terminals:
 
 ```bash
-pnpm strapi:dev
+pnpm payload:dev
 pnpm workers:dev
 pnpm dev
 ```
 
-The public frontend reads content from `/api/content/*`, which Vite proxies to the local Worker. The Worker fetches Strapi content server-to-server from the configured Strapi REST API and can fall back to cached snapshots from KV.
+The public frontend reads content from `/api/content/*`, which Vite proxies to the local Worker. The Worker fetches Payload content server-to-server and can fall back to cached snapshots from KV.
 
 ## Worker Setup
 
-The Worker expects these secrets/bindings:
+The Worker expects these variables and bindings:
 
-- `STRAPI_CONTENT_API_URL`: Strapi REST API base URL used for public read queries
-- `STRAPI_CONTENT_API_TOKEN`: optional bearer token if your Strapi host protects reads
-- `STRAPI_TIMEOUT_MS`: optional upstream timeout override
+- `PAYLOAD_CONTENT_API_URL`: Payload REST API base URL
+- `PAYLOAD_TIMEOUT_MS`: optional upstream timeout override
+- `PAYLOAD_CMS`: production service binding to the separate `lectures-after-dark-cms` Worker
 - `EVENTBRITE_API_BASE_URL`: optional Eventbrite API base URL, defaults to `https://www.eventbriteapi.com/v3`
 - `EVENTBRITE_PRIVATE_TOKEN`: Eventbrite private token used for server-side event reads
 - `EVENTBRITE_ORGANIZER_ID`: optional Eventbrite organizer/account ID. The Worker auto-discovers it from the token when omitted.
@@ -46,10 +46,10 @@ The Worker expects these secrets/bindings:
 - `INSTAGRAM_TIMEOUT_MS`: optional Instagram upstream timeout override
 - `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
 
-For a local Strapi instance, use:
+The production service binding invokes Payload privately without crossing Cloudflare Access. For a local Payload instance, use:
 
 ```env
-STRAPI_CONTENT_API_URL=http://127.0.0.1:1337/api
+PAYLOAD_CONTENT_API_URL=http://127.0.0.1:3000/api
 ```
 
 For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinheiro/projects/lectures-after-dark/.dev.vars) automatically. The repo includes a local default and a copyable example:
@@ -58,7 +58,7 @@ For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinhei
 cp .dev.vars.example .dev.vars
 ```
 
-Public requests should flow through the Worker proxy instead of hitting Strapi directly from the browser. Events are read from Eventbrite and Instagram posts from the Instagram Graph API; their tokens remain server-side in Worker environment variables.
+Public requests should flow through the Worker proxy instead of hitting Payload directly from the browser. Events are read from Eventbrite and Instagram posts from the Instagram Graph API; their tokens remain server-side in Worker environment variables.
 
 ## Contact Form Protection
 
@@ -70,7 +70,21 @@ Email operations use Cloudflare D1, Email Sending, Queues, R2, Turnstile, Cron T
 
 Cloudflare resource provisioning and configuration are documented in [`docs/newsletter-setup.md`](docs/newsletter-setup.md).
 
-## Strapi Setup
+## Payload CMS
+
+The new Payload app lives in [`payload/`](payload/) and is deployed as a separate Cloudflare Worker through OpenNext. It has dedicated D1 and R2 bindings, so it does not share the newsletter database or asset bucket.
+
+Start it locally with:
+
+```bash
+pnpm payload:dev
+```
+
+The Payload admin is available locally at `http://localhost:3000/admin` and in production at `https://cms.lecturesafterdark.ca/admin`. Provisioning, migrations, validation, deployment, and Cloudflare limitations are documented in [`payload/README.md`](payload/README.md).
+
+Payload is protected by Cloudflare Access for `@lecturesafterdark.ca` identities and uses Access-backed passwordless editor records instead of Payload credentials. Its collections and globals back the site Worker through a private Cloudflare service binding, with repository-backed seed support for speakers, team members, venues, FAQ, and page CTAs.
+
+## Legacy Strapi Setup
 
 Seed data still lives in:
 
@@ -78,6 +92,8 @@ Seed data still lives in:
 - `content/team-members/*.json`
 - `content/venues/*.json`
 - `content/faq/faq.json`
+
+The Strapi app remains temporarily in the repository for migration reference only. New content should be managed in Payload.
 
 Events are read directly from Eventbrite and Instagram posts from the Instagram Graph API.
 
@@ -104,6 +120,13 @@ pnpm build
 pnpm type-check
 pnpm workers:dev
 pnpm workers:deploy
+pnpm payload:dev
+pnpm payload:build
+pnpm payload:check
+pnpm payload:types
+pnpm payload:migrate:create
+pnpm payload:preview
+pnpm payload:deploy
 pnpm strapi:dev
 pnpm strapi:build
 pnpm strapi:start

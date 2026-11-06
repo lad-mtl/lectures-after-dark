@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lectures-after-dark-cms-local",
+  "compatibility_date": "2025-08-15",
+  "vars": {
+    "CF_ACCESS_ENABLED": "false",
+    "CF_ACCESS_TEAM_DOMAIN": "lecturesafterdark.cloudflareaccess.com",
+    "CF_ACCESS_AUD": "1b7db2b82bc9449b64fef9fa3cc0f9156a402b6ef5086f59a60b5fc143389786",
+    "CF_ACCESS_EMAIL_DOMAIN": "lecturesafterdark.ca",
+    "MEDIA_BASE_URL": "http://localhost:3000/api/media/file",
+  },
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "d1_databases": [
+    {
+      "binding": "D1",
+      "database_id": "726d2e42-c18b-4e78-8938-ad016a11f110",
+      "database_name": "lectures-after-dark-cms",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "lectures-after-dark-cms-media",
+    },
+  ],
+}

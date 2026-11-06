@@ -35,6 +35,15 @@ The Worker expects these variables and bindings:
 - `PAYLOAD_CONTENT_API_URL`: Payload REST API base URL
 - `PAYLOAD_TIMEOUT_MS`: optional upstream timeout override
 - `PAYLOAD_CMS`: production service binding to the separate `lectures-after-dark-cms` Worker
+- `EVENTBRITE_API_BASE_URL`: optional Eventbrite API base URL, defaults to `https://www.eventbriteapi.com/v3`
+- `EVENTBRITE_PRIVATE_TOKEN`: Eventbrite private token used for server-side event reads
+- `EVENTBRITE_ORGANIZER_ID`: optional Eventbrite organizer/account ID. The Worker auto-discovers it from the token when omitted.
+- `EVENTBRITE_ORGANIZATION_NAME`: optional exact organization name used during auto-discovery, defaults to `Lectures After Dark`
+- `EVENTBRITE_TIMEOUT_MS`: optional Eventbrite upstream timeout override
+- `INSTAGRAM_API_BASE_URL`: optional Instagram API base URL, defaults to `https://graph.instagram.com`
+- `INSTAGRAM_ACCESS_TOKEN`: Instagram user access token used for basic media reads
+- `INSTAGRAM_POSTS_LIMIT`: optional number of latest posts to request
+- `INSTAGRAM_TIMEOUT_MS`: optional Instagram upstream timeout override
 - `CONTENT_CACHE`: KV namespace binding used for stale fallback responses
 
 The production service binding invokes Payload privately without crossing Cloudflare Access. For a local Payload instance, use:
@@ -49,7 +58,7 @@ For local Worker development, Wrangler reads [`.dev.vars`](/Users/augusto.pinhei
 cp .dev.vars.example .dev.vars
 ```
 
-Public requests should flow through the Worker proxy instead of hitting Payload directly from the browser. Eventbrite or Instagram synchronization jobs should write records into Payload instead of exposing third-party API tokens to the Worker or browser.
+Public requests should flow through the Worker proxy instead of hitting Payload directly from the browser. Events are read from Eventbrite and Instagram posts from the Instagram Graph API; their tokens remain server-side in Worker environment variables.
 
 ## Contact Form Protection
 
@@ -85,6 +94,8 @@ Seed data still lives in:
 - `content/faq/faq.json`
 
 The Strapi app remains temporarily in the repository for migration reference only. New content should be managed in Payload.
+
+Events are read directly from Eventbrite and Instagram posts from the Instagram Graph API.
 
 The Strapi app lives in:
 

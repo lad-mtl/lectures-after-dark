@@ -28,7 +28,7 @@ export const EventCardRedesign = ({
             className="relative w-full h-full rounded-2xl overflow-hidden group cursor-pointer bg-black"
         >
             <div
-                className={`absolute inset-0 bg-contain bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-[1.02] ${isPast ? 'grayscale saturate-0 contrast-110' : ''}`}
+                className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-[1.02] ${isPast ? 'grayscale saturate-0 contrast-110' : ''}`}
                 style={{ backgroundImage: `url(${backgroundImage})` }}
             ></div>
 

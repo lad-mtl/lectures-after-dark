@@ -19,6 +19,7 @@ import { FAQ } from './globals/FAQ'
 import { SpeakerPage } from './globals/SpeakerPage'
 import { VenuePage } from './globals/VenuePage'
 import { buildMediaFileURL } from './media/public-url'
+import { payloadMcp } from './mcp'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -108,6 +109,7 @@ export default buildConfig({
   }),
   logger: isProduction ? cloudflareLogger : undefined,
   plugins: [
+    payloadMcp,
     r2Storage({
       bucket: cloudflare.env.R2,
       collections: {

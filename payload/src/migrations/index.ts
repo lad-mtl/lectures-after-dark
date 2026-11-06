@@ -2,6 +2,7 @@ import * as migration_20250929_111647 from './20250929_111647'
 import * as migration_20260908_194006 from './20260908_194006'
 import * as migration_20260908_201610 from './20260908_201610'
 import * as migration_20261106_214957_api_keys from './20261106_214957_api_keys'
+import * as migration_20261106_224114_mcp_api_keys from './20261106_224114_mcp_api_keys'
 
 export const migrations = [
   {
@@ -23,5 +24,10 @@ export const migrations = [
     up: migration_20261106_214957_api_keys.up,
     down: migration_20261106_214957_api_keys.down,
     name: '20261106_214957_api_keys',
+  },
+  {
+    up: migration_20261106_224114_mcp_api_keys.up,
+    down: migration_20261106_224114_mcp_api_keys.down,
+    name: '20261106_224114_mcp_api_keys',
   },
 ]

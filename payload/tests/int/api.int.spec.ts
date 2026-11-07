@@ -1,5 +1,6 @@
-import { getPayload, Payload } from 'payload'
+import { configToJSONSchema, getPayload, Payload } from 'payload'
 import config from '@/payload.config'
+import { convertCollectionSchemaToZod } from '@/mcp/schema'
 
 import { describe, it, beforeAll, expect } from 'vitest'
 
@@ -45,6 +46,20 @@ describe('API', () => {
     } finally {
       await payload.delete({ collection: 'payload-mcp-api-keys', id: key.id, overrideAccess: true })
     }
+  })
+
+  it('builds MCP input schemas from collection and global JSON Schema without eval', () => {
+    const { definitions = {} } = configToJSONSchema(payload.config, payload.db.defaultIDType)
+    const speakers = convertCollectionSchemaToZod(definitions.speakers as never)
+    const faq = convertCollectionSchemaToZod(definitions.faq as never)
+
+    expect(Object.keys(speakers.shape)).not.toEqual(expect.arrayContaining(['id']))
+    expect(Object.keys(speakers.shape)).toEqual(expect.arrayContaining(['name', 'topic', 'order']))
+    expect(speakers.partial().safeParse({ topic: 'New topic' }).success).toBe(true)
+    expect(speakers.safeParse({ name: 42 }).success).toBe(false)
+    expect(faq.partial().safeParse({ items: [{ question: 'Q?', answer: 'A.' }] }).success).toBe(
+      true,
+    )
   })
 
   it('registers every migrated Strapi content model', () => {

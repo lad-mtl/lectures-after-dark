@@ -19,7 +19,7 @@ import { FAQ } from './globals/FAQ'
 import { SpeakerPage } from './globals/SpeakerPage'
 import { VenuePage } from './globals/VenuePage'
 import { buildMediaFileURL } from './media/public-url'
-import { payloadMcp } from './mcp'
+import { payloadMcp } from './mcp/plugin'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)

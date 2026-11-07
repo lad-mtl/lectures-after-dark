@@ -31,6 +31,7 @@
     "type-check": "tsc --noEmit --pretty"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
     "@opennextjs/cloudflare": "1.20.1",
     "@payloadcms/db-d1-sqlite": "3.88.0",
     "@payloadcms/next": "3.88.0",
@@ -45,7 +46,8 @@
     "next": "16.3.3",
     "payload": "3.88.0",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

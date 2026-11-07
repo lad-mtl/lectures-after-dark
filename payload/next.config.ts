@@ -1,5 +1,9 @@
 import { withPayload } from '@payloadcms/next/withPayload'
 import type { NextConfig } from 'next'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -19,12 +23,25 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['jose', 'pg-cloudflare'],
 
   // Your Next.js config here
-  webpack: (webpackConfig) => {
+  webpack: (webpackConfig, { webpack }) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
       '.js': ['.ts', '.tsx', '.js', '.jsx'],
       '.mjs': ['.mts', '.mjs'],
     }
+
+    // Two parts of @payloadcms/plugin-mcp don't run on Workers. See src/mcp/handler.ts and
+    // src/mcp/schema.ts for what each replacement fixes.
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      'mcp-handler$': path.resolve(dirname, 'src/mcp/handler.ts'),
+    }
+    webpackConfig.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /schemaConversion[\\/]convertCollectionSchemaToZod\.js$/,
+        path.resolve(dirname, 'src/mcp/schema.ts'),
+      ),
+    )
 
     return webpackConfig
   },

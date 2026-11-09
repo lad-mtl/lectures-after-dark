@@ -8,6 +8,7 @@ import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
 
+import { Topics } from './collections/Topics'
 import { Events } from './collections/Events'
 import { InstagramPosts } from './collections/InstagramPosts'
 import { Media } from './collections/Media'
@@ -96,7 +97,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Speakers, Venues, TeamMembers, Events, InstagramPosts],
+  collections: [Users, Media, Topics, Speakers, Venues, TeamMembers, Events, InstagramPosts],
   globals: [FAQ, SpeakerPage, VenuePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

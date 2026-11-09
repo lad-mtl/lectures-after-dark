@@ -6,7 +6,7 @@ declare global {
       render: (container: HTMLElement, options: {
         sitekey: string;
         action: string;
-        theme: 'dark';
+        theme: 'dark' | 'light' | 'auto';
         callback: (token: string) => void;
         'expired-callback': () => void;
         'error-callback': () => void;

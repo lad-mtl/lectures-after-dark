@@ -12,6 +12,7 @@ CONTACT_MARKETING_EMAIL = "marketing@lecturesafterdark.ca"
 CONTACT_REQUIRE_RATE_LIMIT = "true"
 CONTACT_REQUIRE_TURNSTILE = "true"
 SITE_URL = "https://lecturesafterdark.ca"
+BREVO_LIST_ID = "2"
 NEWSLETTER_FROM_EMAIL = "Lectures After Dark <newsletter@mail.lecturesafterdark.ca>"
 NEWSLETTER_REPLY_TO = "marketing@lecturesafterdark.ca"
 NEWSLETTER_ASSET_BASE_URL = "https://newsletter-media.lecturesafterdark.ca"
@@ -41,6 +42,17 @@ namespace_id = "24873190"
   [ratelimits.simple]
   limit = 5
   period = 60
+
+# Independent per-form namespaces; configuration only, no live provisioning.
+[[ratelimits]]
+name = "NEWSLETTER_RATE_LIMITER"
+namespace_id = "24873191"
+simple = { limit = 5, period = 60 }
+
+[[ratelimits]]
+name = "PARTICIPATION_RATE_LIMITER"
+namespace_id = "24873192"
+simple = { limit = 5, period = 60 }
 
 [assets]
 directory = "dist"

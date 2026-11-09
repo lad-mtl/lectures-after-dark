@@ -1,3 +1,5 @@
+import { handleNewsletterSignup, type NewsletterEnv as BrevoEnv } from './brevo-signup.ts';
+import { handleParticipation, type ParticipationEnv } from './participation.ts';
 import { handleContentRequest } from "./content";
 import { handleContactRequest } from "./contact";
 import { handleNewsletterRequest } from "./newsletter/api";
@@ -6,7 +8,11 @@ import { dispatchDueEventFeedback } from "./newsletter/feedback";
 import { dispatchDueCampaigns, handleNewsletterQueue } from "./newsletter/queue";
 import type { NewsletterEnv } from "./newsletter/types";
 
-interface Env extends NewsletterEnv {
+interface Env extends NewsletterEnv, ParticipationEnv {
+  BREVO_API_KEY?: BrevoEnv["BREVO_API_KEY"];
+  BREVO_LIST_ID?: BrevoEnv["BREVO_LIST_ID"];
+  NEWSLETTER_RATE_LIMITER?: RateLimit;
+  SITE_URL: string;
   ASSETS?: Fetcher;
   CONTENT_CACHE?: KVNamespace;
   PAYLOAD_CMS?: Fetcher;
@@ -34,6 +40,8 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname === '/api/participation') return handleParticipation(request, env);
+
     if (url.pathname.startsWith("/api/content/")) {
       const contentResponse = await handleContentRequest(request, env);
 
@@ -49,6 +57,8 @@ export default {
         return contactResponse;
       }
     }
+
+    if (url.pathname === "/api/newsletter/subscribe") return handleNewsletterSignup(request, env);
 
     if (url.pathname.startsWith("/api/newsletter/")) {
       const newsletterResponse = await handleNewsletterRequest(request, env, ctx);

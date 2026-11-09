@@ -31,6 +31,7 @@ import {
 } from "./utils";
 
 interface SubscribePayload {
+  consent?: unknown;
   email?: unknown;
   source?: unknown;
   turnstileToken?: unknown;
@@ -61,8 +62,10 @@ async function handleSubscribe(
   env: NewsletterEnv,
   ctx: ExecutionContext,
 ) {
+  if (!isSameOriginRequest(request, env)) return jsonResponse({ error: 'This origin is not allowed.' }, 403);
   const payload = await readJson<SubscribePayload>(request);
   if (!payload) return jsonResponse({ error: "Invalid JSON payload." }, 400);
+  if (payload.consent !== true) return jsonResponse({ error: 'Please agree to receive newsletter emails.' }, 400);
 
   if (typeof payload.website === "string" && payload.website.trim()) {
     return jsonResponse({ success: true, message: GENERIC_SUBSCRIBE_MESSAGE }, 202);

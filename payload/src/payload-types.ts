@@ -70,6 +70,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    topics: Topic;
     speakers: Speaker;
     venues: Venue;
     'team-members': TeamMember;
@@ -85,6 +86,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    topics: TopicsSelect<false> | TopicsSelect<true>;
     speakers: SpeakersSelect<false> | SpeakersSelect<true>;
     venues: VenuesSelect<false> | VenuesSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
@@ -191,10 +193,33 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics".
+ */
+export interface Topic {
+  id: number;
+  title: string;
+  sourceUrl: string;
+  category?:
+    | (
+        | 'mind-behaviour'
+        | 'health-body'
+        | 'science-technology'
+        | 'history-culture'
+        | 'society-power'
+        | 'work-leadership'
+      )
+    | null;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "speakers".
  */
 export interface Speaker {
   id: number;
+  imageCredit?: string | null;
   name: string;
   topic?: string | null;
   bio?: string | null;
@@ -227,6 +252,7 @@ export interface Venue {
  */
 export interface TeamMember {
   id: number;
+  imageCredit?: string | null;
   name: string;
   title?: string | null;
   description?: string | null;
@@ -243,6 +269,46 @@ export interface TeamMember {
  */
 export interface Event {
   id: number;
+  description?: string | null;
+  topic?: string | null;
+  recordingUrl?: string | null;
+  resourcesUrl?: string | null;
+  /**
+   * Array of public Payload speaker IDs (strings).
+   */
+  speakerIds?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Array of speaker display names.
+   */
+  speakerNames?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Array of public image URLs.
+   */
+  gallery?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   title: string;
   startsAt: string;
   locationLabel?: string | null;
@@ -463,6 +529,10 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'topics';
+        value: number | Topic;
+      } | null)
+    | ({
         relationTo: 'speakers';
         value: number | Speaker;
       } | null)
@@ -570,9 +640,22 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topics_select".
+ */
+export interface TopicsSelect<T extends boolean = true> {
+  title?: T;
+  sourceUrl?: T;
+  category?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "speakers_select".
  */
 export interface SpeakersSelect<T extends boolean = true> {
+  imageCredit?: T;
   name?: T;
   topic?: T;
   bio?: T;
@@ -603,6 +686,7 @@ export interface VenuesSelect<T extends boolean = true> {
  * via the `definition` "team-members_select".
  */
 export interface TeamMembersSelect<T extends boolean = true> {
+  imageCredit?: T;
   name?: T;
   title?: T;
   description?: T;
@@ -618,6 +702,13 @@ export interface TeamMembersSelect<T extends boolean = true> {
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
+  description?: T;
+  topic?: T;
+  recordingUrl?: T;
+  resourcesUrl?: T;
+  speakerIds?: T;
+  speakerNames?: T;
+  gallery?: T;
   title?: T;
   startsAt?: T;
   locationLabel?: T;

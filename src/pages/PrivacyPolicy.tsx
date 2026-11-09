@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
             <header className={styles.hero}>
                 <p className={styles.eyebrow}>Your information</p>
                 <h1>Privacy Policy</h1>
-                <p className={styles.updated}>Effective August 18, 2026</p>
+                <p className={styles.updated}>Effective November 9, 2026</p>
             </header>
 
             <main className={styles.content}>
@@ -38,15 +38,31 @@ const PrivacyPolicy = () => {
                     <h2>2. Information we collect</h2>
                     <h3>Newsletter subscriptions</h3>
                     <p>
-                        When you join our newsletter, we collect your email address, subscription status, signup
-                        source, consent date and version, and email delivery information such as delivery, bounce,
-                        complaint, and unsubscribe status. Confirmation links expire after 24 hours.
+                        When you join our newsletter, we require your explicit consent and send your email address
+                        to Brevo for newsletter list management. This signup does not send a confirmation email
+                        or store a separate consent date, version, or signup-source record. Brevo may process
+                        subscription, delivery, bounce, complaint, and unsubscribe information. Existing suppression
+                        and list-unsubscribe settings are not cleared by this form. A signup acknowledgement does
+                        not confirm email delivery or override a previous unsubscribe.
+                    </p>
+                    <p>
+                        Records from our previous newsletter system remain stored securely, including consent,
+                        confirmation, delivery, and suppression information. Previously issued confirmation and
+                        unsubscribe links remain supported; new signups are not automatically imported into that system.
+                    </p>
+
+                    <h3>Participation submissions</h3>
+                    <p>
+                        Speaker proposals, venue and volunteer inquiries, topic suggestions, and event feedback
+                        collect the answers you submit and any contact details you choose or are required to provide.
+                        These submissions are stored in Notion for review by our team. Submitting a participation
+                        form does not subscribe you to our newsletter.
                     </p>
 
                     <h3>Contact requests</h3>
                     <p>
-                        When you use our contact form, we collect your name, email address, inquiry type, subject,
-                        and message so we can receive and respond to your request.
+                        If you previously used our contact form, we may retain your name, email address, inquiry type,
+                        subject, and message to respond to your request. The public contact page is no longer available.
                     </p>
 
                     <h3>Website and security information</h3>
@@ -76,7 +92,7 @@ const PrivacyPolicy = () => {
                     <h2>3. How we use information</h2>
                     <ul>
                         <li>Send event announcements and newsletter content you requested.</li>
-                        <li>Confirm subscriptions and process unsubscribe requests.</li>
+                        <li>Manage subscriptions, process unsubscribe requests, and honor previously issued confirmation links.</li>
                         <li>Respond to questions, speaker proposals, and partnership inquiries.</li>
                         <li>Ask checked-in attendees for feedback about the event they attended.</li>
                         <li>Operate, secure, troubleshoot, and improve our website and services.</li>
@@ -84,8 +100,7 @@ const PrivacyPolicy = () => {
                         <li>Manage events and comply with legal, regulatory, and anti-spam obligations.</li>
                     </ul>
                     <p>
-                        We do not sell or rent personal information. Newsletter messages are sent only to confirmed
-                        subscribers and include an unsubscribe mechanism, in accordance with applicable Canadian
+                        We do not sell or rent personal information. Newsletter messages are intended for people who have consented to receive them and include an unsubscribe mechanism, in accordance with applicable Canadian
                         anti-spam requirements.
                     </p>
                 </section>
@@ -95,6 +110,8 @@ const PrivacyPolicy = () => {
                     <p>We use service providers that process information on our behalf, including:</p>
                     <ul>
                         <li><strong>Cloudflare</strong> for website delivery, security, Turnstile, database storage, file storage, queues, and newsletter, event-feedback, and contact-form email delivery.</li>
+                        <li><strong>Brevo</strong> for newsletter contact and list management and newsletter services.</li>
+                        <li><strong>Notion</strong> for storing and reviewing participation submissions.</li>
                         <li><strong>Google Analytics</strong> for website measurement when analytics is enabled.</li>
                         <li><strong>Eventbrite</strong> for event listings, registration, and ticketing.</li>
                         <li><strong>Our content-management hosting providers</strong> for operating the website.</li>

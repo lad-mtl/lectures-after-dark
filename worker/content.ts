@@ -1,3 +1,4 @@
+import { enrichEvents, payloadCollection } from './payload-content.ts';
 import { refreshEventDates } from "../src/lib/eventDates.ts";
 
 interface CachedSnapshot<T> {
@@ -15,6 +16,7 @@ export interface SpeakerData {
   topic?: string | null;
   bio?: string | null;
   image?: string | null;
+  imageCredit?: string | null;
   twitter?: string | null;
   linkedin?: string | null;
   website?: string | null;
@@ -57,6 +59,13 @@ export interface EventData {
   imageUrl: string | null;
   eventbriteUrl: string;
   isPast: boolean;
+  description?: string | null;
+  topic?: string | null;
+  recordingUrl?: string | null;
+  resourcesUrl?: string | null;
+  speakerIds?: string[];
+  speakerNames?: string[];
+  gallery?: string[];
 }
 
 export interface TeamMemberData {
@@ -65,6 +74,7 @@ export interface TeamMemberData {
   title?: string | null;
   description?: string | null;
   image?: string | null;
+  imageCredit?: string | null;
   linkUrl?: string | null;
   linkText?: string | null;
   order?: number | null;
@@ -625,7 +635,7 @@ async function writeSnapshot(
   }
 
   const snapshot: CachedSnapshot<unknown> = { data, fetchedAt };
-  await env.CONTENT_CACHE.put(resource.cacheKey, JSON.stringify(snapshot));
+  try { await env.CONTENT_CACHE.put(resource.cacheKey, JSON.stringify(snapshot)); } catch { /* Fresh content is still usable when KV is unavailable. */ }
 }
 
 async function readSnapshot(
@@ -636,9 +646,9 @@ async function readSnapshot(
     return null;
   }
 
-  return env.CONTENT_CACHE.get(resource.cacheKey, "json") as Promise<
-    CachedSnapshot<unknown> | null
-  >;
+  try {
+    return await env.CONTENT_CACHE.get(resource.cacheKey, 'json') as CachedSnapshot<unknown> | null;
+  } catch { return null; }
 }
 
 async function fetchFreshContent(
@@ -782,7 +792,9 @@ async function fetchFreshEvents(env: ContentEnv) {
     }
 
     const body = await fetchEventbriteJson<EventbriteEventsResponse>(url, token, timeoutMs);
-    eventbriteEvents.push(...(body.events ?? []));
+    if (!body || !Array.isArray(body.events)) throw new EventbriteContentError('eventbrite-invalid-response');
+    if (seenContinuations.size >= 100) throw new EventbriteContentError('eventbrite-pagination-limit');
+    eventbriteEvents.push(...body.events);
 
     const nextContinuation = body.pagination?.continuation?.trim() || null;
 
@@ -811,10 +823,11 @@ async function fetchFreshEvents(env: ContentEnv) {
     .map((event) => normalizeEventbriteEvent(event, now))
     .filter((event): event is EventData => Boolean(event));
 
+  const enriched = await enrichEvents(events, env);
   const fetchedAt = new Date().toISOString();
-  await writeSnapshot(env, EVENTS_CACHE_RESOURCE, events, fetchedAt);
+  await writeSnapshot(env, EVENTS_CACHE_RESOURCE, enriched, fetchedAt);
 
-  return jsonResponse(events, {
+  return jsonResponse(enriched, {
     headers: {
       "x-content-source": "live",
       "x-content-fetched-at": fetchedAt,
@@ -879,6 +892,9 @@ async function fetchFreshInstagram(env: ContentEnv) {
 
 export async function handleContentRequest(request: Request, env: ContentEnv) {
   const pathname = new URL(request.url).pathname;
+  if (!['GET', 'HEAD'].includes(request.method)) return jsonResponse({ error: 'Method not allowed.' }, { status: 405, headers: { allow: 'GET, HEAD' } });
+  const kind = pathname.slice('/api/content/'.length);
+  if (['speakers', 'team-members', 'topics'].includes(kind)) return payloadCollection(env, kind as 'speakers' | 'team-members' | 'topics');
 
   if (pathname === "/api/content/events") {
     try {

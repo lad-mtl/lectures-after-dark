@@ -1,94 +1,68 @@
-import { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import './App.css';
-import Home from './pages/Home';
-import Speakers from './pages/Speakers';
-import About from './pages/About';
-import Contact from './pages/Contact';
+import { useAnalytics } from "./hooks/useAnalytics";
+import { lazy, Suspense } from "react";
+import { Navigate, Routes, Route } from "react-router-dom";
+import { SiteLayout } from "./components/SiteLayout";
+import { PageHeader } from "./components/PageHeader";
+import Home from "./pages/Home";
+import { Events, EventDetail } from "./pages/Events";
+import { Speakers } from "./pages/Speakers";
+import { Topics } from "./pages/Topics";
+import { About } from "./pages/About";
+import GetInvolved from "./pages/GetInvolved";
+import NewsletterStatus from "./pages/NewsletterStatus";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
-import Venues from './pages/Venues';
-import TestEventCardPage from './pages/TestEventCardPage';
-import TestCardPage from './pages/TestCardPage';
-import Sponsors from './pages/Sponsors';
-import NotFound from './pages/NotFound';
-import NewsletterStatus from './pages/NewsletterStatus';
-import PrivacyPolicy from './pages/PrivacyPolicy';
+const NewsletterAdmin = lazy(() => import("./pages/NewsletterAdmin"));
 
-const NewsletterAdmin = lazy(() => import('./pages/NewsletterAdmin'));
-
-declare global {
-  interface Window {
-    dataLayer: unknown[];
-    gtag: (...args: unknown[]) => void;
-  }
-}
-
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
-let gaLoaded = false;
-
-function loadGa(id: string) {
-  if (gaLoaded) return;
-  gaLoaded = true;
-  const script = document.createElement('script');
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
-  document.head.appendChild(script);
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag(...args: unknown[]) {
-    window.dataLayer.push(args);
-  };
-  window.gtag('js', new Date());
-  window.gtag('config', id, { send_page_view: false });
-}
-
-function App() {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-  const isAdminPage = location.pathname.startsWith('/newsletter/admin');
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (!GA_MEASUREMENT_ID) return;
-    loadGa(GA_MEASUREMENT_ID);
-    window.gtag('event', 'page_view', {
-      page_path: location.pathname + location.search,
-      page_location: window.location.href,
-      page_title: document.title,
-    });
-  }, [location.pathname, location.search]);
-
+export default function App() {
+  useAnalytics();
   return (
-    <main className={`appShell ${isHomePage ? 'appShellHome' : isAdminPage ? '' : 'appShellWithNavbarOffset'}`}>
-      {!isAdminPage && <Navbar />}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/speakers" element={<Speakers />} />
-        <Route path="/sponsors" element={<Sponsors />} />
-        <Route path="/bars" element={<Venues />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/newsletter" element={<NewsletterStatus />} />
-        <Route path="/privacy" element={<PrivacyPolicy />} />
+    <Routes>
+      <Route
+        path="/newsletter/admin/*"
+        element={
+          <Suspense fallback={<p>Loading newsletter studio…</p>}>
+            <NewsletterAdmin />
+          </Suspense>
+        }
+      />
+      <Route element={<SiteLayout />}>
+        <Route index element={<Home />} />
+        <Route path="events" element={<Events />} />
+        <Route path="events/:id" element={<EventDetail />} />
+        <Route path="speakers" element={<Speakers />} />
+        <Route path="topics" element={<Topics />} />
+        <Route path="about" element={<About />} />
+        <Route path="about-us" element={<Navigate to="/about" replace />} />
         <Route
-          path="/newsletter/admin"
-          element={(
-            <Suspense fallback={<div className="routeLoading">Loading newsletter studio…</div>}>
-              <NewsletterAdmin />
-            </Suspense>
-          )}
+          path="privacy-policy"
+          element={<Navigate to="/privacy" replace />}
         />
-        <Route path="/test" element={<TestCardPage />} />
-        <Route path="/test-event-card" element={<TestEventCardPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      {!isAdminPage && <Footer />}
-    </main>
+        <Route
+          path="get-involved"
+          element={<Navigate to="/get-involved/speaker" replace />}
+        />
+        <Route path="get-involved/:kind" element={<GetInvolved />} />
+
+        <Route
+          path="venue"
+          element={<Navigate to="/get-involved/venue" replace />}
+        />
+
+        <Route path="newsletter" element={<NewsletterStatus />} />
+        <Route path="privacy" element={<PrivacyPolicy />} />
+        <Route
+          path="*"
+          element={
+            <div className="lad-container">
+              <PageHeader eyebrow="LECTURES AFTER DARK" title="Page not found.">
+                Explore the events, speakers, and ideas from the navigation
+                above.
+              </PageHeader>
+            </div>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
-
-export default App;

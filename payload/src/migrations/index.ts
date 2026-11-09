@@ -4,6 +4,8 @@ import * as migration_20260908_201610 from './20260908_201610'
 import * as migration_20261106_214957_api_keys from './20261106_214957_api_keys'
 import * as migration_20261106_224114_mcp_api_keys from './20261106_224114_mcp_api_keys'
 
+import * as migration_20261109_000001_redesign_content from './20261109_000001_redesign_content'
+
 export const migrations = [
   {
     up: migration_20250929_111647.up,
@@ -29,5 +31,10 @@ export const migrations = [
     up: migration_20261106_224114_mcp_api_keys.up,
     down: migration_20261106_224114_mcp_api_keys.down,
     name: '20261106_224114_mcp_api_keys',
+  },
+  {
+    up: migration_20261109_000001_redesign_content.up,
+    down: migration_20261109_000001_redesign_content.down,
+    name: '20261109_000001_redesign_content',
   },
 ]

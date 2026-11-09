@@ -21,6 +21,13 @@ export const Events: CollectionConfig = {
   },
   defaultSort: 'startsAt',
   fields: [
+    { name: 'description', type: 'textarea' },
+    { name: 'topic', type: 'text' },
+    { name: 'recordingUrl', type: 'text' },
+    { name: 'resourcesUrl', type: 'text' },
+    { name: 'speakerIds', type: 'json', admin: { description: 'Array of public Payload speaker IDs (strings).' } },
+    { name: 'speakerNames', type: 'json', admin: { description: 'Array of speaker display names.' } },
+    { name: 'gallery', type: 'json', admin: { description: 'Array of public image URLs.' } },
     {
       name: 'title',
       type: 'text',

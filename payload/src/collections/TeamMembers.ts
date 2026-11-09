@@ -21,6 +21,7 @@ export const TeamMembers: CollectionConfig = {
   },
   defaultSort: 'order',
   fields: [
+    { name: 'imageCredit', type: 'text' },
     {
       name: 'name',
       type: 'text',

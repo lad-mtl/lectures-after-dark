@@ -19,7 +19,9 @@ NEWSLETTER_ASSET_BASE_URL = "https://newsletter-media.lecturesafterdark.ca"
 NEWSLETTER_REQUIRE_TURNSTILE = "true"
 TURNSTILE_HOSTNAMES = "lecturesafterdark.ca"
 EVENTBRITE_ORGANIZER_ID = "121002246833"
-# Website reads discover this organization by exact name. Organizer ID stays newsletter-only.
+# Scheduled website refresh discovers this organization by exact name (cached 24h).
+# Optional EVENTBRITE_ORGANIZATION_ID must be a separately verified organization ID.
+# Organizer ID stays newsletter-only.
 EVENTBRITE_ORGANIZATION_NAME = "Lectures After Dark"
 EVENTBRITE_SEND_DELAY_MINUTES = "10"
 EVENT_FEEDBACK_ENABLED = "true"
@@ -106,4 +108,5 @@ allowed_sender_addresses = [
 ]
 
 [triggers]
-crons = ["* * * * *"]
+# Keep legacy newsletter/feedback every minute; website content is independent.
+crons = ["* * * * *", "*/5 * * * *"]

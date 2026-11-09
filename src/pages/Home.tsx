@@ -30,7 +30,7 @@ export default function Home() {
     return (
       <div className="lad-container lad-section">
         <h1>What’s next at Lectures After Dark</h1>
-        <ContentState {...state} />
+        <ContentState {...state} stale={false} />
         <EventbriteCTA />
       </div>
     );
@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <>
       <div className="lad-container">
-        <ContentState {...state} />
+        <ContentState {...state} stale={false} />
         <section className="lad-home-hero">
           <div>
             <p className="lad-eyebrow">

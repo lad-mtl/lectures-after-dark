@@ -1,3 +1,4 @@
+import { runEventbriteRefresh, EventbriteContentError, eventbriteRetryAfter, cachedEventbriteOrganization } from './eventbrite-refresh.ts';
 import { enrichEvents, payloadCollection } from './payload-content.ts';
 import { refreshEventDates } from "../src/lib/eventDates.ts";
 
@@ -90,6 +91,7 @@ export interface InstagramPostData {
 }
 
 export interface ContentEnv {
+  NEWSLETTER_DB?: D1Database;
   CONTENT_CACHE?: KVNamespace;
   PAYLOAD_CMS?: Fetcher;
   PAYLOAD_CONTENT_API_URL: string;
@@ -712,8 +714,6 @@ async function fetchFreshContent(
   }
 }
 
-class EventbriteContentError extends Error {}
-
 async function fetchEventbriteJson<T>(url: URL, token: string, timeoutMs: number): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -729,10 +729,10 @@ async function fetchEventbriteJson<T>(url: URL, token: string, timeoutMs: number
     });
 
     if (!response.ok) {
-      throw new EventbriteContentError(`eventbrite-http-${response.status}`);
+      throw new EventbriteContentError(`eventbrite-http-${response.status}`, response.status === 429 ? eventbriteRetryAfter(response.headers.get("retry-after")) : 0);
     }
 
-    return response.json() as Promise<T>;
+    return await response.json() as T;
   } finally {
     clearTimeout(timeout);
   }
@@ -762,6 +762,10 @@ async function discoverEventbriteOrganizationId(
   throw new EventbriteContentError("eventbrite-organization-not-found");
 }
 
+export async function refreshScheduledEvents(env: ContentEnv): Promise<void> {
+  await runEventbriteRefresh(env, () => fetchFreshEvents(env));
+}
+
 async function fetchFreshEvents(env: ContentEnv) {
   const token = env.EVENTBRITE_PRIVATE_TOKEN?.trim();
 
@@ -769,12 +773,13 @@ async function fetchFreshEvents(env: ContentEnv) {
     throw new EventbriteContentError("eventbrite-token-missing");
   }
 
-  const timeoutMs = Number(env.EVENTBRITE_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const configuredTimeout = Number(env.EVENTBRITE_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const timeoutMs = Number.isFinite(configuredTimeout) && configuredTimeout > 0 ? Math.min(configuredTimeout, 10_000) : DEFAULT_TIMEOUT_MS;
 
   const baseUrl = env.EVENTBRITE_API_BASE_URL?.trim() || DEFAULT_EVENTBRITE_API_BASE_URL;
   const organizationId =
     env.EVENTBRITE_ORGANIZATION_ID?.trim() ||
-    (await discoverEventbriteOrganizationId(env, baseUrl, token, timeoutMs));
+    (await cachedEventbriteOrganization(env, baseUrl, token, () => discoverEventbriteOrganizationId(env, baseUrl, token, timeoutMs)));
   const url = new URL(buildEventbriteUrl(baseUrl, organizationId));
 
   url.searchParams.set("time_filter", "all");
@@ -824,15 +829,9 @@ async function fetchFreshEvents(env: ContentEnv) {
     .filter((event): event is EventData => Boolean(event));
 
   const enriched = await enrichEvents(events, env);
-  const fetchedAt = new Date().toISOString();
-  await writeSnapshot(env, EVENTS_CACHE_RESOURCE, enriched, fetchedAt);
+  const fetchedAt = new Date(Date.now()).toISOString();
+  await env.CONTENT_CACHE!.put(EVENTS_CACHE_RESOURCE.cacheKey, JSON.stringify({ data: enriched, fetchedAt }));
 
-  return jsonResponse(enriched, {
-    headers: {
-      "x-content-source": "live",
-      "x-content-fetched-at": fetchedAt,
-    },
-  });
 }
 
 async function fetchFreshInstagram(env: ContentEnv) {
@@ -897,35 +896,19 @@ export async function handleContentRequest(request: Request, env: ContentEnv) {
   if (['speakers', 'team-members', 'topics'].includes(kind)) return payloadCollection(env, kind as 'speakers' | 'team-members' | 'topics');
 
   if (pathname === "/api/content/events") {
-    try {
-      return await fetchFreshEvents(env);
-    } catch (error) {
-      const snapshot = await readSnapshot(env, EVENTS_CACHE_RESOURCE);
-      const reason = error instanceof EventbriteContentError
-        ? error.message
-        : error instanceof Error && error.name === "AbortError"
-          ? "eventbrite-timeout"
-          : "eventbrite-unreachable";
-      console.warn("Eventbrite content refresh failed", {
-        reason,
-        source: snapshot && Array.isArray(snapshot.data) ? "stale-cache" : "unavailable",
-      });
-
-      if (snapshot && Array.isArray(snapshot.data)) {
-        return jsonResponse(refreshEventDates(snapshot.data as EventData[]), {
-          headers: {
-            "x-content-source": "stale-cache",
-            "x-content-fetched-at": snapshot.fetchedAt,
-            "x-content-fallback-reason": reason,
-          },
-        });
-      }
-
-      return jsonResponse(
-        { error: "Eventbrite content is unavailable and no cached fallback exists." },
-        { status: 503 },
-      );
-    }
+    const snapshot = await readSnapshot(env, EVENTS_CACHE_RESOURCE);
+    const valid = snapshot && Array.isArray(snapshot.data) && typeof snapshot.fetchedAt === "string";
+    const age = valid ? Date.now() - Date.parse(snapshot.fetchedAt) : NaN;
+    // Two refresh intervals allow scheduler jitter and KV propagation, not indefinite freshness.
+    const fresh = Number.isFinite(age) && age >= 0 && age <= 10 * 60_000;
+    const response = valid
+      ? jsonResponse(refreshEventDates(snapshot.data as EventData[]), { headers: {
+          "x-content-source": fresh ? "cache" : "stale-cache",
+          "x-content-fetched-at": snapshot.fetchedAt,
+          ...(!fresh ? { "x-content-fallback-reason": "eventbrite-refresh-overdue" } : {}),
+        } })
+      : jsonResponse({ error: "Eventbrite content is unavailable and no cached fallback exists." }, { status: 503 });
+    return request.method === "HEAD" ? new Response(null, response) : response;
   }
 
   if (pathname === "/api/content/instagram") {

@@ -63,7 +63,7 @@ export async function handleParticipation(request: Request, env: ParticipationEn
     try {
       const response = await handleContentRequest(new Request(new URL('/api/content/events', request.url)), env);
       // Stale snapshots are useful for browsing, not for validating a new write.
-      if (!response?.ok || response.headers.get('x-content-source') !== 'live') return reply('Events are temporarily unavailable. Your feedback was not saved.', 503);
+      if (!response?.ok || !['live', 'cache'].includes(response.headers.get('x-content-source') ?? '')) return reply('Events are temporarily unavailable. Your feedback was not saved.', 503);
       const events = await response.json() as EventData[];
       const event = events.find(item => item.id === data.eventId);
       if (!event || !event.title?.trim() || !Number.isFinite(Date.parse(event.startsAt)) || Date.parse(event.startsAt) >= Date.now()) return reply('Choose an available past event.', 400);

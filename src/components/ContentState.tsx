@@ -7,12 +7,7 @@ export function ContentState({
   error: boolean;
   stale?: boolean;
 }) {
-  if (loading)
-    return (
-      <p className="lad-status" role="status">
-        Loading the latest content…
-      </p>
-    );
+  if (loading) return null;
   if (error)
     return (
       <div className="lad-status" role="alert">

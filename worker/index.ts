@@ -1,6 +1,6 @@
 import { handleNewsletterSignup, type NewsletterEnv as BrevoEnv } from './brevo-signup.ts';
 import { handleParticipation, type ParticipationEnv } from './participation.ts';
-import { handleContentRequest } from "./content";
+import { handleContentRequest, refreshScheduledEvents } from "./content";
 import { handleContactRequest } from "./contact";
 import { handleNewsletterRequest } from "./newsletter/api";
 import { handleEventbriteWebhook } from "./newsletter/eventbrite";
@@ -105,7 +105,11 @@ export default {
     await handleNewsletterQueue(batch, env);
   },
 
-  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    if (controller.cron === "*/5 * * * *") {
+      await refreshScheduledEvents(env);
+      return;
+    }
     await dispatchDueCampaigns(env);
     await dispatchDueEventFeedback(env);
   },
